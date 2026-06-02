@@ -1,26 +1,68 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+@theme {
+  --font-archivo: var(--font-archivo);
+  --font-space: var(--font-space);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  body {
+    @apply font-space bg-white text-[#0A0A0A] antialiased;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@layer utilities {
+  .outline-text {
+    -webkit-text-stroke: 1.5px #0A0A0A;
+    color: transparent;
+  }
 }
+
+/* ====== STYLES D'IMPRESSION DU BADGE — CORRECTION AUDIT ====== */
+@media print {
+  /* On cache tout sauf le badge */
+  body {
+    background: white !important;
+    color: black !important;
+  }
+
+  /* Masquer tout ce qui n'est pas le badge */
+  header,
+  nav,
+  footer,
+  .print\:hidden {
+    display: none !important;
+  }
+
+  /* Fond blanc forcé partout */
+  * {
+    background-color: white !important;
+    color: black !important;
+    box-shadow: none !important;
+  }
+
+  /* Exception : le QR code doit rester noir sur fond blanc */
+  svg path[fill="black"],
+  svg rect[fill="black"] {
+    fill: black !important;
+  }
+
+  /* Le badge prend toute la largeur */
+  .max-w-xs {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+
+  /* Éviter les coupures de page dans le badge */
+  .bg-white.rounded-3xl {
+    page-break-inside: avoid;
+    border: 2px solid black !important;
+  }
+
+  /* Titre de page d'impression */
+  @page {
+    margin: 1cm;
+    size: A4 portrait;
+  }
+}
+

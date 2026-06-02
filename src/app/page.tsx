@@ -1,65 +1,459 @@
-import Image from "next/image";
+'use client';
 
-export default function Home() {
+import Link from 'next/link';
+import Image from 'next/image';
+import { motion } from 'framer-motion';
+import { ArrowRight, QrCode, ShieldCheck, Map as MapIcon, Clock, Sparkles, Zap, CheckCircle2 } from 'lucide-react';
+
+export default function LandingPage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the page.tsx file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="min-h-screen bg-slate-50 text-[#0A0A0A] font-space overflow-x-hidden">
+
+      {/* ====== HEADER ====== */}
+      <header className="fixed top-0 left-0 w-full z-50 bg-white/95 border-b border-slate-100 shadow-sm backdrop-blur-sm px-6 py-3 lg:px-16">
+        <div className="max-w-7xl mx-auto flex justify-between items-center">
+          <div className="flex items-center gap-5">
+            <Image src="/logo-adn.png" alt="ADN" width={64} height={64} className="object-contain" />
+            <div className="w-px h-8 bg-slate-200"></div>
+            <Image src="/logo-escen.png" alt="ESCEN" width={110} height={50} className="object-contain" />
+            <div className="w-px h-8 bg-slate-200 hidden md:block"></div>
+            <div className="hidden md:flex flex-col">
+              <span className="font-archivo text-lg text-slate-800 tracking-tight leading-none uppercase">Fan Zone</span>
+              <span className="text-[9px] font-bold text-yellow-600 tracking-[0.25em] mt-0.5 uppercase">Ici c&apos;est le Mondial · Golfe 1</span>
+            </div>
+          </div>
+
+          <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
+            <a href="#lepass" className="hover:text-slate-900 transition-colors">Le Pass</a>
+            <a href="#comment" className="hover:text-slate-900 transition-colors">Comment ça marche</a>
+            <a href="#agenda" className="hover:text-slate-900 transition-colors">Agenda</a>
+            <a href="#matchs" className="hover:text-slate-900 transition-colors">Matchs</a>
+            <a href="#infos" className="hover:text-slate-900 transition-colors">Infos</a>
+          </nav>
+
+          <div className="flex items-center gap-6">
+            <Link href="/admin" className="hidden sm:block text-[10px] font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest">Admin</Link>
+            <Link href="/inscription" className="bg-yellow-400 text-black font-bold text-[10px] px-6 py-3 rounded-full hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">
+              S'inscrire
+            </Link>
+          </div>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={16}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
+      </header>
+
+      <main>
+
+        {/* ====== HERO ====== */}
+        <section className="relative min-h-screen flex flex-col justify-center px-6 lg:px-16 pt-28 pb-20 bg-slate-50">
+          <Image
+            src="https://images.unsplash.com/photo-1540747913346-19e32dc3e97e?q=80&w=1600"
+            alt="Stade de football"
+            fill
+            className="object-cover opacity-[0.08] mix-blend-luminosity"
+            priority
+          />
+          <div className="absolute bottom-0 left-0 w-full h-40 bg-gradient-to-t from-slate-50 to-transparent z-10"></div>
+
+          <div className="relative z-20 max-w-7xl mx-auto w-full grid lg:grid-cols-2 gap-16 items-center">
+
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.7 }}
+              className="space-y-8"
+            >
+              {/* Badge label officiel */}
+              <div className="inline-flex items-center gap-3 bg-yellow-400/10 border border-yellow-400/20 text-yellow-700 px-5 py-2.5 rounded-full">
+                <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
+                <span className="text-[10px] font-black uppercase tracking-[0.25em]">Événement Officiel · ADN × ESCEN</span>
+              </div>
+
+              {/* Titre principal */}
+              <div>
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-yellow-600 mb-3">Fan Zone Coupe du Monde 2026</p>
+                <h1 className="font-archivo text-5xl md:text-7xl leading-[0.9] tracking-tighter italic uppercase text-slate-900">
+                  Vivez le<br />
+                  <span className="text-yellow-500">Mondial</span><br />
+                  à Lomé.
+                </h1>
+              </div>
+
+              {/* Dates et lieu — CORRECTION AUDIT #3 et #4 */}
+              <div className="flex flex-wrap gap-4">
+                <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-xl px-4 py-3">
+                  <Clock size={14} className="text-yellow-600 shrink-0" />
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Durée</p>
+                    <p className="text-xs font-bold text-slate-800">14 Juin – 14 Juillet 2026</p>
+                  </div>
+                </div>
+                <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-xl px-4 py-3">
+                  <MapIcon size={14} className="text-yellow-600 shrink-0" />
+                  <div>
+                    <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Lieu</p>
+                    <p className="text-xs font-bold text-slate-800">Complexe Sportif du Golfe 1</p>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-base font-medium text-slate-600 max-w-md leading-relaxed">
+                La plus grande Fan Zone d'Afrique de l'Ouest. Écrans géants, concerts, ambiance unique au cœur du Golfe de Guinée. Accès 100% gratuit sur présentation de votre badge quotidien.
+              </p>
+
+              <div className="flex flex-col sm:flex-row gap-4 items-start">
+                <Link href="/inscription" className="group inline-flex items-center gap-3 bg-yellow-400 text-black font-bold text-sm px-8 py-4 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-xl shadow-yellow-400/20">
+                  Obtenir mon Pass Gratuit
+                  <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+                <a href="#comment" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors py-4">
+                  Comment ça marche ? ↓
+                </a>
+              </div>
+
+              <div className="flex items-center gap-10 pt-4 border-t border-slate-200">
+                {[
+                  { v: '100%', l: 'Gratuit' },
+                  { v: '60s', l: 'Pour s\'inscrire' },
+                  { v: '30j', l: 'D\'événements' },
+                ].map((s, i) => (
+                  <div key={i} className="text-center">
+                    <div className="font-archivo text-2xl text-slate-800 tracking-tight">{s.v}</div>
+                    <div className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">{s.l}</div>
+                  </div>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Badge Preview */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.7, delay: 0.2 }}
+              className="flex justify-center lg:justify-end"
+            >
+              <div className="relative w-80 bg-white rounded-3xl shadow-2xl shadow-slate-200 overflow-hidden rotate-2 hover:rotate-0 transition-transform duration-500 border border-slate-100">
+                <div className="bg-[#0F1020] p-8 text-white space-y-5">
+                  <div className="flex justify-between items-start">
+                    <div className="flex items-center gap-2">
+                      <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
+                      <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
+                    </div>
+                    <div className="text-right">
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Ici c&apos;est le Mondial</p>
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Badge Officiel</p>
+                    </div>
+                  </div>
+                  <div>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-1">Titulaire</p>
+                    <p className="font-archivo text-2xl italic uppercase leading-tight">Nom & Prénom</p>
+                  </div>
+                </div>
+                <div className="p-8 space-y-5 bg-white">
+                  <div className="bg-slate-50 aspect-square rounded-2xl flex items-center justify-center relative">
+                    <QrCode size={100} className="text-slate-200" />
+                    <span className="absolute font-bold text-[10px] uppercase tracking-widest bg-white border border-yellow-200 px-3 py-1.5 rounded-full text-yellow-600 shadow-sm">Accès Validé</span>
+                  </div>
+                  <div className="bg-yellow-400 rounded-xl py-3 text-center">
+                    <p className="font-archivo text-[11px] font-black uppercase tracking-wider text-black">#FZ2026 · TOGO</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* ====== BANDEAU INSTITUTIONNEL — CORRECTION AUDIT #2 ====== */}
+          <div className="bg-[#0F1020] py-5 px-6 lg:px-16 border-y border-white/5">
+          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-[11px] font-black text-white/70 uppercase tracking-widest text-center sm:text-left">
+              Un événement organisé par <span className="text-yellow-400">ADN — Académie Digitale Numérique</span> en partenariat avec <span className="text-yellow-400">ESCEN</span>
+            </p>
+            <div className="flex items-center gap-5">
+              <Image src="/logo-adn.png" alt="ADN" width={56} height={28} className="object-contain" />
+              <div className="w-px h-6 bg-white/10"></div>
+              <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
+            </div>
+          </div>
         </div>
+
+        {/* ====== LE PASS ====== */}
+        <section id="lepass" className="py-28 px-6 lg:px-16 bg-white">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+            <div className="space-y-10">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-4">L'Accès Officiel</p>
+                <h2 className="font-archivo text-4xl md:text-5xl leading-tight tracking-tighter italic uppercase">Le Pass Fan Zone</h2>
+              </div>
+              <p className="text-base text-slate-500 leading-relaxed max-w-md">
+                Votre badge numérique personnel est <strong>obligatoire pour chaque entrée</strong>. Il est gratuit, instantané et lié à votre numéro de téléphone.
+              </p>
+
+              {/* CORRECTION AUDIT #7 : mention badge à présenter chaque jour en évidence */}
+              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-5 rounded-r-2xl">
+                <p className="text-sm font-black text-yellow-800 uppercase tracking-wide">⚡ Important</p>
+                <p className="text-sm text-yellow-700 mt-1 leading-relaxed">
+                  Votre badge doit être présenté et scanné <strong>chaque jour à l'entrée</strong>. Un badge non scanné ne valide pas la présence du jour.
+                </p>
+              </div>
+
+              <div className="space-y-4">
+                {[
+                  { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Validation quotidienne', d: 'Badge scanné à chaque journée par nos agents à l\'entrée.', bg: 'bg-yellow-50/50 border-yellow-100' },
+                  { icon: <Zap size={20} className="text-yellow-500" />, t: 'Généré en 60 secondes', d: 'Aucun email requis. Juste votre numéro de téléphone.', bg: 'bg-yellow-50 border-yellow-100' },
+                  { icon: <Sparkles size={20} className="text-blue-500" />, t: 'Papier ou Digital', d: 'Imprimez votre QR Code ou gardez-le sur smartphone.', bg: 'bg-blue-50 border-blue-100' },
+                ].map((f, i) => (
+                  <div key={i} className={`flex items-center gap-5 p-5 rounded-2xl border ${f.bg}`}>
+                    <div className="shrink-0 w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">{f.icon}</div>
+                    <div>
+                      <h4 className="font-bold text-sm text-[#0A0A0A]">{f.t}</h4>
+                      <p className="text-xs text-slate-400 mt-0.5">{f.d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <Link href="/inscription" className="group inline-flex items-center gap-3 bg-[#0A0A14] text-white font-bold text-sm px-8 py-4 rounded-xl hover:bg-yellow-400 hover:text-black transition-all shadow-lg shadow-violet-900/20">
+                S'inscrire maintenant <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
+            <div className="relative">
+              <div className="absolute -top-8 -left-8 w-64 h-64 bg-yellow-100 rounded-full blur-3xl opacity-50"></div>
+              <div className="absolute -bottom-8 -right-8 w-64 h-64 bg-indigo-100 rounded-full blur-3xl opacity-50"></div>
+              <Image
+                src="https://images.unsplash.com/photo-1517466787929-bc90951d0974?q=80&w=800"
+                alt="Supporters Fan Zone"
+                width={600}
+                height={500}
+                className="relative z-10 rounded-3xl object-cover w-full shadow-xl shadow-slate-200"
+              />
+            </div>
+          </div>
+        </section>
+
+        {/* ====== COMMENT ÇA MARCHE — CORRECTION AUDIT #8 ====== */}
+        <section id="comment" className="py-28 px-6 lg:px-16 bg-white border-y border-slate-100">
+          <div className="max-w-7xl mx-auto space-y-16">
+            <div className="text-center space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600">Guide Rapide</p>
+              <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase text-slate-900">Comment ça marche ?</h2>
+              <p className="text-slate-500 text-sm max-w-md mx-auto">Trois étapes simples pour accéder à la Fan Zone chaque jour.</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {[
+                {
+                  num: '01',
+                  t: 'Je m\'inscris',
+                  d: 'Je remplis le formulaire en ligne avec mon nom, prénom et numéro de téléphone. L\'email est optionnel. L\'inscription est gratuite et prend moins d\'une minute.',
+                  icon: '📝',
+                },
+                {
+                  num: '02',
+                  t: 'Je reçois mon Badge QR',
+                  d: 'Un badge personnel avec un QR Code unique est généré immédiatement. Je peux l\'afficher sur mon téléphone ou l\'imprimer sur papier.',
+                  icon: '🎫',
+                },
+                {
+                  num: '03',
+                  t: 'Je le présente chaque jour',
+                  d: 'À chaque visite, je présente mon QR Code à l\'agent à l\'entrée. Il sera scanné pour valider ma présence du jour. Ce badge est personnel et non transférable.',
+                  icon: '✅',
+                },
+              ].map((step, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.15 }}
+                  className="relative bg-slate-50 border border-slate-200 rounded-3xl p-8 space-y-5 hover:bg-slate-100/50 transition-colors shadow-sm"
+                >
+                  <div className="flex items-center gap-4">
+                    <span className="font-archivo text-5xl text-slate-200">{step.num}</span>
+                    <span className="text-3xl">{step.icon}</span>
+                  </div>
+                  <h3 className="font-archivo text-xl italic uppercase text-slate-900 tracking-tighter">{step.t}</h3>
+                  <p className="text-sm text-slate-600 leading-relaxed">{step.d}</p>
+                  {i < 2 && (
+                    <div className="hidden md:block absolute top-1/2 -right-4 z-10 text-slate-300 text-2xl">→</div>
+                  )}
+                </motion.div>
+              ))}
+            </div>
+            <div className="text-center pt-4">
+              <Link href="/inscription" className="group inline-flex items-center gap-3 bg-yellow-400 text-black font-bold text-sm px-10 py-5 rounded-xl hover:bg-white transition-all shadow-xl shadow-yellow-400/20">
+                Commencer l'inscription <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </div>
+        </section>
+
+        {/* ====== AGENDA — CORRECTION AUDIT #5 ====== */}
+        <section id="agenda" className="py-28 px-6 lg:px-16 bg-[#F8FAFC]">
+          <div className="max-w-7xl mx-auto space-y-16">
+            <div className="text-center space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600">Programme 2026</p>
+              <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase">L'Agenda</h2>
+              <p className="text-slate-500 text-sm">Du 14 juin au 14 juillet 2026 · Esplanade du Palais de Lomé · Ouvert dès 09h00</p>
+            </div>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {[
+                {
+                  d: '14 Juin 2026',
+                  h: '10h00 – 22h00',
+                  t: 'Opening Day',
+                  p: 'Cérémonie officielle d\'ouverture. Discours officiels, animations et premier match diffusé.',
+                  bg: 'bg-white',
+                  accent: 'text-blue-600 bg-blue-50',
+                },
+                {
+                  d: 'Chaque Jour',
+                  h: '09h00 – 23h00',
+                  t: 'Match Day',
+                  p: 'Diffusion en direct de tous les matchs sur écrans géants 4K LED. Accès sur badge obligatoire.',
+                  bg: 'bg-[#0A0A14] text-white',
+                  accent: 'text-yellow-400 bg-white/10',
+                },
+                {
+                  d: 'Chaque Soir',
+                  h: '20h00 – 23h00',
+                  t: 'Fan Party',
+                  p: 'Concerts live, animations culturelles et saveurs locales après les matchs.',
+                  bg: 'bg-yellow-400',
+                  accent: 'text-black bg-black/10',
+                },
+                {
+                  d: '14 Juillet 2026',
+                  h: '15h00 – Minuit',
+                  t: 'The Finals',
+                  p: 'Diffusion de la grande finale de la Coupe du Monde et méga concert de clôture.',
+                  bg: 'bg-white',
+                  accent: 'text-purple-600 bg-purple-50',
+                },
+              ].map((a, i) => (
+                <div key={i} className={`p-8 rounded-2xl shadow-sm hover:shadow-xl transition-all space-y-4 ${a.bg}`}>
+                  <span className={`inline-block text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${a.accent}`}>{a.d}</span>
+                  <p className="text-[10px] font-bold opacity-50 uppercase tracking-widest">{a.h}</p>
+                  <h4 className="font-archivo text-xl italic uppercase tracking-tight">{a.t}</h4>
+                  <p className="text-sm opacity-50 leading-relaxed">{a.p}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ====== MATCHS ====== */}
+        <section id="matchs" className="py-28 px-6 lg:px-16 bg-white">
+          <div className="max-w-7xl mx-auto space-y-16">
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
+              <div className="space-y-3">
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500">Diffusion Officielle</p>
+                <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase">Les Matchs</h2>
+                <p className="text-sm text-slate-400">Tous les matchs de la Coupe du Monde 2026 seront diffusés sur écrans géants.</p>
+              </div>
+              <div className="inline-flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-full">
+                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
+                <span className="text-[10px] font-black uppercase tracking-widest">Projection Live</span>
+              </div>
+            </div>
+
+            {/* CORRECTION AUDIT #6 : explication des données fictives */}
+            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-start gap-4">
+              <span className="text-xl">ℹ️</span>
+              <p className="text-sm text-slate-500 leading-relaxed">
+                <strong className="text-slate-700">Programme en cours de mise à jour.</strong> Les matchs ci-dessous sont des exemples. Le programme complet et définitif des diffusions sera publié dès la confirmation du calendrier de la FIFA.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              {[
+                { t1: 'TOGO', t2: 'ALLEMAGNE', g: 'Groupe D — Exemple', s: '?', date: '18 Juin 2026', live: false },
+                { t1: 'BRÉSIL', t2: 'FRANCE', g: 'Quart de Finale — Exemple', s: '?', date: '5 Juil. 2026', live: false },
+              ].map((m, i) => (
+                <div key={i} className={`rounded-2xl p-8 space-y-6 transition-all hover:shadow-xl ${i === 0 ? 'bg-[#0A0A14] text-white' : 'bg-slate-50 border border-slate-100'}`}>
+                  <div className="flex justify-between items-center">
+                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${i === 0 ? 'bg-white/10 text-white/60' : 'bg-slate-200 text-slate-500'}`}>{m.g}</span>
+                    <span className={`text-[10px] font-bold ${i === 0 ? 'text-white/30' : 'text-slate-300'}`}>{m.date} · 20:00</span>
+                  </div>
+                  <div className="flex items-center justify-between font-archivo uppercase italic tracking-tight">
+                    <span className="text-2xl md:text-3xl flex-1">{m.t1}</span>
+                    <div className={`px-6 md:px-8 py-3 rounded-xl font-black text-xl ${i === 0 ? 'bg-yellow-400 text-black' : 'bg-[#0A0A14] text-white'}`}>{m.s}</div>
+                    <span className="text-2xl md:text-3xl flex-1 text-right">{m.t2}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        {/* ====== INFOS ====== */}
+        <section id="infos" className="py-28 px-6 lg:px-16 bg-white text-slate-900 border-t border-slate-100">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            <div className="space-y-10">
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600 mb-4">Informations Pratiques</p>
+                <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase leading-tight text-slate-900">Venez Vivre<br />L'Expérience.</h2>
+              </div>
+              <div className="space-y-6">
+                {[
+                  { icon: <MapIcon size={20} className="text-yellow-600" />, t: 'Emplacement', d: 'Complexe Sportif du Golfe 1\nGolfe 1, Lomé, Togo' },
+                  { icon: <Clock size={20} className="text-yellow-600" />, t: 'Horaires d\'ouverture', d: 'Accueil dès 09h00 · Chaque jour\nFermeture 1h après le dernier match' },
+                  { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Assistance sur place', d: 'Des agents ADN & ESCEN sont présents\npour vous aider à vous inscrire ou retrouver votre badge.' },
+                ].map((item, i) => (
+                  <div key={i} className="flex items-start gap-5">
+                    <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">{item.icon}</div>
+                    <div>
+                      <h5 className="font-bold mb-1 text-slate-800">{item.t}</h5>
+                      <p className="text-slate-500 text-sm leading-relaxed whitespace-pre-line">{item.d}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            <div className="bg-slate-50 rounded-3xl p-10 space-y-8 border border-slate-200 shadow-sm">
+              <h3 className="font-archivo text-3xl italic uppercase text-slate-900">Prêt à rejoindre ?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">L'inscription est rapide, gratuite et se fait depuis votre téléphone. Votre badge QR est généré immédiatement.</p>
+              <Link href="/inscription" className="group w-full flex items-center justify-center gap-3 bg-yellow-400 text-black font-bold text-sm px-8 py-5 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-md">
+                Créer mon Badge Gratuit <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+              <div className="space-y-3 pt-2">
+                {[
+                  'Inscription gratuite et sans email',
+                  'Badge généré instantanément',
+                  'Assistance disponible sur place',
+                ].map((item, i) => (
+                  <div key={i} className="flex items-center gap-3">
+                    <CheckCircle2 size={14} className="text-yellow-500 shrink-0" />
+                    <p className="text-xs text-slate-500">{item}</p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+        </section>
+
       </main>
+
+      {/* ====== FOOTER CORRIGÉ — CORRECTION AUDIT #8 ====== */}
+      <footer className="py-12 px-6 lg:px-16 bg-slate-100 border-t border-slate-200">
+        <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 items-center">
+          <div className="space-y-2">
+            <p className="text-[11px] font-black uppercase tracking-widest text-slate-700">Ici c&apos;est le Mondial 2026</p>
+            <p className="text-[10px] text-slate-500">Complexe Sportif du Golfe 1 · Lomé, Togo</p>
+          </div>
+          <div className="text-center flex flex-col items-center gap-3">
+            <div className="flex items-center gap-4">
+              <Image src="/logo-adn.png" alt="ADN" width={80} height={40} className="object-contain" />
+              <span className="text-slate-300 text-xs">×</span>
+              <Image src="/logo-escen.png" alt="ESCEN" width={96} height={42} className="object-contain" />
+            </div>
+            <p className="text-[10px] text-slate-400">Organisateurs officiels</p>
+          </div>
+          <div className="text-right space-y-1">
+            <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">Assistance</p>
+            <p className="text-[10px] text-slate-400">Disponible sur place · Agents terrain</p>
+          </div>
+        </div>
+      </footer>
+
     </div>
   );
 }
