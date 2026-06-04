@@ -7,11 +7,15 @@ import {
     Download,
     QrCode,
     LogOut,
-    Search,
     ShieldCheck,
-    Tag
+    Tag,
+    UserPlus,
+    Trophy,
+    Shield
 } from 'lucide-react';
 import { getCurrentUser, logout } from '@/app/actions/auth';
+import AdminNavLink from './AdminNavLink';
+import AdminSearchBar from './AdminSearchBar';
 
 export default async function AdminLayout({
     children,
@@ -21,6 +25,17 @@ export default async function AdminLayout({
     const user = await getCurrentUser();
     const userEmail = user?.email ?? 'admin@fanzone.tg';
     const userInitial = userEmail.charAt(0).toUpperCase();
+
+    const navLinks = [
+        { href: '/admin', icon: <LayoutDashboard size={18} />, label: 'Dashboard', exact: true },
+        { href: '/admin/inscription', icon: <UserPlus size={18} />, label: 'Inscrire', exact: false },
+        { href: '/admin/participants', icon: <Users size={18} />, label: 'Participants', exact: false },
+        { href: '/admin/teams', icon: <Shield size={18} />, label: 'Équipes', exact: false },
+        { href: '/admin/pronostics', icon: <Trophy size={18} />, label: 'Matchs & Pronostics', exact: false },
+        { href: '/admin/presences', icon: <History size={18} />, label: 'Présences', exact: false },
+        { href: '/admin/badges', icon: <Tag size={18} />, label: 'Badges QR', exact: false },
+        { href: '/admin/exports', icon: <Download size={18} />, label: 'Exports', exact: false },
+    ];
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex">
@@ -36,30 +51,30 @@ export default async function AdminLayout({
                     </div>
                     <div className="flex items-center gap-2">
                         <Image src="/logo-escen.png" alt="ESCEN" width={64} height={24} className="object-contain" />
+                        <span className="text-white/20 text-xs">|</span>
+                        <Image src="/logo-mairie.png" alt="Mairie" width={64} height={24} className="object-contain" />
                     </div>
                 </div>
 
-                <nav className="flex-1 p-6 space-y-2">
-                    <Link href="/admin" className="flex items-center gap-3 px-4 py-3 rounded-xl hover:bg-yellow-400 hover:text-black text-white/70 font-bold text-xs uppercase tracking-widest transition-all group">
-                        <LayoutDashboard size={18} /> Dashboard
-                    </Link>
-                    <Link href="/admin/participants" className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-bold text-xs uppercase tracking-widest transition-all">
-                        <Users size={18} /> Participants
-                    </Link>
-                    <Link href="/admin/presences" className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-bold text-xs uppercase tracking-widest transition-all">
-                        <History size={18} /> Présences
-                    </Link>
-                    <Link href="/admin/badges" className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-bold text-xs uppercase tracking-widest transition-all">
-                        <Tag size={18} /> Badges QR
-                    </Link>
-                    <Link href="/admin/exports" className="flex items-center gap-3 px-4 py-3 rounded-xl text-white/60 hover:text-white hover:bg-white/5 font-bold text-xs uppercase tracking-widest transition-all">
-                        <Download size={18} /> Exports
-                    </Link>
+                <nav className="flex-1 p-6 space-y-1">
+                    {navLinks.map((link) => (
+                        <AdminNavLink key={link.href} href={link.href} icon={link.icon} label={link.label} exact={link.exact} />
+                    ))}
                 </nav>
+
+                {/* Lien scanner terrain */}
+                <div className="px-6 pb-2">
+                    <Link
+                        href="/scan"
+                        target="_blank"
+                        className="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 font-bold text-xs uppercase tracking-widest hover:bg-yellow-400 hover:text-black transition-all"
+                    >
+                        <QrCode size={18} /> Scanner terrain
+                    </Link>
+                </div>
 
                 {/* User + Logout */}
                 <div className="p-6 border-t border-white/5 space-y-3">
-                    {/* Info admin connecté */}
                     <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-white/5">
                         <div className="w-8 h-8 bg-yellow-400 rounded-full flex items-center justify-center text-black font-archivo font-bold text-sm flex-shrink-0">
                             {userInitial}
@@ -70,7 +85,6 @@ export default async function AdminLayout({
                         </div>
                     </div>
 
-                    {/* Bouton déconnexion */}
                     <form action={logout}>
                         <button
                             type="submit"
@@ -86,14 +100,7 @@ export default async function AdminLayout({
             <main className="flex-1 lg:ml-64 min-h-screen flex flex-col">
                 {/* Header */}
                 <header className="h-20 bg-white border-b border-slate-200 px-8 flex items-center justify-between sticky top-0 z-10">
-                    <div className="flex items-center gap-4 bg-slate-50 border border-slate-100 rounded-xl px-4 py-2 w-96">
-                        <Search size={16} className="text-slate-400" />
-                        <input
-                            type="text"
-                            placeholder="Rechercher un participant (Nom, N° Badge...)"
-                            className="bg-transparent border-none text-sm w-full focus:outline-none placeholder:text-slate-400"
-                        />
-                    </div>
+                    <AdminSearchBar />
 
                     <div className="flex items-center gap-6">
                         <div className="flex items-center gap-2 bg-green-50 text-green-700 px-3 py-1.5 rounded-full border border-green-100">

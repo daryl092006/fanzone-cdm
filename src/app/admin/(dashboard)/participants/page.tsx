@@ -2,39 +2,44 @@ import { getParticipants } from '@/app/actions/admin-list';
 import {
     User,
     Search,
-    Filter,
+    Download,
     ExternalLink,
-    MoreVertical,
     CheckCircle2,
     XCircle,
-    Clock,
     Eye
 } from 'lucide-react';
 import Link from 'next/link';
+import ParticipantsSearchForm from './ParticipantsSearchForm';
 
 export default async function ParticipantsPage({
     searchParams
 }: {
-    searchParams: { q?: string }
+    searchParams: Promise<{ q?: string }>
 }) {
-    const query = searchParams.q || '';
+    const { q } = await searchParams;
+    const query = q || '';
+
     const data = await getParticipants(query);
     const participants = data.participants || [];
 
     return (
         <div className="space-y-6">
-            <div className="flex justify-between items-end">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4">
                 <div>
                     <h1 className="font-archivo text-3xl italic uppercase tracking-tighter text-[#0A0A14]">Participants</h1>
-                    <p className="text-slate-400 text-sm mt-1">Liste complète des supporters inscrits ({participants.length}).</p>
+                    <p className="text-slate-400 text-sm mt-1">
+                        {query ? `${participants.length} résultat(s) pour « ${query} »` : `${participants.length} inscrits au total`}
+                    </p>
                 </div>
-                <div className="flex gap-3">
-                    <button className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 rounded-xl text-xs font-bold uppercase tracking-widest text-slate-600 hover:bg-slate-50 transition-all shadow-sm">
-                        <Filter size={14} /> Filtrer
-                    </button>
-                    <button className="flex items-center gap-2 px-4 py-2 bg-[#0A0A14] text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md shadow-slate-200">
-                        Exporter CSV
-                    </button>
+                <div className="flex gap-3 items-center">
+                    <ParticipantsSearchForm defaultValue={query} />
+                    <a
+                        href="/api/exports/participants"
+                        download
+                        className="flex items-center gap-2 px-4 py-2 bg-[#0A0A14] text-white rounded-xl text-xs font-bold uppercase tracking-widest hover:bg-yellow-400 hover:text-black transition-all shadow-md"
+                    >
+                        <Download size={14} /> CSV
+                    </a>
                 </div>
             </div>
 

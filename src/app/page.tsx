@@ -1,11 +1,29 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { motion } from 'framer-motion';
-import { ArrowRight, QrCode, ShieldCheck, Map as MapIcon, Clock, Sparkles, Zap, CheckCircle2 } from 'lucide-react';
+import { ArrowRight, QrCode, ShieldCheck, Map as MapIcon, Clock, Sparkles, Zap, CheckCircle2, ClipboardList, Ticket, Activity, Trophy, AlertTriangle } from 'lucide-react';
+import { getMatchesAndPredictions } from '@/app/actions/predictions';
+import LiveScoresBanner from '@/app/components/LiveScoresBanner';
+import FixturesSection from '@/app/components/FixturesSection';
+import StandingsSection from '@/app/components/StandingsSection';
+import TopScorers from '@/app/components/TopScorers';
 
 export default function LandingPage() {
+  const [matches, setMatches] = useState<any[]>([]);
+
+  useEffect(() => {
+    async function loadMatches() {
+      const res = await getMatchesAndPredictions('00000000-0000-0000-0000-000000000000');
+      if (res.success && res.matches) {
+        setMatches(res.matches);
+      }
+    }
+    loadMatches();
+  }, []);
+
   return (
     <div className="min-h-screen bg-slate-50 text-[#0A0A0A] font-space overflow-x-hidden">
 
@@ -13,9 +31,11 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 w-full z-50 bg-white/95 border-b border-slate-100 shadow-sm backdrop-blur-sm px-6 py-3 lg:px-16">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-5">
-            <Image src="/logo-adn.png" alt="ADN" width={64} height={64} className="object-contain" />
+             <Image src="/logo-adn.png" alt="ADN" width={64} height={64} className="object-contain" />
             <div className="w-px h-8 bg-slate-200"></div>
             <Image src="/logo-escen.png" alt="ESCEN" width={110} height={50} className="object-contain" />
+            <div className="w-px h-8 bg-slate-200"></div>
+            <Image src="/logo-mairie.png" alt="Mairie" width={90} height={50} className="object-contain" />
             <div className="w-px h-8 bg-slate-200 hidden md:block"></div>
             <div className="hidden md:flex flex-col">
               <span className="font-archivo text-lg text-slate-800 tracking-tight leading-none uppercase">Fan Zone</span>
@@ -26,8 +46,9 @@ export default function LandingPage() {
           <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
             <a href="#lepass" className="hover:text-slate-900 transition-colors">Le Pass</a>
             <a href="#comment" className="hover:text-slate-900 transition-colors">Comment ça marche</a>
-            <a href="#agenda" className="hover:text-slate-900 transition-colors">Agenda</a>
-            <a href="#matchs" className="hover:text-slate-900 transition-colors">Matchs</a>
+            <Link href="/pronostics" className="text-yellow-600 hover:text-yellow-700 transition-colors flex items-center gap-1.5">
+              <Trophy size={12} /> Pronostics
+            </Link>
             <a href="#infos" className="hover:text-slate-900 transition-colors">Infos</a>
           </nav>
 
@@ -39,6 +60,11 @@ export default function LandingPage() {
           </div>
         </div>
       </header>
+
+      {/* ====== BANDEAU LIVE SCORES ====== */}
+      <div className="pt-[68px]">
+        <LiveScoresBanner />
+      </div>
 
       <main>
 
@@ -62,17 +88,17 @@ export default function LandingPage() {
               className="space-y-8"
             >
               {/* Badge label officiel */}
-              <div className="inline-flex items-center gap-3 bg-yellow-400/10 border border-yellow-400/20 text-yellow-700 px-5 py-2.5 rounded-full">
-                <span className="w-2 h-2 bg-yellow-400 rounded-full animate-pulse"></span>
-                <span className="text-[10px] font-black uppercase tracking-[0.25em]">Événement Officiel · ADN × ESCEN</span>
+              <div className="inline-flex items-center gap-3 bg-primary-green/10 border border-primary-green/20 text-primary-green px-5 py-2.5 rounded-full">
+                <span className="w-2 h-2 bg-light-green rounded-full animate-pulse"></span>
+                <span className="text-[10px] font-black uppercase tracking-[0.25em]">Événement Officiel · Mairie Golfe 1 · ADN × ESCEN</span>
               </div>
 
               {/* Titre principal */}
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-yellow-600 mb-3">Fan Zone Coupe du Monde 2026</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue mb-3">Fan Zone Coupe du Monde 2026</p>
                 <h1 className="font-archivo text-5xl md:text-7xl leading-[0.9] tracking-tighter italic uppercase text-slate-900">
                   Vivez le<br />
-                  <span className="text-yellow-500">Mondial</span><br />
+                  <span className="text-primary-green">Mondial</span><br />
                   à Lomé.
                 </h1>
               </div>
@@ -80,14 +106,14 @@ export default function LandingPage() {
               {/* Dates et lieu — CORRECTION AUDIT #3 et #4 */}
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-xl px-4 py-3">
-                  <Clock size={14} className="text-yellow-600 shrink-0" />
+                  <Clock size={14} className="text-primary-blue shrink-0" />
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Durée</p>
                     <p className="text-xs font-bold text-slate-800">14 Juin – 14 Juillet 2026</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-xl px-4 py-3">
-                  <MapIcon size={14} className="text-yellow-600 shrink-0" />
+                  <MapIcon size={14} className="text-primary-green shrink-0" />
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Lieu</p>
                     <p className="text-xs font-bold text-slate-800">Complexe Sportif du Golfe 1</p>
@@ -100,7 +126,7 @@ export default function LandingPage() {
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 items-start">
-                <Link href="/inscription" className="group inline-flex items-center gap-3 bg-yellow-400 text-black font-bold text-sm px-8 py-4 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-xl shadow-yellow-400/20">
+                <Link href="/inscription" className="group inline-flex items-center gap-3 bg-primary-yellow text-black font-bold text-sm px-8 py-4 rounded-xl hover:bg-primary-green hover:text-white transition-all shadow-xl shadow-primary-yellow/20">
                   Obtenir mon Pass Gratuit
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
@@ -136,6 +162,7 @@ export default function LandingPage() {
                     <div className="flex items-center gap-2">
                       <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
                       <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
+                      <Image src="/logo-mairie.png" alt="Mairie" width={48} height={20} className="object-contain animate-pulse" />
                     </div>
                     <div className="text-right">
                       <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Ici c&apos;est le Mondial</p>
@@ -150,9 +177,9 @@ export default function LandingPage() {
                 <div className="p-8 space-y-5 bg-white">
                   <div className="bg-slate-50 aspect-square rounded-2xl flex items-center justify-center relative">
                     <QrCode size={100} className="text-slate-200" />
-                    <span className="absolute font-bold text-[10px] uppercase tracking-widest bg-white border border-yellow-200 px-3 py-1.5 rounded-full text-yellow-600 shadow-sm">Accès Validé</span>
+                    <span className="absolute font-bold text-[10px] uppercase tracking-widest bg-white border border-primary-green/20 px-3 py-1.5 rounded-full text-primary-green shadow-sm">Accès Validé</span>
                   </div>
-                  <div className="bg-yellow-400 rounded-xl py-3 text-center">
+                  <div className="bg-primary-yellow rounded-xl py-3 text-center">
                     <p className="font-archivo text-[11px] font-black uppercase tracking-wider text-black">#FZ2026 · TOGO</p>
                   </div>
                 </div>
@@ -160,17 +187,19 @@ export default function LandingPage() {
             </motion.div>
           </div>
         </section>
-
+ 
         {/* ====== BANDEAU INSTITUTIONNEL — CORRECTION AUDIT #2 ====== */}
-          <div className="bg-[#0F1020] py-5 px-6 lg:px-16 border-y border-white/5">
+        <div className="bg-[#0F1020] py-5 px-6 lg:px-16 border-y border-white/5">
           <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-[11px] font-black text-white/70 uppercase tracking-widest text-center sm:text-left">
-              Un événement organisé par <span className="text-yellow-400">ADN — Académie Digitale Numérique</span> en partenariat avec <span className="text-yellow-400">ESCEN</span>
+              Un événement organisé par <span className="text-primary-yellow">ADN — Académie Digitale Numérique</span> en partenariat avec <span className="text-primary-yellow">ESCEN</span> et la <span className="text-primary-yellow">Mairie Golfe 1</span>
             </p>
             <div className="flex items-center gap-5">
               <Image src="/logo-adn.png" alt="ADN" width={56} height={28} className="object-contain" />
               <div className="w-px h-6 bg-white/10"></div>
               <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
+              <div className="w-px h-6 bg-white/10"></div>
+              <Image src="/logo-mairie.png" alt="Mairie" width={80} height={36} className="object-contain" />
             </div>
           </div>
         </div>
@@ -180,7 +209,7 @@ export default function LandingPage() {
           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
             <div className="space-y-10">
               <div>
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500 mb-4">L'Accès Officiel</p>
+                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-green mb-4">L'Accès Officiel</p>
                 <h2 className="font-archivo text-4xl md:text-5xl leading-tight tracking-tighter italic uppercase">Le Pass Fan Zone</h2>
               </div>
               <p className="text-base text-slate-500 leading-relaxed max-w-md">
@@ -188,18 +217,21 @@ export default function LandingPage() {
               </p>
 
               {/* CORRECTION AUDIT #7 : mention badge à présenter chaque jour en évidence */}
-              <div className="bg-yellow-50 border-l-4 border-yellow-400 p-5 rounded-r-2xl">
-                <p className="text-sm font-black text-yellow-800 uppercase tracking-wide">⚡ Important</p>
-                <p className="text-sm text-yellow-700 mt-1 leading-relaxed">
-                  Votre badge doit être présenté et scanné <strong>chaque jour à l'entrée</strong>. Un badge non scanné ne valide pas la présence du jour.
-                </p>
+              <div className="bg-primary-green/5 border-l-4 border-primary-green p-5 rounded-r-2xl flex gap-3 items-start">
+                <AlertTriangle size={18} className="text-primary-green shrink-0 mt-0.5" />
+                <div>
+                  <p className="text-sm font-black text-primary-green uppercase tracking-wide">Important</p>
+                  <p className="text-sm text-primary-green/80 mt-1 leading-relaxed">
+                    Votre badge doit être présenté et scanné <strong>chaque jour à l'entrée</strong>. Un badge non scanné ne valide pas la présence du jour.
+                  </p>
+                </div>
               </div>
 
               <div className="space-y-4">
                 {[
-                  { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Validation quotidienne', d: 'Badge scanné à chaque journée par nos agents à l\'entrée.', bg: 'bg-yellow-50/50 border-yellow-100' },
-                  { icon: <Zap size={20} className="text-yellow-500" />, t: 'Généré en 60 secondes', d: 'Aucun email requis. Juste votre numéro de téléphone.', bg: 'bg-yellow-50 border-yellow-100' },
-                  { icon: <Sparkles size={20} className="text-blue-500" />, t: 'Papier ou Digital', d: 'Imprimez votre QR Code ou gardez-le sur smartphone.', bg: 'bg-blue-50 border-blue-100' },
+                  { icon: <ShieldCheck size={20} className="text-primary-green" />, t: 'Validation quotidienne', d: 'Badge scanné à chaque journée par nos agents à l\'entrée.', bg: 'bg-primary-green/5 border-primary-green/10' },
+                  { icon: <Zap size={20} className="text-primary-blue" />, t: 'Généré en 60 secondes', d: 'Aucun email requis. Juste votre numéro de téléphone.', bg: 'bg-primary-blue/5 border-primary-blue/10' },
+                  { icon: <QrCode size={20} className="text-[#8cbe43]" />, t: 'Papier ou Digital', d: 'Imprimez votre QR Code ou gardez-le sur smartphone.', bg: 'bg-light-green/5 border-light-green/10' },
                 ].map((f, i) => (
                   <div key={i} className={`flex items-center gap-5 p-5 rounded-2xl border ${f.bg}`}>
                     <div className="shrink-0 w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">{f.icon}</div>
@@ -210,7 +242,7 @@ export default function LandingPage() {
                   </div>
                 ))}
               </div>
-              <Link href="/inscription" className="group inline-flex items-center gap-3 bg-[#0A0A14] text-white font-bold text-sm px-8 py-4 rounded-xl hover:bg-yellow-400 hover:text-black transition-all shadow-lg shadow-violet-900/20">
+              <Link href="/inscription" className="group inline-flex items-center gap-3 bg-[#0A0A14] text-white font-bold text-sm px-8 py-4 rounded-xl hover:bg-primary-yellow hover:text-black transition-all shadow-lg shadow-violet-900/20">
                 S'inscrire maintenant <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
@@ -243,19 +275,19 @@ export default function LandingPage() {
                   num: '01',
                   t: 'Je m\'inscris',
                   d: 'Je remplis le formulaire en ligne avec mon nom, prénom et numéro de téléphone. L\'email est optionnel. L\'inscription est gratuite et prend moins d\'une minute.',
-                  icon: '📝',
+                  icon: <ClipboardList className="text-yellow-600 shrink-0" size={24} />,
                 },
                 {
                   num: '02',
                   t: 'Je reçois mon Badge QR',
                   d: 'Un badge personnel avec un QR Code unique est généré immédiatement. Je peux l\'afficher sur mon téléphone ou l\'imprimer sur papier.',
-                  icon: '🎫',
+                  icon: <Ticket className="text-yellow-500 shrink-0" size={24} />,
                 },
                 {
                   num: '03',
                   t: 'Je le présente chaque jour',
                   d: 'À chaque visite, je présente mon QR Code à l\'agent à l\'entrée. Il sera scanné pour valider ma présence du jour. Ce badge est personnel et non transférable.',
-                  icon: '✅',
+                  icon: <CheckCircle2 className="text-emerald-500 shrink-0" size={24} />,
                 },
               ].map((step, i) => (
                 <motion.div
@@ -268,7 +300,7 @@ export default function LandingPage() {
                 >
                   <div className="flex items-center gap-4">
                     <span className="font-archivo text-5xl text-slate-200">{step.num}</span>
-                    <span className="text-3xl">{step.icon}</span>
+                    <span className="flex items-center justify-center w-12 h-12 bg-white rounded-2xl shadow-sm border border-slate-100">{step.icon}</span>
                   </div>
                   <h3 className="font-archivo text-xl italic uppercase text-slate-900 tracking-tighter">{step.t}</h3>
                   <p className="text-sm text-slate-600 leading-relaxed">{step.d}</p>
@@ -340,49 +372,31 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ====== MATCHS ====== */}
-        <section id="matchs" className="py-28 px-6 lg:px-16 bg-white">
-          <div className="max-w-7xl mx-auto space-y-16">
-            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
-              <div className="space-y-3">
-                <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-500">Diffusion Officielle</p>
-                <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase">Les Matchs</h2>
-                <p className="text-sm text-slate-400">Tous les matchs de la Coupe du Monde 2026 seront diffusés sur écrans géants.</p>
-              </div>
-              <div className="inline-flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-full">
-                <span className="w-2 h-2 bg-white rounded-full animate-pulse"></span>
-                <span className="text-[10px] font-black uppercase tracking-widest">Projection Live</span>
-              </div>
-            </div>
 
-            {/* CORRECTION AUDIT #6 : explication des données fictives */}
-            <div className="bg-slate-50 border border-slate-200 rounded-2xl p-5 flex items-start gap-4">
-              <span className="text-xl">ℹ️</span>
-              <p className="text-sm text-slate-500 leading-relaxed">
-                <strong className="text-slate-700">Programme en cours de mise à jour.</strong> Les matchs ci-dessous sont des exemples. Le programme complet et définitif des diffusions sera publié dès la confirmation du calendrier de la FIFA.
-              </p>
-            </div>
-
-            <div className="grid md:grid-cols-2 gap-6">
-              {[
-                { t1: 'TOGO', t2: 'ALLEMAGNE', g: 'Groupe D — Exemple', s: '?', date: '18 Juin 2026', live: false },
-                { t1: 'BRÉSIL', t2: 'FRANCE', g: 'Quart de Finale — Exemple', s: '?', date: '5 Juil. 2026', live: false },
-              ].map((m, i) => (
-                <div key={i} className={`rounded-2xl p-8 space-y-6 transition-all hover:shadow-xl ${i === 0 ? 'bg-[#0A0A14] text-white' : 'bg-slate-50 border border-slate-100'}`}>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-full ${i === 0 ? 'bg-white/10 text-white/60' : 'bg-slate-200 text-slate-500'}`}>{m.g}</span>
-                    <span className={`text-[10px] font-bold ${i === 0 ? 'text-white/30' : 'text-slate-300'}`}>{m.date} · 20:00</span>
-                  </div>
-                  <div className="flex items-center justify-between font-archivo uppercase italic tracking-tight">
-                    <span className="text-2xl md:text-3xl flex-1">{m.t1}</span>
-                    <div className={`px-6 md:px-8 py-3 rounded-xl font-black text-xl ${i === 0 ? 'bg-yellow-400 text-black' : 'bg-[#0A0A14] text-white'}`}>{m.s}</div>
-                    <span className="text-2xl md:text-3xl flex-1 text-right">{m.t2}</span>
-                  </div>
-                </div>
-              ))}
+        {/* ====== CTA PRONOSTICS ====== */}
+        <section className="py-12 px-6 lg:px-16 bg-white">
+          <div className="max-w-7xl mx-auto">
+            <div className="bg-[#0F1020] border border-white/5 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl text-white">
+              <div className="space-y-2">
+                <span className="inline-flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                  <Trophy size={10} /> Tirage au Sort
+                </span>
+                <h3 className="font-archivo text-2xl md:text-3xl italic uppercase tracking-tight">Faites vos pronostics et gagnez !</h3>
+                <p className="text-sm text-slate-400 max-w-xl leading-relaxed">
+                  Devinez les scores exacts des matchs de la Coupe du Monde. Un tirage au sort sera effectué parmi tous les pronostics corrects pour faire gagner de nombreux lots officiels !
+                </p>
+              </div>
+              <div className="shrink-0">
+                <Link href="/pronostics" className="group inline-flex items-center gap-2 bg-yellow-400 text-black font-bold text-sm px-8 py-4 rounded-xl hover:bg-white transition-all shadow-lg">
+                  Lancer mes Pronostics
+                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
+
+
 
         {/* ====== INFOS ====== */}
         <section id="infos" className="py-28 px-6 lg:px-16 bg-white text-slate-900 border-t border-slate-100">
@@ -444,6 +458,8 @@ export default function LandingPage() {
               <Image src="/logo-adn.png" alt="ADN" width={80} height={40} className="object-contain" />
               <span className="text-slate-300 text-xs">×</span>
               <Image src="/logo-escen.png" alt="ESCEN" width={96} height={42} className="object-contain" />
+              <span className="text-slate-300 text-xs">×</span>
+              <Image src="/logo-mairie.png" alt="Mairie" width={96} height={42} className="object-contain" />
             </div>
             <p className="text-[10px] text-slate-400">Organisateurs officiels</p>
           </div>

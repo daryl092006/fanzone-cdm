@@ -2,7 +2,7 @@ import { supabase } from '@/lib/supabase';
 import { notFound } from 'next/navigation';
 import QRCodeClient from './QRCodeClient';
 import Image from 'next/image';
-import { Printer, Home, Share2, CheckCircle2, XCircle, Clock } from 'lucide-react';
+import { Printer, Home, Share2, CheckCircle2, XCircle, Clock, Info } from 'lucide-react';
 import Link from 'next/link';
 import BadgeActions from './BadgeActions';
 
@@ -66,6 +66,7 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
                 <div className="flex items-center gap-3">
                     <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
                     <Image src="/logo-escen.png" alt="ESCEN" width={64} height={28} className="object-contain" />
+                    <Image src="/logo-mairie.png" alt="Mairie" width={56} height={28} className="object-contain" />
                 </div>
             </div>
 
@@ -100,6 +101,7 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
                     <div className="flex justify-center items-center gap-3">
                         <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
                         <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
+                        <Image src="/logo-mairie.png" alt="Mairie" width={72} height={32} className="object-contain" />
                     </div>
                     <div>
                         <h2 className="font-archivo text-white text-lg italic uppercase tracking-tighter print:text-black">Fan Zone Coupe du Monde 2026</h2>
@@ -157,8 +159,8 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
                     </div>
 
                     {/* Rappel quotidien */}
-                    <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-[10px] font-bold px-4 py-3 rounded-xl text-center leading-relaxed uppercase tracking-wide">
-                        ⚡ À présenter à chaque entrée · Valable toute la durée de l'événement
+                    <div className="bg-yellow-50 border border-yellow-200 text-yellow-800 text-[10px] font-bold px-4 py-3 rounded-xl flex items-center justify-center gap-1.5 leading-relaxed uppercase tracking-wide">
+                        <Info size={12} className="shrink-0" /> À présenter à chaque entrée · Valable toute la durée de l'événement
                     </div>
                 </div>
 

@@ -1,17 +1,5 @@
 import type { Metadata } from "next";
-import { Archivo_Black, Space_Grotesk } from "next/font/google";
 import "./globals.css";
-
-const archivo = Archivo_Black({
-  subsets: ["latin"],
-  weight: "400",
-  variable: "--font-archivo",
-});
-
-const space = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-space",
-});
 
 export const metadata: Metadata = {
   title: "Fan Zone Coupe du Monde 2026 | Lomé, Togo — Mairie du Golfe × ESCEN",
@@ -24,8 +12,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className={`${archivo.variable} ${space.variable} scroll-smooth`}>
-      <body className="antialiased font-space selection:bg-yellow-400 selection:text-black min-h-screen" suppressHydrationWarning>
+    <html lang="fr" className="scroll-smooth">
+      <head>
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        <link
+          href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Space+Grotesk:wght@400;500;600;700&display=swap"
+          rel="stylesheet"
+        />
+      </head>
+      <body className="antialiased font-space selection:bg-primary-yellow selection:text-black min-h-screen" suppressHydrationWarning>
         {children}
       </body>
     </html>

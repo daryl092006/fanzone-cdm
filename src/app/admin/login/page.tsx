@@ -139,6 +139,8 @@ export default function AdminLoginPage() {
                     <Image src="/logo-adn.png" alt="ADN" width={64} height={32} className="object-contain" />
                     <span className="text-white/20 text-xs">×</span>
                     <Image src="/logo-escen.png" alt="ESCEN" width={72} height={32} className="object-contain" />
+                    <span className="text-white/20 text-xs">×</span>
+                    <Image src="/logo-mairie.png" alt="Mairie" width={72} height={32} className="object-contain" />
                 </div>
             </div>
         </div>

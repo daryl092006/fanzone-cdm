@@ -1,9 +1,23 @@
 @import "tailwindcss";
 
 @theme {
-  --font-archivo: var(--font-archivo);
-  --font-space: var(--font-space);
+  --font-archivo: 'Archivo Black', sans-serif;
+  --font-space: 'Space Grotesk', sans-serif;
+  
+  --color-primary-red: #e3001f;
+  --color-primary-green: #00622f;
+  --color-light-green: #8cbe43;
+  --color-primary-blue: #227ba7;
+  --color-primary-yellow: #e7e119;
+
+  /* Surcharge des couleurs Tailwind pour propager la charte sur tout le site */
+  --color-yellow-400: var(--color-primary-yellow);
+  --color-yellow-500: var(--color-primary-yellow);
+  --color-yellow-600: var(--color-primary-green);
+  --color-yellow-700: var(--color-primary-green);
+  --color-yellow-800: var(--color-primary-red);
 }
+
 
 @layer base {
   body {

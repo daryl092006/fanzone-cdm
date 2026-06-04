@@ -12,26 +12,32 @@ export async function generateBadgePool(
         return { error: 'Le nombre de badges doit être entre 1 et 2000.' };
     }
 
-    // Trouver le dernier numéro utilisé pour ce préfixe
+    // Récupérer les codes existants pour éviter les collisions
     const { data: existing } = await supabase
         .from('badges')
-        .select('badge_code')
-        .like('badge_code', `FZ26-${prefix}%`)
-        .order('badge_code', { ascending: false })
-        .limit(1);
+        .select('badge_code');
 
-    let startNum = 1;
-    if (existing && existing.length > 0) {
-        const lastCode = existing[0].badge_code; // ex: FZ26-A042
-        const lastNum = parseInt(lastCode.replace(`FZ26-${prefix}`, ''), 10);
-        if (!isNaN(lastNum)) startNum = lastNum + 1;
+    const existingCodes = new Set((existing || []).map(b => b.badge_code));
+    const badges = [];
+
+    for (let i = 0; i < count; i++) {
+        let code = '';
+        let attempts = 0;
+        
+        // Boucle pour générer un code unique à 6 chiffres aléatoires
+        do {
+            const randomDigits = Math.floor(100000 + Math.random() * 900000); // Code à 6 chiffres
+            code = `FZ26-${prefix}${randomDigits}`;
+            attempts++;
+        } while (existingCodes.has(code) && attempts < 100);
+
+        existingCodes.add(code);
+        badges.push({
+            badge_code: code,
+            status: 'LIBRE',
+            print_batch: batchName,
+        });
     }
-
-    const badges = Array.from({ length: count }, (_, i) => ({
-        badge_code: `FZ26-${prefix}${String(startNum + i).padStart(3, '0')}`,
-        status: 'LIBRE',
-        print_batch: batchName,
-    }));
 
     const { data, error } = await supabase
         .from('badges')
