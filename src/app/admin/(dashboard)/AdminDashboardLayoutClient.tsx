@@ -3,26 +3,48 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { Menu, X, QrCode, LogOut, ShieldCheck } from 'lucide-react';
+import { 
+    Menu, 
+    X, 
+    QrCode, 
+    LogOut, 
+    ShieldCheck,
+    LayoutDashboard,
+    UserPlus,
+    Users,
+    Shield,
+    Trophy,
+    History,
+    Tag,
+    Download
+} from 'lucide-react';
 import AdminNavLink from './AdminNavLink';
 import AdminSearchBar from './AdminSearchBar';
+import { logout } from '@/app/actions/auth';
 
 interface AdminDashboardLayoutClientProps {
     userEmail: string;
     userInitial: string;
-    navLinks: Array<{ href: string; icon: React.ReactNode; label: string; exact: boolean }>;
-    logoutAction: () => void;
     children: React.ReactNode;
 }
 
 export default function AdminDashboardLayoutClient({
     userEmail,
     userInitial,
-    navLinks,
-    logoutAction,
     children,
 }: AdminDashboardLayoutClientProps) {
     const [sidebarOpen, setSidebarOpen] = useState(false);
+
+    const navLinks = [
+        { href: '/admin', icon: <LayoutDashboard size={18} />, label: 'Dashboard', exact: true },
+        { href: '/admin/inscription', icon: <UserPlus size={18} />, label: 'Inscrire', exact: false },
+        { href: '/admin/participants', icon: <Users size={18} />, label: 'Participants', exact: false },
+        { href: '/admin/teams', icon: <Shield size={18} />, label: 'Équipes', exact: false },
+        { href: '/admin/pronostics', icon: <Trophy size={18} />, label: 'Matchs & Pronostics', exact: false },
+        { href: '/admin/presences', icon: <History size={18} />, label: 'Présences', exact: false },
+        { href: '/admin/badges', icon: <Tag size={18} />, label: 'Badges QR', exact: false },
+        { href: '/admin/exports', icon: <Download size={18} />, label: 'Exports', exact: false },
+    ];
 
     return (
         <div className="min-h-screen bg-[#F8FAFC] flex relative overflow-x-hidden">
@@ -92,7 +114,7 @@ export default function AdminDashboardLayoutClient({
                         </div>
                     </div>
 
-                    <form action={logoutAction}>
+                    <form action={logout}>
                         <button
                             type="submit"
                             className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-400/60 hover:text-red-400 hover:bg-red-400/5 font-bold text-xs uppercase tracking-widest transition-all"

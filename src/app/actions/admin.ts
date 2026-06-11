@@ -68,6 +68,21 @@ export async function getDashboardStats() {
             .order('scan_time', { ascending: false })
             .limit(10);
 
+        const mappedScans = (recentScans ?? []).map((scan: any) => {
+            const part = Array.isArray(scan.participants) ? scan.participants[0] : scan.participants;
+            return {
+                id: scan.id,
+                badgeCode: scan.badge_code,
+                result: scan.result,
+                message: scan.message,
+                scanTime: scan.scan_time,
+                participant: part ? {
+                    firstName: part.first_name,
+                    lastName: part.last_name
+                } : null
+            };
+        });
+
         return {
             success: true,
             stats: {
@@ -82,7 +97,7 @@ export async function getDashboardStats() {
                     : 0,
             },
             professionStats,
-            recentScans: recentScans ?? [],
+            recentScans: mappedScans,
             topParticipants,
         };
     } catch (error) {

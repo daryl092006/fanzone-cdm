@@ -206,7 +206,7 @@ export default function LandingPage() {
                 {[
                   { v: '100%', l: 'Gratuit' },
                   { v: '60s', l: 'Pour s\'inscrire' },
-                  { v: '30j', l: 'D\'événements' },
+                  { v: '40j', l: 'D\'événements' },
                 ].map((s, i) => (
                   <div key={i} className="text-center">
                     <div className="font-archivo text-2xl text-slate-800 tracking-tight">{s.v}</div>
