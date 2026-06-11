@@ -3,8 +3,8 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { motion } from 'framer-motion';
-import { ArrowRight, QrCode, ShieldCheck, Map as MapIcon, Clock, Sparkles, Zap, CheckCircle2, ClipboardList, Ticket, Activity, Trophy, AlertTriangle } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { ArrowRight, QrCode, ShieldCheck, Map as MapIcon, Clock, Sparkles, Zap, CheckCircle2, ClipboardList, Ticket, Activity, Trophy, AlertTriangle, Menu, X } from 'lucide-react';
 import { getMatchesAndPredictions } from '@/app/actions/predictions';
 import LiveScoresBanner from '@/app/components/LiveScoresBanner';
 import FixturesSection from '@/app/components/FixturesSection';
@@ -13,6 +13,7 @@ import TopScorers from '@/app/components/TopScorers';
 
 export default function LandingPage() {
   const [matches, setMatches] = useState<any[]>([]);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   useEffect(() => {
     async function loadMatches() {
@@ -52,14 +53,80 @@ export default function LandingPage() {
             <a href="#infos" className="hover:text-slate-900 transition-colors">Infos</a>
           </nav>
 
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4">
             <Link href="/admin" className="hidden sm:block text-[10px] font-bold text-slate-400 hover:text-slate-900 transition-colors uppercase tracking-widest">Admin</Link>
-            <Link href="/inscription" className="bg-yellow-400 text-black font-bold text-[10px] px-6 py-3 rounded-full hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">
+            <Link href="/inscription" className="hidden lg:block bg-yellow-400 text-black font-bold text-[10px] px-6 py-3 rounded-full hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest">
               S'inscrire
             </Link>
+            
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="lg:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+            >
+              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
         </div>
       </header>
+
+      {/* Mobile Menu Drawer */}
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            transition={{ duration: 0.2 }}
+            className="lg:hidden fixed top-[68px] left-0 w-full bg-white border-b border-slate-200 z-40 shadow-lg overflow-hidden"
+          >
+            <nav className="flex flex-col p-6 space-y-4 text-xs font-bold uppercase tracking-widest text-slate-600">
+              <a
+                href="#lepass"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 border-b border-slate-50 hover:text-slate-900 transition-colors"
+              >
+                Le Pass
+              </a>
+              <a
+                href="#comment"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 border-b border-slate-50 hover:text-slate-900 transition-colors"
+              >
+                Comment ça marche
+              </a>
+              <Link
+                href="/pronostics"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 border-b border-slate-50 text-yellow-600 hover:text-yellow-700 transition-colors flex items-center gap-1.5"
+              >
+                <Trophy size={14} /> Pronostics
+              </Link>
+              <a
+                href="#infos"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 border-b border-slate-50 hover:text-slate-900 transition-colors"
+              >
+                Infos
+              </a>
+              <Link
+                href="/admin"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 border-b border-slate-50 hover:text-slate-900 transition-colors sm:hidden"
+              >
+                Admin
+              </Link>
+              <Link
+                href="/inscription"
+                onClick={() => setMobileMenuOpen(false)}
+                className="bg-yellow-400 text-black text-center font-bold py-3.5 rounded-xl hover:bg-slate-900 hover:text-white transition-all uppercase tracking-widest mt-2"
+              >
+                S'inscrire
+              </Link>
+            </nav>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* ====== BANDEAU LIVE SCORES ====== */}
       <div className="pt-[68px]">
