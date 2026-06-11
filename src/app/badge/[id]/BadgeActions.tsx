@@ -28,6 +28,29 @@ function loadScript(src: string): Promise<void> {
     });
 }
 
+function getBase64ImageFromUrl(url: string): Promise<string> {
+    return new Promise((resolve, reject) => {
+        const img = new window.Image();
+        img.onload = () => {
+            const canvas = document.createElement('canvas');
+            canvas.width = img.width;
+            canvas.height = img.height;
+            const ctx = canvas.getContext('2d');
+            if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                const dataURL = canvas.toDataURL('image/png');
+                resolve(dataURL);
+            } else {
+                reject(new Error('Could not get canvas context'));
+            }
+        };
+        img.onerror = (error) => {
+            reject(error);
+        };
+        img.src = url;
+    });
+}
+
 export default function BadgeActions({
     participantId,
     registrationNumber,
@@ -54,7 +77,14 @@ export default function BadgeActions({
 
             const qrPngDataUrl = canvasElement.toDataURL('image/png');
 
-            // 2. Charger jsPDF via CDN pour éviter les bugs de compilation SSR Next.js
+            // 2. Charger les logos en parallèle
+            const [logoMairie, logoEscen, logoAdn] = await Promise.all([
+                getBase64ImageFromUrl('/logo-mairie.png').catch(() => null),
+                getBase64ImageFromUrl('/logo-escen.png').catch(() => null),
+                getBase64ImageFromUrl('/logo-adn.png').catch(() => null),
+            ]);
+
+            // 3. Charger jsPDF via CDN pour éviter les bugs de compilation SSR Next.js
             await loadScript("https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js");
             
             // Récupérer le constructeur global
@@ -67,45 +97,50 @@ export default function BadgeActions({
 
             // Fond gris clair de l'en-tête du badge
             doc.setFillColor(248, 250, 252); // #F8FAFC
-            doc.rect(0, 0, 85, 28, 'F');
+            doc.rect(0, 0, 85, 38, 'F');
             doc.setDrawColor(226, 232, 240); // Bordure #E2E8F0
-            doc.line(0, 28, 85, 28);
+            doc.line(0, 38, 85, 38);
+
+            // Ajouter les logos à l'en-tête (plus grands et bien espacés)
+            if (logoMairie) doc.addImage(logoMairie, 'PNG', 7.5, 3, 24, 13);
+            if (logoEscen) doc.addImage(logoEscen, 'PNG', 35.5, 4, 24, 11);
+            if (logoAdn) doc.addImage(logoAdn, 'PNG', 63.5, 3.5, 14, 14);
 
             // Titre principal de la Fan Zone
             doc.setTextColor(15, 16, 32); // Couleur sombre #0F1020
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(8);
-            doc.text("Ici le Mondial Golfe 1 Digital Fan Zone", 42.5, 9, { align: 'center' });
+            doc.text("Ici le Mondial Golfe 1 Digital Fan Zone", 42.5, 22, { align: 'center' });
 
             // Sous-titre
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6.5);
             doc.setTextColor(100, 116, 139); // Gris ardoise #64748B
-            doc.text("Badge Officiel - Mairie du Golfe 1 - ADN x ESCEN", 42.5, 14, { align: 'center' });
+            doc.text("Badge Officiel - Mairie du Golfe 1 - ADN x ESCEN", 42.5, 27, { align: 'center' });
 
             // Badge Statut
             if (isActive) {
                 doc.setFillColor(254, 249, 195); // Fond jaune clair #FEF9C3
-                doc.rect(32.5, 18, 20, 4.5, 'F');
+                doc.rect(32.5, 31, 20, 4.5, 'F');
                 // Dessiner une petite bordure jaune or
                 doc.setDrawColor(254, 240, 138);
-                doc.rect(32.5, 18, 20, 4.5, 'S');
+                doc.rect(32.5, 31, 20, 4.5, 'S');
                 
                 doc.setTextColor(133, 77, 14); // Texte jaune foncé #854D0E
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(6);
-                doc.text("ACTIF", 42.5, 21.2, { align: 'center' });
+                doc.text("ACTIF", 42.5, 34.2, { align: 'center' });
             } else {
                 doc.setFillColor(254, 226, 226); // Fond rouge clair #FEE2E2
-                doc.rect(32.5, 18, 20, 4.5, 'F');
+                doc.rect(32.5, 31, 20, 4.5, 'F');
                 // Dessiner une petite bordure rouge
                 doc.setDrawColor(252, 165, 165);
-                doc.rect(32.5, 18, 20, 4.5, 'S');
+                doc.rect(32.5, 31, 20, 4.5, 'S');
                 
                 doc.setTextColor(153, 27, 27); // Texte rouge foncé #991B1B
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(6);
-                doc.text("ANNULE", 42.5, 21.2, { align: 'center' });
+                doc.text("ANNULE", 42.5, 34.2, { align: 'center' });
             }
 
             // Nom du titulaire
@@ -113,60 +148,60 @@ export default function BadgeActions({
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(13);
             const displayName = `${firstName} ${lastName}`.toUpperCase();
-            doc.text(displayName, 42.5, 38, { align: 'center' });
+            doc.text(displayName, 42.5, 46, { align: 'center' });
 
             // Profession
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(8);
             doc.setTextColor(100, 100, 100);
-            doc.text(profession, 42.5, 43, { align: 'center' });
+            doc.text(profession, 42.5, 48, { align: 'center' });
 
             // Ajout du QR Code PNG centré
-            doc.addImage(qrPngDataUrl, 'PNG', 22.5, 48, 40, 40);
+            doc.addImage(qrPngDataUrl, 'PNG', 22.5, 53, 40, 40);
 
             // Ligne de séparation
             doc.setDrawColor(230, 230, 230);
-            doc.line(10, 94, 75, 94);
+            doc.line(10, 97, 75, 97);
 
             // Colonne Gauche - N° PASS
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(6.5);
             doc.setTextColor(140, 140, 140);
-            doc.text("N° PASS", 12, 99);
+            doc.text("N° PASS", 12, 101);
             doc.setFont('courier', 'bold');
             doc.setFontSize(7.5);
             doc.setTextColor(50, 50, 50);
-            doc.text(registrationNumber, 12, 103);
+            doc.text(registrationNumber, 12, 105);
 
             // Colonne Droite - TELEPHONE
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(6.5);
             doc.setTextColor(140, 140, 140);
-            doc.text("TELEPHONE", 45, 99);
+            doc.text("TELEPHONE", 45, 101);
             doc.setFont('courier', 'bold');
             doc.setFontSize(7.5);
             doc.setTextColor(50, 50, 50);
-            doc.text(phoneMasked, 45, 103);
+            doc.text(phoneMasked, 45, 105);
 
             // Colonne Gauche 2 - DATE INSCRIPTION
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(6.5);
             doc.setTextColor(140, 140, 140);
-            doc.text("INSCRIT LE", 12, 109);
+            doc.text("INSCRIT LE", 12, 110);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(7);
             doc.setTextColor(50, 50, 50);
-            doc.text(dateInscription, 12, 113);
+            doc.text(dateInscription, 12, 114);
 
-            // Colonne Droite 2 - GOLFE 1 LOME
+            // Colonne Droite 2 - LIEU
             doc.setFont('helvetica', 'bold');
             doc.setFontSize(6.5);
             doc.setTextColor(140, 140, 140);
-            doc.text("LIEU", 45, 109);
+            doc.text("LIEU", 45, 110);
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(7);
             doc.setTextColor(50, 50, 50);
-            doc.text("Terrain GER, Lomé", 45, 113);
+            doc.text("Terrain GER, Lomé", 45, 114);
 
             // Footer du PDF
             doc.setFillColor(245, 247, 250);

@@ -86,9 +86,9 @@ export default function ScanPage() {
                         </div>
                     </div>
                     <div className="flex items-center gap-3">
-                        <Image src="/logo-adn.png" alt="ADN" width={28} height={28} className="object-contain" />
-                        <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
                         <Image src="/logo-mairie.png" alt="Mairie" width={48} height={20} className="object-contain" />
+                        <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
+                        <Image src="/logo-adn.png" alt="ADN" width={28} height={28} className="object-contain" />
                     </div>
                 </div>
 

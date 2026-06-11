@@ -44,11 +44,11 @@ export default function InscriptionPage() {
                         <ArrowLeft size={14} className="group-hover:-translate-x-1 transition-transform" /> Retour
                     </Link>
                     <div className="flex items-center gap-3">
-                        <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
+                        <Image src="/logo-mairie.png" alt="Mairie" width={56} height={28} className="object-contain" />
                         <div className="w-px h-6 bg-slate-200"></div>
                         <Image src="/logo-escen.png" alt="ESCEN" width={64} height={28} className="object-contain" />
                         <div className="w-px h-6 bg-slate-200"></div>
-                        <Image src="/logo-mairie.png" alt="Mairie" width={56} height={28} className="object-contain" />
+                        <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
                     </div>
                 </div>
             </div>

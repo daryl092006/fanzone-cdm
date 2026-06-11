@@ -53,12 +53,12 @@ export default function BadgesClientPage({ stats, badges, statusFilter, batchFil
                         Gérez le pool de badges physiques et numériques.
                     </p>
                 </div>
-                {badges.length > 0 && (
+                {badges.some(b => b.status === 'LIBRE') && (
                     <button
                         onClick={() => setShowPrintModal(true)}
                         className="flex items-center gap-2 bg-yellow-400 hover:bg-[#0A0A14] hover:text-white text-black font-bold text-xs uppercase tracking-widest px-5 py-3.5 rounded-xl transition-all shadow-md shadow-yellow-400/20"
                     >
-                        <Printer size={16} /> Imprimer ces badges ({badges.length})
+                        <Printer size={16} /> Imprimer les badges libres ({badges.filter(b => b.status === 'LIBRE').length})
                     </button>
                 )}
             </div>
@@ -178,7 +178,7 @@ export default function BadgesClientPage({ stats, badges, statusFilter, batchFil
             {/* Modal d'impression */}
             {showPrintModal && (
                 <PrintBadgesModal
-                    badges={badges}
+                    badges={badges.filter(b => b.status === 'LIBRE')}
                     onClose={() => setShowPrintModal(false)}
                 />
             )}

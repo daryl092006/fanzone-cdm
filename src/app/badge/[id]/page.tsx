@@ -64,9 +64,9 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
                     <Home size={14} /> Accueil
                 </Link>
                 <div className="flex items-center gap-3">
-                    <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
-                    <Image src="/logo-escen.png" alt="ESCEN" width={64} height={28} className="object-contain" />
                     <Image src="/logo-mairie.png" alt="Mairie" width={56} height={28} className="object-contain" />
+                    <Image src="/logo-escen.png" alt="ESCEN" width={64} height={28} className="object-contain" />
+                    <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
                 </div>
             </div>
 
@@ -99,9 +99,9 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
                 {/* Header du badge */}
                 <div className="bg-slate-50 border-b border-slate-100 px-8 py-7 text-center space-y-3 print:bg-white print:border-b-2 print:border-black">
                     <div className="flex justify-center items-center gap-3">
-                        <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
-                        <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
                         <Image src="/logo-mairie.png" alt="Mairie" width={72} height={32} className="object-contain" />
+                        <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
+                        <Image src="/logo-adn.png" alt="ADN" width={44} height={44} className="object-contain" />
                     </div>
                     <div>
                         <h2 className="font-archivo text-slate-900 text-base italic uppercase tracking-tighter print:text-black">Ici le Mondial Golfe 1 Digital Fan Zone</h2>

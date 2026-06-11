@@ -136,11 +136,11 @@ export default function AdminLoginPage() {
 
                 {/* Footer */}
                 <div className="flex items-center justify-center gap-4 opacity-60">
-                    <Image src="/logo-adn.png" alt="ADN" width={64} height={32} className="object-contain" />
+                    <Image src="/logo-mairie.png" alt="Mairie" width={72} height={32} className="object-contain" />
                     <span className="text-white/20 text-xs">×</span>
                     <Image src="/logo-escen.png" alt="ESCEN" width={72} height={32} className="object-contain" />
                     <span className="text-white/20 text-xs">×</span>
-                    <Image src="/logo-mairie.png" alt="Mairie" width={72} height={32} className="object-contain" />
+                    <Image src="/logo-adn.png" alt="ADN" width={64} height={32} className="object-contain" />
                 </div>
             </div>
         </div>

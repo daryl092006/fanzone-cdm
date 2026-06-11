@@ -43,7 +43,7 @@ export default async function AdminLayout({
             <aside className="w-64 bg-[#0A0A14] text-white hidden lg:flex flex-col fixed h-full z-20">
                 <div className="p-6 border-b border-white/5 space-y-4">
                     <div className="flex items-center gap-3">
-                        <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
+                        <Image src="/logo-mairie.png" alt="Mairie" width={64} height={24} className="object-contain" />
                         <div>
                             <p className="font-archivo text-sm italic uppercase tracking-tighter">Admin Panel</p>
                             <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-widest">Ici c&apos;est le Mondial</p>
@@ -52,7 +52,7 @@ export default async function AdminLayout({
                     <div className="flex items-center gap-2">
                         <Image src="/logo-escen.png" alt="ESCEN" width={64} height={24} className="object-contain" />
                         <span className="text-white/20 text-xs">|</span>
-                        <Image src="/logo-mairie.png" alt="Mairie" width={64} height={24} className="object-contain" />
+                        <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
                     </div>
                 </div>
 

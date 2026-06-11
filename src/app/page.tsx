@@ -160,9 +160,9 @@ export default function LandingPage() {
                 <div className="bg-[#0F1020] p-8 text-white space-y-5">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
-                      <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
                       <Image src="/logo-mairie.png" alt="Mairie" width={48} height={20} className="object-contain animate-pulse" />
+                      <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
+                      <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
                     </div>
                     <div className="text-right">
                       <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Ici c&apos;est le Mondial</p>
@@ -195,11 +195,11 @@ export default function LandingPage() {
               Un événement organisé par <span className="text-primary-yellow">ADN — Académie Digitale Numérique</span> en partenariat avec <span className="text-primary-yellow">ESCEN</span> et la <span className="text-primary-yellow">Mairie Golfe 1</span>
             </p>
             <div className="flex items-center gap-5">
-              <Image src="/logo-adn.png" alt="ADN" width={56} height={28} className="object-contain" />
+              <Image src="/logo-mairie.png" alt="Mairie" width={80} height={36} className="object-contain" />
               <div className="w-px h-6 bg-white/10"></div>
               <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
               <div className="w-px h-6 bg-white/10"></div>
-              <Image src="/logo-mairie.png" alt="Mairie" width={80} height={36} className="object-contain" />
+              <Image src="/logo-adn.png" alt="ADN" width={56} height={28} className="object-contain" />
             </div>
           </div>
         </div>
@@ -455,11 +455,11 @@ export default function LandingPage() {
           </div>
           <div className="text-center flex flex-col items-center gap-3">
             <div className="flex items-center gap-4">
-              <Image src="/logo-adn.png" alt="ADN" width={80} height={40} className="object-contain" />
+              <Image src="/logo-mairie.png" alt="Mairie" width={96} height={42} className="object-contain" />
               <span className="text-slate-300 text-xs">×</span>
               <Image src="/logo-escen.png" alt="ESCEN" width={96} height={42} className="object-contain" />
               <span className="text-slate-300 text-xs">×</span>
-              <Image src="/logo-mairie.png" alt="Mairie" width={96} height={42} className="object-contain" />
+              <Image src="/logo-adn.png" alt="ADN" width={80} height={40} className="object-contain" />
             </div>
             <p className="text-[10px] text-slate-400">Organisateurs officiels</p>
           </div>

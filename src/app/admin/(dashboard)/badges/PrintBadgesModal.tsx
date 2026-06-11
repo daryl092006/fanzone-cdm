@@ -41,10 +41,10 @@ export default function PrintBadgesModal({ badges, onClose }: PrintBadgesModalPr
     };
 
     return (
-        <div className="fixed inset-0 z-50 bg-[#0A0A14]/80 backdrop-blur-sm flex items-center justify-center p-6 print:p-0 print:bg-white print:static print:inset-auto">
+        <div id="print-modal-container" className="fixed inset-0 z-50 bg-[#0A0A14]/80 backdrop-blur-sm flex items-center justify-center p-6 print:p-0 print:bg-white print:static print:inset-auto">
             <div className="bg-white rounded-3xl p-8 max-w-4xl w-full max-h-[85vh] overflow-y-auto flex flex-col shadow-2xl print:shadow-none print:p-0 print:max-h-none print:overflow-visible">
                 {/* Header screen only */}
-                <div className="flex items-center justify-between mb-6 border-b pb-4 print:hidden">
+                <div className="flex items-center justify-between mb-6 border-b pb-4 print:hidden print-header-actions">
                     <div>
                         <h2 className="font-archivo text-xl italic uppercase text-slate-900">
                             Impression des Badges Officiels
@@ -75,32 +75,30 @@ export default function PrintBadgesModal({ badges, onClose }: PrintBadgesModalPr
                         Génération des QR Codes...
                     </div>
                 ) : (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 bg-slate-50 rounded-2xl print:bg-white print:grid-cols-3 print:gap-8 print:p-0">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 p-4 bg-slate-50 rounded-2xl print:bg-white print:grid-cols-2 print:gap-8 print:p-0 badges-print-grid">
                         {badges.map((badge) => (
                             <div
                                 key={badge.id}
-                                className="relative w-72 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mx-auto print:shadow-none print:border-slate-300 print:break-inside-avoid print:my-4"
+                                className="relative w-72 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mx-auto print:shadow-none print:border-slate-300 print:break-inside-avoid print:my-0 badge-print-card"
                             >
-                                {/* Header du badge (avec les vrais logos de l'événement) */}
-                                <div className="bg-slate-50 border-b border-slate-200 p-5 text-slate-800 space-y-3">
-                                    <div className="flex justify-between items-center">
-                                        <div className="flex items-center gap-2">
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src="/logo-adn.png" alt="ADN" className="h-6 object-contain" />
-                                            <span className="text-slate-200 text-xs">|</span>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src="/logo-escen.png" alt="ESCEN" className="h-4 object-contain" />
-                                            <span className="text-slate-200 text-xs">|</span>
-                                            {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src="/logo-mairie.png" alt="Mairie" className="h-6 object-contain" />
-                                        </div>
-                                        <div className="text-right">
-                                            <p className="text-[6px] font-bold uppercase tracking-widest text-slate-400">Ici le Mondial Golfe 1 Digital Fan Zone</p>
-                                        </div>
+                                {/* Header du badge (exactement aligné sur le design officiel) */}
+                                <div className="bg-slate-50 border-b border-slate-200 px-6 py-5 text-center space-y-3">
+                                    <div className="flex justify-center items-center gap-3">
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src="/logo-mairie.png" alt="Mairie" className="h-7 object-contain" />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src="/logo-escen.png" alt="ESCEN" className="h-6 object-contain" />
+                                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                                        <img src="/logo-adn.png" alt="ADN" className="h-7 object-contain" />
                                     </div>
                                     <div>
-                                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Accès Fan Zone</p>
-                                        <h3 className="font-archivo text-lg italic uppercase leading-none tracking-tight text-slate-900">SUPPORT SUR PLACE</h3>
+                                        <h2 className="font-archivo text-slate-900 text-sm italic uppercase tracking-tighter">Ici le Mondial Golfe 1 Digital Fan Zone</h2>
+                                        <p className="text-slate-400 text-[8px] font-bold uppercase tracking-widest mt-1">Badge Officiel · Mairie du Golfe 1 · ADN × ESCEN</p>
+                                    </div>
+
+                                    {/* Statut du badge — Alignement sur la forme de la pastille officielle */}
+                                    <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[8px] font-black uppercase tracking-widest bg-yellow-100 text-yellow-800 border border-yellow-200">
+                                        SUPPORT SUR PLACE
                                     </div>
                                 </div>
 
@@ -142,20 +140,41 @@ export default function PrintBadgesModal({ badges, onClose }: PrintBadgesModalPr
             {/* CSS style injected only for printing layout */}
             <style jsx global>{`
                 @media print {
+                    /* Cacher toute l'application sauf la modal d'impression */
                     body * {
-                        visibility: hidden;
+                        visibility: hidden !important;
                     }
-                    .print\\:static, .print\\:static * {
-                        visibility: visible;
+                    #print-modal-container, #print-modal-container * {
+                        visibility: visible !important;
                     }
-                    .print\\:static {
-                        position: absolute;
-                        left: 0;
-                        top: 0;
-                        width: 100%;
+                    #print-modal-container {
+                        position: absolute !important;
+                        left: 0 !important;
+                        top: 0 !important;
+                        width: 100% !important;
+                        background: white !important;
+                        padding: 0 !important;
+                        margin: 0 !important;
                     }
-                    header, footer, nav, aside {
+                    .print-header-actions {
                         display: none !important;
+                    }
+                    /* Grille propre sur feuille A4 : 2 colonnes */
+                    .badges-print-grid {
+                        display: grid !important;
+                        grid-template-columns: repeat(2, 1fr) !important;
+                        gap: 12mm !important;
+                        padding: 10mm !important;
+                        background: white !important;
+                    }
+                    /* Empêcher la coupure des badges au milieu */
+                    .badge-print-card {
+                        break-inside: avoid !important;
+                        page-break-inside: avoid !important;
+                        border: 1px solid #e2e8f0 !important;
+                        border-radius: 20px !important;
+                        box-shadow: none !important;
+                        margin: 0 auto !important;
                     }
                 }
             `}</style>
