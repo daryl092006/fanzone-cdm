@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { Html5QrcodeScanner } from 'html5-qrcode';
+import { Html5Qrcode } from 'html5-qrcode';
 import { processScan } from '../actions/scan';
 import Image from 'next/image';
 import { Camera, CheckCircle2, AlertCircle, Loader2, ArrowRight, ShieldCheck } from 'lucide-react';
@@ -15,47 +15,48 @@ export default function ScanPage() {
     useEffect(() => {
         if (!hasStarted) return;
 
-        const scanner = new Html5QrcodeScanner("reader", {
-            fps: 10,
-            qrbox: { width: 220, height: 220 },
-            rememberLastUsedCamera: true
-        }, false);
+        const html5QrCode = new Html5Qrcode("reader");
+        
+        html5QrCode.start(
+            { facingMode: "environment" }, // Force la caméra arrière !
+            {
+                fps: 10,
+                qrbox: { width: 220, height: 220 }
+            },
+            async (decodedText) => {
+                // Arrêter la caméra après lecture réussie
+                try {
+                    await html5QrCode.stop();
+                } catch (e) {
+                    console.error("Erreur d'arrêt du scan", e);
+                }
+                setHasStarted(false);
+                await handleScan(decodedText);
+            },
+            () => {} // Ignorer les erreurs de frame
+        ).catch((err) => {
+            console.error("Erreur d'initialisation caméra", err);
+        });
 
-        scanner.render(async (decodedText) => {
-            await handleScan(decodedText);
-        }, () => { });
-
-        // Style natif de la lib adapté au thème vert sombre
+        // Style pour arrondir la vidéo de la caméra
         const style = document.createElement('style');
         style.innerHTML = `
-      #reader { border: none !important; background: transparent !important; }
-      #reader video { border-radius: 16px; }
-      #reader__dashboard_section_csr button {
-        background-color: #EAB308 !important;
-        color: black !important;
-        border: none !important;
-        padding: 10px 20px !important;
-        border-radius: 12px !important;
-        font-size: 12px !important;
-        font-weight: 700 !important;
-        cursor: pointer !important;
-        margin: 4px !important;
-      }
-      #reader__camera_selection {
-        padding: 8px 12px !important;
-        border-radius: 12px !important;
-        border: 1px solid rgba(255,255,255,0.1) !important;
-        font-size: 13px !important;
-        margin-bottom: 8px !important;
-        background: rgba(255,255,255,0.05) !important;
-        color: white !important;
-      }
-      #reader__status_span { display: none !important; }
-      #reader__header_message { display: none !important; }
-    `;
+            #reader video { 
+                border-radius: 16px; 
+                width: 100% !important; 
+                height: auto !important; 
+                object-fit: cover;
+            }
+        `;
         document.head.appendChild(style);
 
-        return () => { try { scanner.clear(); } catch (e) { } };
+        return () => {
+            if (html5QrCode.isScanning) {
+                try {
+                    html5QrCode.stop();
+                } catch (e) {}
+            }
+        };
     }, [hasStarted]);
 
     async function handleScan(code: string) {
