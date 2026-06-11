@@ -11,15 +11,47 @@ import {
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
-export default async function PresencesPage() {
-    const data = await getPresences();
+export default async function PresencesPage({
+    searchParams,
+}: {
+    searchParams: Promise<{ date?: string }>;
+}) {
+    const { date } = await searchParams;
+    const dateFilter = date || '';
+    const data = await getPresences(dateFilter);
     const presences = data.presences || [];
 
     return (
         <div className="space-y-6">
-            <div>
-                <h1 className="font-archivo text-3xl italic uppercase tracking-tighter text-[#0A0A14]">Journal des Présences</h1>
-                <p className="text-slate-400 text-sm mt-1">Historique des accès à la Fan Zone en temps réel.</p>
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h1 className="font-archivo text-3xl italic uppercase tracking-tighter text-[#0A0A14]">Journal des Présences</h1>
+                    <p className="text-slate-400 text-sm mt-1">Historique des accès à la Fan Zone en temps réel.</p>
+                </div>
+
+                {/* Filtre par date */}
+                <form method="GET" action="/admin/presences" className="flex items-center gap-2">
+                    <input 
+                        type="date" 
+                        name="date"
+                        defaultValue={dateFilter}
+                        className="bg-white border border-slate-200 rounded-xl px-4 py-2.5 text-xs font-bold text-slate-700 focus:outline-none focus:ring-2 focus:ring-yellow-400"
+                    />
+                    {dateFilter && (
+                        <a 
+                            href="/admin/presences"
+                            className="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold text-xs px-4 py-2.5 rounded-xl transition-all"
+                        >
+                            Reset
+                        </a>
+                    )}
+                    <button 
+                        type="submit"
+                        className="bg-yellow-400 hover:bg-black hover:text-white text-black font-bold text-xs uppercase tracking-widest px-4 py-2.5 rounded-xl transition-all"
+                    >
+                        Filtrer
+                    </button>
+                </form>
             </div>
 
             <div className="bg-white rounded-3xl border border-slate-200 shadow-sm overflow-hidden">

@@ -6,12 +6,27 @@ export async function processScan(badgeCode: string) {
     const today = new Date().toISOString().split('T')[0]; // YYYY-MM-DD
 
     try {
-        // 1. Chercher le badge
+        // 1. Récupérer le badge, le participant et l'historique en une SEULE requête optimisée
         const { data: badge, error: badgeError } = await supabase
             .from('badges')
-            .select('id, badge_code, status')
+            .select(`
+                id,
+                badge_code,
+                status,
+                participants (
+                    id,
+                    first_name,
+                    last_name,
+                    phone,
+                    profession,
+                    attendances (
+                        id,
+                        date
+                    )
+                )
+            `)
             .eq('badge_code', badgeCode)
-            .single();
+            .maybeSingle();
 
         if (badgeError || !badge) {
             await supabase.from('scan_logs').insert({
@@ -35,40 +50,19 @@ export async function processScan(badgeCode: string) {
             return { error: "Badge désactivé. Veuillez voir l'administration." };
         }
 
-        // 2. Chercher le participant lié
-        const { data: participant, error: participantError } = await supabase
-            .from('participants')
-            .select('id, first_name, last_name, phone, profession')
-            .eq('badge_id', badge.id)
-            .single();
+        // Récupérer le participant lié (peut être un tableau ou un objet seul)
+        const participantArray = badge.participants as any;
+        const participant = Array.isArray(participantArray) ? participantArray[0] : participantArray;
 
-        if (participantError || !participant) {
+        if (!participant) {
             return { error: "Participant introuvable pour ce badge." };
         }
 
-        // 3. Compter les visites totales
-        const { count: totalVisits } = await supabase
-            .from('attendances')
-            .select('*', { count: 'exact', head: true })
-            .eq('participant_id', participant.id);
+        const attendances = participant.attendances || [];
+        const totalVisits = attendances.length;
 
-        // 4. Dernière visite avant aujourd'hui
-        const { data: lastAttendance } = await supabase
-            .from('attendances')
-            .select('date')
-            .eq('participant_id', participant.id)
-            .lt('date', today)
-            .order('date', { ascending: false })
-            .limit(1)
-            .single();
-
-        // 5. Déjà scanné aujourd'hui ?
-        const { data: alreadyScanned } = await supabase
-            .from('attendances')
-            .select('id')
-            .eq('participant_id', participant.id)
-            .eq('date', today)
-            .maybeSingle();
+        // Vérifier si déjà scanné aujourd'hui
+        const alreadyScanned = attendances.some((att: any) => att.date === today);
 
         if (alreadyScanned) {
             await supabase.from('scan_logs').insert({
@@ -77,32 +71,46 @@ export async function processScan(badgeCode: string) {
                 result: 'DEJA_SCANNE',
                 message: "Déjà venu aujourd'hui",
             });
+
+            // Trouver la dernière visite avant aujourd'hui
+            const pastAttendances = attendances
+                .filter((att: any) => att.date < today)
+                .sort((a: any, b: any) => b.date.localeCompare(a.date));
+            const lastVisitDate = pastAttendances[0]?.date || null;
+
             return {
-                warning: "Déjà scanné aujourd'hui !",
+                warning: "Ce badge a déjà été scanné aujourd'hui.",
                 participant: {
                     firstName: participant.first_name,
                     lastName: participant.last_name,
                     badgeCode,
                     profession: participant.profession,
                 },
-                totalVisits: totalVisits ?? 0,
-                lastVisit: lastAttendance?.date || null,
+                totalVisits: totalVisits,
+                lastVisit: lastVisitDate,
             };
         }
 
-        // 6. Enregistrer la présence
+        // 2. Enregistrer la présence
         await supabase.from('attendances').insert({
             participant_id: participant.id,
             date: today,
             status: 'VALIDE',
         });
 
+        // Enregistrer le log
         await supabase.from('scan_logs').insert({
             participant_id: participant.id,
             badge_code: badgeCode,
             result: 'SUCCES',
             message: 'Entrée validée',
         });
+
+        // Trouver la dernière visite avant aujourd'hui
+        const pastAttendances = attendances
+            .filter((att: any) => att.date < today)
+            .sort((a: any, b: any) => b.date.localeCompare(a.date));
+        const lastVisitDate = pastAttendances[0]?.date || null;
 
         return {
             success: true,
@@ -112,8 +120,8 @@ export async function processScan(badgeCode: string) {
                 badgeCode,
                 profession: participant.profession,
             },
-            totalVisits: (totalVisits ?? 0) + 1,
-            lastVisit: lastAttendance?.date || null,
+            totalVisits: totalVisits + 1,
+            lastVisit: lastVisitDate,
         };
 
     } catch (error) {
