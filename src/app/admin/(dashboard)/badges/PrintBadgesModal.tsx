@@ -82,25 +82,25 @@ export default function PrintBadgesModal({ badges, onClose }: PrintBadgesModalPr
                                 className="relative w-72 bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden mx-auto print:shadow-none print:border-slate-300 print:break-inside-avoid print:my-4"
                             >
                                 {/* Header du badge (avec les vrais logos de l'événement) */}
-                                <div className="bg-[#0F1020] p-5 text-white space-y-3">
+                                <div className="bg-slate-50 border-b border-slate-200 p-5 text-slate-800 space-y-3">
                                     <div className="flex justify-between items-center">
                                         <div className="flex items-center gap-2">
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
                                             <img src="/logo-adn.png" alt="ADN" className="h-6 object-contain" />
-                                            <span className="text-white/20 text-xs">|</span>
+                                            <span className="text-slate-200 text-xs">|</span>
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src="/logo-escen.png" alt="ESCEN" className="h-4 object-contain brightness-0 invert" />
-                                            <span className="text-white/20 text-xs">|</span>
+                                            <img src="/logo-escen.png" alt="ESCEN" className="h-4 object-contain" />
+                                            <span className="text-slate-200 text-xs">|</span>
                                             {/* eslint-disable-next-line @next/next/no-img-element */}
-                                            <img src="/logo-mairie.png" alt="Mairie" className="h-6 object-contain brightness-0 invert" />
+                                            <img src="/logo-mairie.png" alt="Mairie" className="h-6 object-contain" />
                                         </div>
                                         <div className="text-right">
-                                            <p className="text-[7px] font-bold uppercase tracking-widest text-white/40">Coupe du Monde 2026</p>
+                                            <p className="text-[6px] font-bold uppercase tracking-widest text-slate-400">Ici le Mondial Golfe 1 Digital Fan Zone</p>
                                         </div>
                                     </div>
                                     <div>
-                                        <p className="text-[8px] font-bold uppercase tracking-widest text-white/30 mb-0.5">Accès Fan Zone</p>
-                                        <h3 className="font-archivo text-lg italic uppercase leading-none tracking-tight">SUPPORT SUR PLACE</h3>
+                                        <p className="text-[8px] font-bold uppercase tracking-widest text-slate-400 mb-0.5">Accès Fan Zone</p>
+                                        <h3 className="font-archivo text-lg italic uppercase leading-none tracking-tight text-slate-900">SUPPORT SUR PLACE</h3>
                                     </div>
                                 </div>
 

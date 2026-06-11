@@ -138,7 +138,7 @@ export default async function ParticipantDetailPage({ params }: { params: Promis
                                                 </div>
                                                 <div>
                                                     <p className="text-sm font-bold text-white capitalize">{format(scan.scanTime, 'EEEE dd MMMM yyyy', { locale: fr })}</p>
-                                                    <p className="text-[10px] text-white/30 uppercase tracking-widest">Esplanade du Palais · Lomé</p>
+                                                    <p className="text-[10px] text-white/30 uppercase tracking-widest">Terrain GER, Akodesséwa · Lomé</p>
                                                 </div>
                                             </div>
                                             <div className="text-right">

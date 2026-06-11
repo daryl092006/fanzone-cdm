@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Fan Zone Coupe du Monde 2026 | Lomé, Togo — Mairie du Golfe × ESCEN",
-  description: "Plateforme officielle de la Fan Zone Coupe du Monde 2026 à Lomé, Togo. Inscrivez-vous gratuitement pour obtenir votre badge d'accès. Une initiative de la Mairie du Golfe en partenariat avec ESCEN Expert Pro.",
+  title: "Ici le Mondial Golfe 1 Digital Fan Zone | Lomé, Togo — Mairie du Golfe × ESCEN",
+  description: "Plateforme officielle de l'événement Ici le Mondial Golfe 1 Digital Fan Zone à Lomé, Togo. Inscrivez-vous gratuitement pour obtenir votre badge d'accès. Une initiative de la Mairie du Golfe en partenariat avec ESCEN Expert Pro.",
 };
 
 export default function RootLayout({

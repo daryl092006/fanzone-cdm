@@ -97,19 +97,19 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
             <div id="badge-card" className="w-full max-w-xs bg-white rounded-3xl shadow-2xl shadow-slate-200 overflow-hidden print:shadow-none print:rounded-none print:max-w-full border border-slate-100">
 
                 {/* Header du badge */}
-                <div className="bg-[#0F1020] px-8 py-7 text-center space-y-3 print:bg-white print:border-b-2 print:border-black">
+                <div className="bg-slate-50 border-b border-slate-100 px-8 py-7 text-center space-y-3 print:bg-white print:border-b-2 print:border-black">
                     <div className="flex justify-center items-center gap-3">
                         <Image src="/logo-adn.png" alt="ADN" width={48} height={48} className="object-contain" />
                         <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
                         <Image src="/logo-mairie.png" alt="Mairie" width={72} height={32} className="object-contain" />
                     </div>
                     <div>
-                        <h2 className="font-archivo text-white text-lg italic uppercase tracking-tighter print:text-black">Fan Zone Coupe du Monde 2026</h2>
-                        <p className="text-white/30 text-[10px] font-bold uppercase tracking-widest mt-1 print:text-black">Badge Officiel · Mairie du Golfe 1 · ADN × ESCEN</p>
+                        <h2 className="font-archivo text-slate-900 text-base italic uppercase tracking-tighter print:text-black">Ici le Mondial Golfe 1 Digital Fan Zone</h2>
+                        <p className="text-slate-400 text-[10px] font-bold uppercase tracking-widest mt-1 print:text-black">Badge Officiel · Mairie du Golfe 1 · ADN × ESCEN</p>
                     </div>
 
                     {/* Statut du badge — Visible sur le badge */}
-                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isActive ? 'bg-yellow-400/20 text-yellow-400 print:bg-yellow-100 print:text-yellow-800' : 'bg-red-500/20 text-red-400 print:bg-red-100 print:text-red-800'}`}>
+                    <div className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest ${isActive ? 'bg-yellow-100 text-yellow-800 border border-yellow-200' : 'bg-red-100 text-red-800 border border-red-200'}`}>
                         {isActive ? <CheckCircle2 size={12} /> : <XCircle size={12} />}
                         {isActive ? 'Actif' : 'Annulé'}
                     </div>
@@ -166,7 +166,7 @@ export default async function BadgePage({ params }: { params: Promise<{ id: stri
 
                 {/* Footer du badge */}
                 <div className="px-8 py-4 bg-slate-50 border-t border-slate-100 text-center print:bg-white print:border-t-2 print:border-black">
-                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Mairie du Golfe 1 · ADN × ESCEN · Fan Zone 2026</p>
+                    <p className="text-[9px] text-slate-400 font-bold uppercase tracking-widest">Mairie du Golfe 1 · ADN × ESCEN · Ici le Mondial Golfe 1 Digital Fan Zone</p>
                 </div>
             </div>
 

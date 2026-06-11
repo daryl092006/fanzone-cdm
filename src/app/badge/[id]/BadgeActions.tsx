@@ -65,34 +65,44 @@ export default function BadgeActions({
                 format: [85, 125] // Taille de badge standard (85x125 mm)
             });
 
-            // Fond bleu foncé de l'en-tête du badge
-            doc.setFillColor(15, 16, 32); // #0F1020
+            // Fond gris clair de l'en-tête du badge
+            doc.setFillColor(248, 250, 252); // #F8FAFC
             doc.rect(0, 0, 85, 28, 'F');
+            doc.setDrawColor(226, 232, 240); // Bordure #E2E8F0
+            doc.line(0, 28, 85, 28);
 
             // Titre principal de la Fan Zone
-            doc.setTextColor(255, 255, 255);
+            doc.setTextColor(15, 16, 32); // Couleur sombre #0F1020
             doc.setFont('helvetica', 'bold');
-            doc.setFontSize(10);
-            doc.text("Fan Zone Coupe du Monde 2026", 42.5, 9, { align: 'center' });
+            doc.setFontSize(8);
+            doc.text("Ici le Mondial Golfe 1 Digital Fan Zone", 42.5, 9, { align: 'center' });
 
             // Sous-titre
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(6.5);
-            doc.setTextColor(180, 180, 180);
+            doc.setTextColor(100, 116, 139); // Gris ardoise #64748B
             doc.text("Badge Officiel - Mairie du Golfe 1 - ADN x ESCEN", 42.5, 14, { align: 'center' });
 
             // Badge Statut
             if (isActive) {
-                doc.setFillColor(234, 179, 8); // Jaune or
+                doc.setFillColor(254, 249, 195); // Fond jaune clair #FEF9C3
                 doc.rect(32.5, 18, 20, 4.5, 'F');
-                doc.setTextColor(0, 0, 0);
+                // Dessiner une petite bordure jaune or
+                doc.setDrawColor(254, 240, 138);
+                doc.rect(32.5, 18, 20, 4.5, 'S');
+                
+                doc.setTextColor(133, 77, 14); // Texte jaune foncé #854D0E
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(6);
                 doc.text("ACTIF", 42.5, 21.2, { align: 'center' });
             } else {
-                doc.setFillColor(239, 68, 68); // Rouge
+                doc.setFillColor(254, 226, 226); // Fond rouge clair #FEE2E2
                 doc.rect(32.5, 18, 20, 4.5, 'F');
-                doc.setTextColor(255, 255, 255);
+                // Dessiner une petite bordure rouge
+                doc.setDrawColor(252, 165, 165);
+                doc.rect(32.5, 18, 20, 4.5, 'S');
+                
+                doc.setTextColor(153, 27, 27); // Texte rouge foncé #991B1B
                 doc.setFont('helvetica', 'bold');
                 doc.setFontSize(6);
                 doc.text("ANNULE", 42.5, 21.2, { align: 'center' });
@@ -156,15 +166,15 @@ export default function BadgeActions({
             doc.setFont('helvetica', 'normal');
             doc.setFontSize(7);
             doc.setTextColor(50, 50, 50);
-            doc.text("Golfe 1, Lomé, Togo", 45, 113);
+            doc.text("Terrain GER, Lomé", 45, 113);
 
             // Footer du PDF
             doc.setFillColor(245, 247, 250);
             doc.rect(0, 118, 85, 7, 'F');
             doc.setFont('helvetica', 'normal');
-            doc.setFontSize(5.5);
+            doc.setFontSize(5);
             doc.setTextColor(150, 150, 150);
-            doc.text("Mairie du Golfe 1 - ADN x ESCEN - Fan Zone 2026", 42.5, 122.5, { align: 'center' });
+            doc.text("Mairie du Golfe 1 - ADN x ESCEN - Ici le Mondial Golfe 1 Digital Fan Zone", 42.5, 122.5, { align: 'center' });
 
             // Téléchargement du fichier
             doc.save(`badge-${registrationNumber}.pdf`);
@@ -182,8 +192,8 @@ export default function BadgeActions({
             if (navigator.share) {
                 // API native de partage (mobile)
                 await navigator.share({
-                    title: 'Mon Badge Fan Zone 2026',
-                    text: `Badge #${registrationNumber} — Fan Zone Coupe du Monde 2026`,
+                    title: 'Mon Badge - Ici le Mondial Golfe 1 Digital Fan Zone',
+                    text: `Badge #${registrationNumber} — Ici le Mondial Golfe 1 Digital Fan Zone`,
                     url,
                 });
             } else {

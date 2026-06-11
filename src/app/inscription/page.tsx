@@ -56,7 +56,7 @@ export default function InscriptionPage() {
             {/* Bandeau institutionnel */}
             <div className="px-6 py-3 lg:px-16 border-b border-slate-200 bg-slate-100">
                 <p className="text-center text-[10px] font-bold text-slate-500 uppercase tracking-widest">
-                    Fan Zone Coupe du Monde 2026 · <span className="text-yellow-600 font-black">Mairie du Golfe 1 × ADN × ESCEN</span>
+                    Ici le Mondial Golfe 1 Digital Fan Zone · <span className="text-yellow-600 font-black">Mairie du Golfe 1 × ADN × ESCEN</span>
                 </p>
             </div>
 
@@ -255,7 +255,7 @@ export default function InscriptionPage() {
                                         className="mt-0.5 h-5 w-5 rounded accent-yellow-600 cursor-pointer shrink-0"
                                     />
                                     <label htmlFor="consent" className="text-xs text-yellow-800 leading-relaxed cursor-pointer">
-                                        Je confirme que mes informations sont exactes et complètes. J&apos;accepte les conditions d&apos;accès à la Fan Zone Coupe du Monde 2026. Je sais que mon badge est personnel et doit être présenté à chaque entrée.
+                                        Je confirme que mes informations sont exactes et complètes. J&apos;accepte les conditions d&apos;accès à Ici le Mondial Golfe 1 Digital Fan Zone. Je sais que mon badge est personnel et doit être présenté à chaque entrée.
                                         <span className="text-red-500"> *</span>
                                     </label>
                                 </div>

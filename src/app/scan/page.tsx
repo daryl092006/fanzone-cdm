@@ -82,7 +82,7 @@ export default function ScanPage() {
                         </div>
                         <div>
                             <p className="font-archivo text-white text-sm italic uppercase tracking-tighter">Contrôle d'accès</p>
-                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Complexe Sportif du Golfe 1</p>
+                            <p className="text-[10px] font-bold text-white/30 uppercase tracking-widest">Complexe Sportif d&apos;Akodesséwa-Kpota (Terrain GER)</p>
                         </div>
                     </div>
                     <div className="flex items-center gap-3">

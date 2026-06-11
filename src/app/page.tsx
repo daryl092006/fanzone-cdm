@@ -31,15 +31,15 @@ export default function LandingPage() {
       <header className="fixed top-0 left-0 w-full z-50 bg-white/95 border-b border-slate-100 shadow-sm backdrop-blur-sm px-6 py-3 lg:px-16">
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex items-center gap-5">
-             <Image src="/logo-adn.png" alt="ADN" width={64} height={64} className="object-contain" />
+            <Image src="/logo-mairie.png" alt="Mairie" width={90} height={50} className="object-contain" />
             <div className="w-px h-8 bg-slate-200"></div>
             <Image src="/logo-escen.png" alt="ESCEN" width={110} height={50} className="object-contain" />
             <div className="w-px h-8 bg-slate-200"></div>
-            <Image src="/logo-mairie.png" alt="Mairie" width={90} height={50} className="object-contain" />
+            <Image src="/logo-adn.png" alt="ADN" width={64} height={64} className="object-contain" />
             <div className="w-px h-8 bg-slate-200 hidden md:block"></div>
             <div className="hidden md:flex flex-col">
               <span className="font-archivo text-lg text-slate-800 tracking-tight leading-none uppercase">Fan Zone</span>
-              <span className="text-[9px] font-bold text-yellow-600 tracking-[0.25em] mt-0.5 uppercase">Ici c&apos;est le Mondial · Golfe 1</span>
+              <span className="text-[9px] font-bold text-yellow-600 tracking-[0.1em] mt-0.5 uppercase">Ici le Mondial Golfe 1 Digital Fan Zone</span>
             </div>
           </div>
 
@@ -95,7 +95,7 @@ export default function LandingPage() {
 
               {/* Titre principal */}
               <div>
-                <p className="text-[11px] font-black uppercase tracking-[0.3em] text-primary-blue mb-3">Fan Zone Coupe du Monde 2026</p>
+                <p className="text-[11px] font-black uppercase tracking-[0.15em] text-primary-blue mb-3">Ici le Mondial Golfe 1 Digital Fan Zone</p>
                 <h1 className="font-archivo text-5xl md:text-7xl leading-[0.9] tracking-tighter italic uppercase text-slate-900">
                   Vivez le<br />
                   <span className="text-primary-green">Mondial</span><br />
@@ -109,14 +109,14 @@ export default function LandingPage() {
                   <Clock size={14} className="text-primary-blue shrink-0" />
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Durée</p>
-                    <p className="text-xs font-bold text-slate-800">14 Juin – 14 Juillet 2026</p>
+                    <p className="text-xs font-bold text-slate-800">11 Juin – 19 Juillet 2026</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-2 bg-white border border-slate-200 shadow-sm rounded-xl px-4 py-3">
                   <MapIcon size={14} className="text-primary-green shrink-0" />
                   <div>
                     <p className="text-[9px] font-black uppercase tracking-widest text-slate-400">Lieu</p>
-                    <p className="text-xs font-bold text-slate-800">Complexe Sportif du Golfe 1</p>
+                    <p className="text-xs font-bold text-slate-800">Terrain GER (Akodesséwa-Kpota)</p>
                   </div>
                 </div>
               </div>
@@ -324,12 +324,12 @@ export default function LandingPage() {
             <div className="text-center space-y-4">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600">Programme 2026</p>
               <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase">L'Agenda</h2>
-              <p className="text-slate-500 text-sm">Du 14 juin au 14 juillet 2026 · Esplanade du Palais de Lomé · Ouvert dès 09h00</p>
+              <p className="text-slate-500 text-sm">Du 11 juin au 19 juillet 2026 · Complexe Sportif d&apos;Akodesséwa-Kpota (Terrain GER) · Ouvert dès 09h00</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
                 {
-                  d: '14 Juin 2026',
+                  d: '11 Juin 2026',
                   h: '10h00 – 22h00',
                   t: 'Opening Day',
                   p: 'Cérémonie officielle d\'ouverture. Discours officiels, animations et premier match diffusé.',
@@ -353,7 +353,7 @@ export default function LandingPage() {
                   accent: 'text-black bg-black/10',
                 },
                 {
-                  d: '14 Juillet 2026',
+                  d: '19 Juillet 2026',
                   h: '15h00 – Minuit',
                   t: 'The Finals',
                   p: 'Diffusion de la grande finale de la Coupe du Monde et méga concert de clôture.',
@@ -408,7 +408,7 @@ export default function LandingPage() {
               </div>
               <div className="space-y-6">
                 {[
-                  { icon: <MapIcon size={20} className="text-yellow-600" />, t: 'Emplacement', d: 'Complexe Sportif du Golfe 1\nGolfe 1, Lomé, Togo' },
+                  { icon: <MapIcon size={20} className="text-yellow-600" />, t: 'Emplacement', d: 'Complexe Sportif d\'Akodesséwa-Kpota (Terrain GER)\nLomé, Togo' },
                   { icon: <Clock size={20} className="text-yellow-600" />, t: 'Horaires d\'ouverture', d: 'Accueil dès 09h00 · Chaque jour\nFermeture 1h après le dernier match' },
                   { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Assistance sur place', d: 'Des agents ADN & ESCEN sont présents\npour vous aider à vous inscrire ou retrouver votre badge.' },
                 ].map((item, i) => (
@@ -450,8 +450,8 @@ export default function LandingPage() {
       <footer className="py-12 px-6 lg:px-16 bg-slate-100 border-t border-slate-200">
         <div className="max-w-7xl mx-auto grid md:grid-cols-3 gap-8 items-center">
           <div className="space-y-2">
-            <p className="text-[11px] font-black uppercase tracking-widest text-slate-700">Ici c&apos;est le Mondial 2026</p>
-            <p className="text-[10px] text-slate-500">Complexe Sportif du Golfe 1 · Lomé, Togo</p>
+            <p className="text-[11px] font-black uppercase tracking-widest text-slate-700">Ici le Mondial Golfe 1 Digital Fan Zone</p>
+            <p className="text-[10px] text-slate-500">Complexe Sportif d&apos;Akodesséwa-Kpota (Terrain GER) · Lomé, Togo</p>
           </div>
           <div className="text-center flex flex-col items-center gap-3">
             <div className="flex items-center gap-4">
