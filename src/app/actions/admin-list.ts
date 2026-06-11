@@ -19,14 +19,24 @@ export async function getParticipants(search: string = '') {
 
         if (error) throw error;
 
-        // Enrichir avec le nombre de présences
-        const enriched = participants?.map(p => ({
-            ...p,
-            badgeCode: p.badges?.badge_code ?? null,
-            attendanceCount: p.attendances?.length ?? 0,
-        }));
+        // Mapper les données vers le format camelCase attendu par la page
+        const mapped = participants?.map(p => {
+            const badge = Array.isArray(p.badges) ? p.badges[0] : p.badges;
+            return {
+                id: p.id,
+                firstName: p.first_name || '',
+                lastName: p.last_name || '',
+                phone: p.phone || '',
+                profession: p.profession || '',
+                registrationNumber: badge?.badge_code ?? '—',
+                badgeStatus: badge?.status === 'ASSIGNE' ? 'ACTIF' : 'INACTIF',
+                _count: {
+                    attendances: p.attendances?.length ?? 0
+                }
+            };
+        }) || [];
 
-        return { success: true, participants: enriched };
+        return { success: true, participants: mapped };
     } catch (error) {
         console.error("Fetch Participants Error:", error);
         return { error: "Erreur lors de la récupération des participants." };
