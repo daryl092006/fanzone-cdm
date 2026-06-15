@@ -402,6 +402,7 @@ function matchesAlign(apiHome: string, apiAway: string, dbHome: string, dbAway: 
 }
 
 export async function adminSyncScoresFromGoogle() {
+    let updatedCount = 0;
     try {
         const res = await fetch('https://worldcup26.ir/get/games');
         if (!res.ok) {
@@ -416,9 +417,9 @@ export async function adminSyncScoresFromGoogle() {
 
         if (matchesError) throw matchesError;
 
-        let updatedCount = 0;
-
         for (const m of (dbMatches || [])) {
+            if (m.id === '00000000-0000-0000-0000-000000000000') continue;
+            
             const apiGame = apiGames.find(g => matchesAlign(g.home_team_name_en, g.away_team_name_en, m.team_home, m.team_away));
             
             if (apiGame) {
@@ -472,9 +473,9 @@ export async function adminSyncScoresFromGoogle() {
                         const { error: updateError } = await supabase
                             .from('matches')
                             .update({
-                                score_home: null,
-                                score_away: null,
-                                status: 'UPCOMING'
+                                  score_home: null,
+                                  score_away: null,
+                                  status: 'UPCOMING'
                             })
                             .eq('id', m.id);
                         if (!updateError) {
@@ -485,21 +486,25 @@ export async function adminSyncScoresFromGoogle() {
             }
         }
 
-        // Mettre à jour la date de dernière synchronisation
-        await supabase
-            .from('matches')
-            .upsert({
-                id: '00000000-0000-0000-0000-000000000000',
-                team_home: 'SYSTEM',
-                team_away: 'METADATA',
-                match_date: new Date().toISOString(),
-                status: 'FINISHED'
-            });
-
         return { success: true, message: `${updatedCount} match(s) synchronisé(s) avec succès !` };
     } catch (e: any) {
         console.error("Sync Scores Error:", e);
         return { success: false, error: "Erreur de synchronisation : " + e.message };
+    } finally {
+        // Toujours mettre à jour la date de dernière tentative de synchronisation
+        try {
+            await supabase
+                .from('matches')
+                .upsert({
+                    id: '00000000-0000-0000-0000-000000000000',
+                    team_home: 'SYSTEM',
+                    team_away: 'METADATA',
+                    match_date: new Date().toISOString(),
+                    status: 'FINISHED'
+                });
+        } catch (dbErr) {
+            console.error("Failed to update system metadata match date:", dbErr);
+        }
     }
 }
 
