@@ -1,0 +1,1042 @@
+﻿[
+  {
+    "id": "7dcb2942-a866-4641-aa6d-24945d35339c",
+    "team_home": "Mexico",
+    "team_away": "South Africa",
+    "match_date": "2026-06-11T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "e98d37dd-8236-4bd5-8532-e60a6d954aa4",
+    "team_home": "Canada",
+    "team_away": "Bosnia-Herzegovina",
+    "match_date": "2026-06-12T13:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "84045d03-0ec6-473d-b770-60266f08e563",
+    "team_home": "Korea Republic",
+    "team_away": "Czechia",
+    "match_date": "2026-06-12T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "65f06e3f-e7b7-4657-8afe-e9219a5529b8",
+    "team_home": "USA",
+    "team_away": "Paraguay",
+    "match_date": "2026-06-12T21:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "63e66bd7-c041-4638-842e-3715ab6f7b8d",
+    "team_home": "Qatar",
+    "team_away": "Switzerland",
+    "match_date": "2026-06-13T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "df01ed0b-3dc9-47c5-b7a7-172d0398c9da",
+    "team_home": "Australia",
+    "team_away": "T├╝rkiye",
+    "match_date": "2026-06-14T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "7a0c2d74-9c04-4468-8ce7-05e3e49b5f92",
+    "team_home": "Haiti",
+    "team_away": "Scotland",
+    "match_date": "2026-06-14T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "a390880c-6890-46f9-aed3-c07556ed0ccf",
+    "team_home": "Germany",
+    "team_away": "Ecuador",
+    "match_date": "2026-06-14T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "a2cfc009-2664-4ca4-9372-a1dd48340834",
+    "team_home": "Netherlands",
+    "team_away": "Japan",
+    "match_date": "2026-06-14T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "1527fcee-f903-4c31-8de2-0ad77d32a362",
+    "team_home": "Brazil",
+    "team_away": "Morocco",
+    "match_date": "2026-06-14T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "70d1649b-148d-4fe2-be0c-20fe28a36611",
+    "team_home": "Spain",
+    "team_away": "Cape Verde",
+    "match_date": "2026-06-15T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "af77842a-a76b-4032-882b-a7ebf8d61503",
+    "team_home": "Sweden",
+    "team_away": "Tunisia",
+    "match_date": "2026-06-15T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "20c39c09-3a20-4026-b842-7e9e23a9d4a8",
+    "team_home": "Ivory Coast",
+    "team_away": "Ecuador",
+    "match_date": "2026-06-15T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "922913ac-cee5-4eb1-af02-4e93de74c7cf",
+    "team_home": "Belgium",
+    "team_away": "Egypt",
+    "match_date": "2026-06-15T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "130ff98d-189e-4350-85fb-74837d0007e8",
+    "team_home": "Saudi Arabia",
+    "team_away": "Uruguay",
+    "match_date": "2026-06-16T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "b132f4ce-ff79-4b29-a0a5-65fb899c8768",
+    "team_home": "Iran",
+    "team_away": "New Zealand",
+    "match_date": "2026-06-16T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "bee00f6b-eba6-44cf-b7a4-5ef57cf012dc",
+    "team_home": "France",
+    "team_away": "Senegal",
+    "match_date": "2026-06-16T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "b4cecee1-3ebc-46ff-b3ef-908ac599bdae",
+    "team_home": "Austria",
+    "team_away": "Jordan",
+    "match_date": "2026-06-17T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "377fce4e-a2fa-4d10-b231-47e466b9c08d",
+    "team_home": "Argentina",
+    "team_away": "Algeria",
+    "match_date": "2026-06-17T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "c58a614d-0b43-47ae-811c-2d48e843bb6d",
+    "team_home": "Portugal",
+    "team_away": "DR Congo",
+    "match_date": "2026-06-17T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "341e828c-47d9-4669-b8dd-e53dd3749557",
+    "team_home": "Iraq",
+    "team_away": "Norway",
+    "match_date": "2026-06-17T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.521592+00:00"
+  },
+  {
+    "id": "21e1f842-6897-48da-aff3-bb7ba48cb8bf",
+    "team_home": "England",
+    "team_away": "Croatia",
+    "match_date": "2026-06-17T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "7eda1e9b-715d-4cb2-8807-6c61a9c79e52",
+    "team_home": "Ghana",
+    "team_away": "Panama",
+    "match_date": "2026-06-18T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "84daa362-e072-4dc0-8c51-0e1335f3dbd6",
+    "team_home": "Uzbekistan",
+    "team_away": "Colombia",
+    "match_date": "2026-06-18T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "6db9d77f-6fbc-4c44-b77b-2a7088593b09",
+    "team_home": "Switzerland",
+    "team_away": "Bosnia-Herzegovina",
+    "match_date": "2026-06-18T14:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "cf97bec1-9aa1-40c8-9757-6365b62fec64",
+    "team_home": "Czechia",
+    "team_away": "South Africa",
+    "match_date": "2026-06-18T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "420c3822-9d24-4aa6-9f74-b775a5649365",
+    "team_home": "Mexico",
+    "team_away": "Korea Republic",
+    "match_date": "2026-06-19T01:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "08ea65a5-e582-462b-860d-7728d45b1c0a",
+    "team_home": "USA",
+    "team_away": "Australia",
+    "match_date": "2026-06-19T14:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "cc8fa057-1c7f-4f2d-a1fa-052fcb9c3469",
+    "team_home": "Canada",
+    "team_away": "Qatar",
+    "match_date": "2026-06-19T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "65ea69dc-66e6-41c2-a564-d59e464f1279",
+    "team_home": "Brazil",
+    "team_away": "Haiti",
+    "match_date": "2026-06-20T01:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "9cff0692-7f5f-49df-b37f-7cba8073fd5c",
+    "team_home": "Scotland",
+    "team_away": "Morocco",
+    "match_date": "2026-06-20T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "93ad4ae3-9acb-4726-86a7-8b16ed40476a",
+    "team_home": "Netherlands",
+    "team_away": "Sweden",
+    "match_date": "2026-06-20T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "59dcc94e-3a61-4dfd-a236-d26ad40dc7e4",
+    "team_home": "T├╝rkiye",
+    "team_away": "Paraguay",
+    "match_date": "2026-06-20T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "cbc5d2a3-c73c-47d5-9504-afa0cb11a367",
+    "team_home": "Germany",
+    "team_away": "Ivory Coast",
+    "match_date": "2026-06-20T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "01cd13c8-9c84-457f-94cc-1e8e0465e06c",
+    "team_home": "Ecuador",
+    "team_away": "Cura├ºao",
+    "match_date": "2026-06-21T00:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "75df9dd6-1f89-48d2-a4e7-91e28e3c32b3",
+    "team_home": "Tunisia",
+    "team_away": "Japan",
+    "match_date": "2026-06-21T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "323adc51-00ad-43f3-8875-d9aaf11ef64e",
+    "team_home": "Belgique",
+    "team_away": "Iran",
+    "match_date": "2026-06-21T14:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "e85a93c0-19a7-4e8c-9f7b-6e475b3b18b6",
+    "team_home": "Espagne",
+    "team_away": "Saudi Arabia",
+    "match_date": "2026-06-21T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "cf2bb5b2-ba74-4839-bd9a-584eba5e5224",
+    "team_home": "New Zealand",
+    "team_away": "Egypt",
+    "match_date": "2026-06-22T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "07392ce5-e043-405f-a712-f78b3196a240",
+    "team_home": "Argentina",
+    "team_away": "Autriche",
+    "match_date": "2026-06-22T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "0eb292f7-c834-4204-a427-861856c327e2",
+    "team_home": "France",
+    "team_away": "Iraq",
+    "match_date": "2026-06-22T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "c99a8ff6-b7d2-49c9-98a3-1c54964600b4",
+    "team_home": "Uruguay",
+    "team_away": "Cape Verde",
+    "match_date": "2026-06-22T22:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:54.82857+00:00"
+  },
+  {
+    "id": "3b7cdcb7-1386-495e-b583-ca137cc33c98",
+    "team_home": "Norway",
+    "team_away": "Senegal",
+    "match_date": "2026-06-23T00:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "a0c20b89-0890-40da-9983-76c0c2639786",
+    "team_home": "Jordan",
+    "team_away": "Algeria",
+    "match_date": "2026-06-23T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "edb57218-1d83-4ccb-9466-081ef51543b7",
+    "team_home": "Portugal",
+    "team_away": "Uzbekistan",
+    "match_date": "2026-06-23T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "c49f1b59-c6dc-483b-8618-c94ea2906277",
+    "team_home": "England",
+    "team_away": "Panama",
+    "match_date": "2026-06-23T21:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "e62f106d-13ad-4171-a42e-803ee53eda56",
+    "team_home": "Switzerland",
+    "team_away": "Canada",
+    "match_date": "2026-06-24T14:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "27476a4a-1af5-47ce-9565-39487b59bf54",
+    "team_home": "Bosnia-Herzegovina",
+    "team_away": "Qatar",
+    "match_date": "2026-06-24T14:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "9ad3f85f-e5fd-4e8c-a9f3-168bae4f4f89",
+    "team_home": "Colombia",
+    "team_away": "DR Congo",
+    "match_date": "2026-06-24T22:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "76d93830-8aed-493d-9c7f-cc0e08e951e1",
+    "team_home": "Panama",
+    "team_away": "Croatia",
+    "match_date": "2026-06-24T23:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "e490774e-321b-4c48-814a-32b2428e73c1",
+    "team_home": "Czechia",
+    "team_away": "Mexico",
+    "match_date": "2026-06-25T01:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "169b99c4-5d64-4994-b742-1f7b7503c834",
+    "team_home": "South Africa",
+    "team_away": "Korea Republic",
+    "match_date": "2026-06-25T01:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "42533fd6-3406-46e0-8575-49950d9b03c2",
+    "team_home": "Ecuador",
+    "team_away": "Germany",
+    "match_date": "2026-06-25T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "b7e0e6ef-e13d-4a4a-8321-21671d910973",
+    "team_home": "Cura├ºao",
+    "team_away": "Ivory Coast",
+    "match_date": "2026-06-25T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "7be3b48c-6e14-45f9-81b8-6094f3628249",
+    "team_home": "Scotland",
+    "team_away": "Brazil",
+    "match_date": "2026-06-25T22:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "72899979-843f-44bd-b4c5-a613136917d3",
+    "team_home": "Morocco",
+    "team_away": "Haiti",
+    "match_date": "2026-06-25T23:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "f1b492b0-3730-497f-a603-e2f051ebcd9d",
+    "team_home": "T├╝rkiye",
+    "team_away": "USA",
+    "match_date": "2026-06-26T01:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "5ca7fa25-6aae-4263-90a7-31ac6275fa91",
+    "team_home": "Paraguay",
+    "team_away": "Australia",
+    "match_date": "2026-06-26T02:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "a66c88d9-f195-4c50-9b9a-4eef6a86a589",
+    "team_home": "Senegal",
+    "team_away": "Iraq",
+    "match_date": "2026-06-26T10:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "ea77ee50-abb3-4dda-b7b8-971566be5527",
+    "team_home": "Norway",
+    "team_away": "France",
+    "match_date": "2026-06-26T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "b960930e-809c-4175-a730-d79edbabee08",
+    "team_home": "Japan",
+    "team_away": "Sweden",
+    "match_date": "2026-06-26T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "c803b9e3-ffe3-465e-9ac7-0ef9167226e9",
+    "team_home": "Tunisia",
+    "team_away": "Netherlands",
+    "match_date": "2026-06-26T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.182648+00:00"
+  },
+  {
+    "id": "ffab84f5-9c81-4f6f-aa3c-e4048a7726f3",
+    "team_home": "Panama",
+    "team_away": "England",
+    "match_date": "2026-06-27T01:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "8920efd9-db5c-437c-91c5-46838fb7f6dc",
+    "team_home": "New Zealand",
+    "team_away": "Belgium",
+    "match_date": "2026-06-27T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "fe93f6af-d5c2-40ac-8b99-c6a9d647a1bd",
+    "team_home": "Egypt",
+    "team_away": "Iran",
+    "match_date": "2026-06-27T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "64234139-a70e-4a15-8819-a5fc46f8a7c1",
+    "team_home": "Cape Verde",
+    "team_away": "Saudi Arabia",
+    "match_date": "2026-06-27T09:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "ce0516b8-e673-4176-906a-fbfbbc0aa465",
+    "team_home": "Croatia",
+    "team_away": "Ghana",
+    "match_date": "2026-06-27T21:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "2e97a5d0-004f-4117-94d0-4c643bc9e312",
+    "team_home": "Colombia",
+    "team_away": "Portugal",
+    "match_date": "2026-06-27T23:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "160ee3db-87ac-4c62-8ca7-62f92c301a63",
+    "team_home": "Uruguay",
+    "team_away": "Spain",
+    "match_date": "2026-06-28T00:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "c29d184c-8c09-491f-b3f5-612e54c2145f",
+    "team_home": "Algeria",
+    "team_away": "Austria",
+    "match_date": "2026-06-28T02:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "6ee6ef62-722e-4064-9261-eef8cc1e919d",
+    "team_home": "Jordan",
+    "team_away": "Argentina",
+    "match_date": "2026-06-28T02:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "d7832d9f-79f5-4cbe-841b-552c22d2a278",
+    "team_home": "2e gr. A",
+    "team_away": "2e gr. B",
+    "match_date": "2026-06-28T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "347de73b-3ae2-4098-9005-61dd3ba74aca",
+    "team_home": "1er gr. C",
+    "team_away": "2e gr. F",
+    "match_date": "2026-06-28T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "b6372d60-6d77-4708-aac0-ec3f43c4e826",
+    "team_home": "DR Congo",
+    "team_away": "Uzbekistan",
+    "match_date": "2026-06-28T23:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "895d72e5-dd74-4de2-8ca7-dee165f77f35",
+    "team_home": "1er gr. E",
+    "team_away": "3e gr. A/B/C/D/F",
+    "match_date": "2026-06-29T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "3cd03586-f08a-4cd8-8f74-87cf4331b187",
+    "team_home": "1er gr. F",
+    "team_away": "2e gr. C",
+    "match_date": "2026-06-29T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "12849f9d-f3ff-49bb-8bda-3db8c9c211e4",
+    "team_home": "2e gr. E",
+    "team_away": "2e gr. I",
+    "match_date": "2026-06-30T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "9e042cb2-3170-4506-a897-2fe3824d45e5",
+    "team_home": "1er gr. I",
+    "team_away": "3e gr. C/D/F/G/H",
+    "match_date": "2026-06-30T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "f2148d30-8047-4611-9eaf-c2909ad157a8",
+    "team_home": "1er gr. A",
+    "team_away": "3e gr. C/E/F/H/I",
+    "match_date": "2026-07-01T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "e9232511-458b-454c-adc5-d212e82ce08e",
+    "team_home": "1er gr. G",
+    "team_away": "3e gr. A/E/H/I/J",
+    "match_date": "2026-07-01T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "34a99f9b-bead-47fc-b7e0-be5446ccc71f",
+    "team_home": "1er gr. L",
+    "team_away": "3e gr. E/H/I/J/K",
+    "match_date": "2026-07-01T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.489999+00:00"
+  },
+  {
+    "id": "6e078934-fb3c-4f09-b46b-0d399f49f1d5",
+    "team_home": "1er gr. D",
+    "team_away": "3e gr. B/E/F/I/J",
+    "match_date": "2026-07-02T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "8d4337d0-1a5d-4a26-a0b5-08cbb5431bc5",
+    "team_home": "1er gr. H",
+    "team_away": "2e gr. J",
+    "match_date": "2026-07-02T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "1a8a9fb8-9e22-4e93-85ac-9f0e6526132c",
+    "team_home": "1er gr. B",
+    "team_away": "3e gr. E/F/G/J",
+    "match_date": "2026-07-03T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "5f33db1e-8971-4b95-afef-f206cc035af8",
+    "team_home": "2e gr. D",
+    "team_away": "2e gr. G",
+    "match_date": "2026-07-03T19:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "c27b61b2-8fda-400a-b210-d010003976b2",
+    "team_home": "2e gr. K",
+    "team_away": "2e gr. L",
+    "match_date": "2026-07-03T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "f70fecff-c976-410b-a9cf-db6f97d3ab31",
+    "team_home": "1er gr. J",
+    "team_away": "2e gr. H",
+    "match_date": "2026-07-04T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "9b576de6-7c72-4f80-8897-6e59f39400a2",
+    "team_home": "1er gr. K",
+    "team_away": "3e gr. D/E/I/J/L",
+    "match_date": "2026-07-04T19:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "61e8a997-28b1-43a6-9089-d87dd0d30b62",
+    "team_home": "Vq. S1",
+    "team_away": "Vq. S2",
+    "match_date": "2026-07-05T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "c16150e5-5641-4399-a12a-b61a5233b355",
+    "team_home": "Vq. S3",
+    "team_away": "Vq. S4",
+    "match_date": "2026-07-05T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "f82aa387-2bc5-4402-89bc-7dffc5cd8423",
+    "team_home": "Vq. S5",
+    "team_away": "Vq. S6",
+    "match_date": "2026-07-06T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "7de8e0d1-9aa0-4129-9b7e-cabd6eb92db9",
+    "team_home": "Vq. S7",
+    "team_away": "Vq. S8",
+    "match_date": "2026-07-06T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "330750c5-277b-48a8-92b9-11927025db20",
+    "team_home": "Vq. S9",
+    "team_away": "Vq. S10",
+    "match_date": "2026-07-06T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "769c11ed-7f09-4fbe-a2d6-11b634d25e89",
+    "team_home": "Vq. S11",
+    "team_away": "Vq. S12",
+    "match_date": "2026-07-07T16:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "a0a5649f-0e18-41b0-928c-2548f9fe3a69",
+    "team_home": "Vq. S13",
+    "team_away": "Vq. S14",
+    "match_date": "2026-07-07T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "a1d10b7c-fc0b-41c9-be25-4b94a5c74878",
+    "team_home": "Vq. S15",
+    "team_away": "Vq. S16",
+    "match_date": "2026-07-07T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "3339da6c-b33b-4fe3-a4db-f083bddc9c2d",
+    "team_home": "Vq. H1",
+    "team_away": "Vq. H2",
+    "match_date": "2026-07-09T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "31fb5e87-56ae-4997-88f3-4151d06e4e11",
+    "team_home": "Vq. H3",
+    "team_away": "Vq. H4",
+    "match_date": "2026-07-10T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "dee45d43-74ef-4a72-ac2a-76e0a6354c76",
+    "team_home": "Vq. H5",
+    "team_away": "Vq. H6",
+    "match_date": "2026-07-11T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "b122c090-63d7-4ca3-9e9e-10c8c19c9b6c",
+    "team_home": "Vq. H7",
+    "team_away": "Vq. H8",
+    "match_date": "2026-07-12T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:55.836997+00:00"
+  },
+  {
+    "id": "de647906-7322-4157-81e4-8b864cc2ea36",
+    "team_home": "Vq. Q1",
+    "team_away": "Vq. Q2",
+    "match_date": "2026-07-14T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:56.106506+00:00"
+  },
+  {
+    "id": "23f24c3b-e77d-4f29-a0a0-bdafed2b6ebe",
+    "team_home": "Vq. Q3",
+    "team_away": "Vq. Q4",
+    "match_date": "2026-07-15T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:56.106506+00:00"
+  },
+  {
+    "id": "35e80d5c-ebea-40e5-8863-61032879b3ef",
+    "team_home": "Perd. D1",
+    "team_away": "Perd. D2",
+    "match_date": "2026-07-18T17:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:56.106506+00:00"
+  },
+  {
+    "id": "adf71c92-dead-4299-a9ac-df6563e39a14",
+    "team_home": "Vq. D1",
+    "team_away": "Vq. D2",
+    "match_date": "2026-07-19T20:00:00+00:00",
+    "score_home": null,
+    "score_away": null,
+    "status": "UPCOMING",
+    "created_at": "2026-06-15T11:57:56.106506+00:00"
+  }
+]

@@ -16,7 +16,8 @@ import {
     Trophy,
     History,
     Tag,
-    Download
+    Download,
+    BarChart2
 } from 'lucide-react';
 import AdminNavLink from './AdminNavLink';
 import AdminSearchBar from './AdminSearchBar';
@@ -41,6 +42,7 @@ export default function AdminDashboardLayoutClient({
         { href: '/admin/participants', icon: <Users size={18} />, label: 'Participants', exact: false },
         { href: '/admin/teams', icon: <Shield size={18} />, label: 'Équipes', exact: false },
         { href: '/admin/pronostics', icon: <Trophy size={18} />, label: 'Matchs & Pronostics', exact: false },
+        { href: '/admin/classements', icon: <BarChart2 size={18} />, label: 'Classements Groupes', exact: false },
         { href: '/admin/presences', icon: <History size={18} />, label: 'Présences', exact: false },
         { href: '/admin/badges', icon: <Tag size={18} />, label: 'Badges QR', exact: false },
         { href: '/admin/exports', icon: <Download size={18} />, label: 'Exports', exact: false },

@@ -1,6 +1,7 @@
 'use server';
 
 import { supabase } from '@/lib/supabase';
+import { advanceToKnockout } from '@/app/actions/standings-engine';
 
 // Structure d'un participant identifié
 export interface AuthParticipant {
@@ -81,6 +82,20 @@ export async function loginParticipant(identifier: string): Promise<{ success: b
     }
 }
 
+// Récupérer la dernière date de synchronisation
+export async function getLastSyncTime(): Promise<string | null> {
+    try {
+        const { data } = await supabase
+            .from('matches')
+            .select('match_date')
+            .eq('id', '00000000-0000-0000-0000-000000000000')
+            .maybeSingle();
+        return data?.match_date || null;
+    } catch {
+        return null;
+    }
+}
+
 // Récupérer les matchs et pronostics d'un supporter
 export async function getMatchesAndPredictions(participantId: string) {
     try {
@@ -106,33 +121,35 @@ export async function getMatchesAndPredictions(participantId: string) {
             .select('*, participants(first_name, last_name, phone)')
             .limit(100);
 
-        // Fusionner les données
-        const results = (matches || []).map((m: any) => {
-            const pred = (predictions || []).find((p: any) => p.match_id === m.id);
-            const winner = (winners || []).find((w: any) => w.match_id === m.id);
+        // Fusionner les données (en excluant le match système de métadonnées)
+        const results = (matches || [])
+            .filter((m: any) => m.id !== '00000000-0000-0000-0000-000000000000')
+            .map((m: any) => {
+                const pred = (predictions || []).find((p: any) => p.match_id === m.id);
+                const winner = (winners || []).find((w: any) => w.match_id === m.id);
 
-            return {
-                id: m.id,
-                teamHome: m.team_home,
-                teamAway: m.team_away,
-                matchDate: m.match_date,
-                scoreHome: m.score_home,
-                scoreAway: m.score_away,
-                status: m.status, // 'UPCOMING', 'LIVE', 'FINISHED'
-                prediction: pred ? {
-                    id: pred.id,
-                    predScoreHome: pred.pred_score_home,
-                    predScoreAway: pred.pred_score_away,
-                    createdAt: pred.created_at
-                } : null,
-                winner: winner ? {
-                    firstName: winner.participants?.first_name,
-                    lastName: winner.participants?.last_name,
-                    phone: winner.participants?.phone ? '**** ' + winner.participants.phone.slice(-4) : '',
-                    drawnAt: winner.drawn_at
-                } : null
-            };
-        });
+                return {
+                    id: m.id,
+                    teamHome: m.team_home,
+                    teamAway: m.team_away,
+                    matchDate: m.match_date,
+                    scoreHome: m.score_home,
+                    scoreAway: m.score_away,
+                    status: m.status, // 'UPCOMING', 'LIVE', 'FINISHED'
+                    prediction: pred ? {
+                        id: pred.id,
+                        predScoreHome: pred.pred_score_home,
+                        predScoreAway: pred.pred_score_away,
+                        createdAt: pred.created_at
+                    } : null,
+                    winner: winner ? {
+                        firstName: winner.participants?.first_name,
+                        lastName: winner.participants?.last_name,
+                        phone: winner.participants?.phone ? '**** ' + winner.participants.phone.slice(-4) : '',
+                        drawnAt: winner.drawn_at
+                    } : null
+                };
+            });
 
         return { success: true, matches: results };
     } catch (e: any) {
@@ -207,7 +224,39 @@ export async function adminAddMatch(teamHome: string, teamAway: string, matchDat
     }
 }
 
-// Mettre à jour le score d'un match
+// Supprimer un match
+export async function adminDeleteMatch(matchId: string) {
+    try {
+        const { error } = await supabase
+            .from('matches')
+            .delete()
+            .eq('id', matchId);
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error("Admin Delete Match Error:", e);
+        return { success: false, error: "Impossible de supprimer le match." };
+    }
+}
+
+// Supprimer TOUS les matchs (pour nettoyer la base)
+export async function adminClearAllMatches() {
+    try {
+        const { error } = await supabase
+            .from('matches')
+            .delete()
+            .neq('id', '00000000-0000-0000-0000-000000000000'); // Supprime tout sauf un éventuel ID vide de test
+
+        if (error) throw error;
+        return { success: true };
+    } catch (e: any) {
+        console.error("Admin Clear Matches Error:", e);
+        return { success: false, error: "Impossible de vider la liste des matchs." };
+    }
+}
+
+// Mettre à jour le score d'un match + déclencher l'avancement automatique KO
 export async function adminUpdateMatchScore(matchId: string, scoreHome: number, scoreAway: number, status: string) {
     try {
         const { data, error } = await supabase
@@ -222,7 +271,19 @@ export async function adminUpdateMatchScore(matchId: string, scoreHome: number, 
             .single();
 
         if (error) throw error;
-        return { success: true, match: data };
+
+        // ── Qualification automatique ─────────────────────────────────────────
+        // Si le match est terminé, on recalcule les classements et on avance
+        // les équipes qualifiées dans le bracket KO si le groupe est complet.
+        let knockoutMessage: string | undefined;
+        if (status === 'FINISHED') {
+            const advancement = await advanceToKnockout(matchId);
+            if (advancement.groupsAdvanced.length > 0) {
+                knockoutMessage = advancement.message;
+            }
+        }
+
+        return { success: true, match: data, knockoutMessage };
     } catch (e: any) {
         console.error("Admin Update Match Error:", e);
         return { success: false, error: "Impossible de mettre à jour le match." };
@@ -314,7 +375,133 @@ export async function adminDrawWinner(matchId: string) {
     }
 }
 
-// Synchronisation avec l'API de football désactivée
-export async function adminSyncMatchesWithApi(): Promise<{ success: boolean; message?: string; error?: string }> {
-    return { success: false, error: "La synchronisation avec l'API de football a été désactivée." };
+// ─── Scraper de scores via Google / DuckDuckGo Search ─────────────────────────
+
+function normalizeTeamName(name: string): string {
+    if (!name) return "";
+    let clean = name.toLowerCase().trim();
+    if (clean.includes('south korea') || clean.includes('corée du sud') || clean.includes('korea republic')) return 'korea republic';
+    if (clean.includes('czech republic') || clean.includes('république tchèque') || clean.includes('rep. tcheque') || clean.includes('czechia')) return 'czechia';
+    if (clean.includes('democratic republic of the congo') || clean.includes('rd congo') || clean.includes('dr congo')) return 'dr congo';
+    if (clean.includes('united states') || clean.includes('états unis') || clean.includes('etats unis') || clean.includes('usa')) return 'usa';
+    if (clean.includes('turkey') || clean.includes('türkiye') || clean.includes('turquie')) return 'türkiye';
+    if (clean.includes('bosnia')) return 'bosnia-herzegovina';
+    if (clean.includes('ivory coast') || clean.includes('côte d\'ivoire')) return 'ivory coast';
+    if (clean.includes('espagne') || clean.includes('spain') || clean.includes('españa')) return 'spain';
+    if (clean.includes('belgique') || clean.includes('belgium')) return 'belgium';
+    return clean.replace(/and/g, '&').replace(/-/g, ' ').replace(/\s+/g, ' ').replace(/republic/g, 'rep.');
 }
+
+function matchesAlign(apiHome: string, apiAway: string, dbHome: string, dbAway: string): boolean {
+    const ah = normalizeTeamName(apiHome);
+    const aa = normalizeTeamName(apiAway);
+    const dh = normalizeTeamName(dbHome);
+    const da = normalizeTeamName(dbAway);
+    
+    return (ah === dh && aa === da) || (ah === da && aa === dh);
+}
+
+export async function adminSyncScoresFromGoogle() {
+    try {
+        const res = await fetch('https://worldcup26.ir/get/games');
+        if (!res.ok) {
+            throw new Error(`Impossible de contacter la base de données des scores : Status ${res.status}`);
+        }
+        const data = await res.json();
+        const apiGames: any[] = data.games || [];
+
+        const { data: dbMatches, error: matchesError } = await supabase
+            .from('matches')
+            .select('*');
+
+        if (matchesError) throw matchesError;
+
+        let updatedCount = 0;
+
+        for (const m of (dbMatches || [])) {
+            const apiGame = apiGames.find(g => matchesAlign(g.home_team_name_en, g.away_team_name_en, m.team_home, m.team_away));
+            
+            if (apiGame) {
+                const isFinished = apiGame.finished === 'TRUE';
+                const isLive = apiGame.finished === 'FALSE' && apiGame.time_elapsed !== 'notstarted';
+
+                if (isFinished) {
+                    const homeScore = apiGame.home_score !== 'null' ? parseInt(apiGame.home_score) : null;
+                    const awayScore = apiGame.away_score !== 'null' ? parseInt(apiGame.away_score) : null;
+
+                    if (homeScore !== null && awayScore !== null) {
+                        if (m.score_home !== homeScore || m.score_away !== awayScore || m.status !== 'FINISHED') {
+                            const { error: updateError } = await supabase
+                                .from('matches')
+                                .update({
+                                    score_home: homeScore,
+                                    score_away: awayScore,
+                                    status: 'FINISHED'
+                                })
+                                .eq('id', m.id);
+
+                            if (!updateError) {
+                                await advanceToKnockout(m.id);
+                                updatedCount++;
+                            }
+                        }
+                    }
+                } else if (isLive) {
+                    const homeScore = apiGame.home_score !== 'null' ? parseInt(apiGame.home_score) : null;
+                    const awayScore = apiGame.away_score !== 'null' ? parseInt(apiGame.away_score) : null;
+
+                    if (homeScore !== null && awayScore !== null) {
+                        if (m.score_home !== homeScore || m.score_away !== awayScore || m.status !== 'LIVE') {
+                            const { error: updateError } = await supabase
+                                .from('matches')
+                                .update({
+                                    score_home: homeScore,
+                                    score_away: awayScore,
+                                    status: 'LIVE'
+                                })
+                                .eq('id', m.id);
+
+                            if (!updateError) {
+                                updatedCount++;
+                            }
+                        }
+                    }
+                } else {
+                    // Match has not started (UPCOMING)
+                    if (m.status !== 'UPCOMING' || m.score_home !== null || m.score_away !== null) {
+                        const { error: updateError } = await supabase
+                            .from('matches')
+                            .update({
+                                score_home: null,
+                                score_away: null,
+                                status: 'UPCOMING'
+                            })
+                            .eq('id', m.id);
+                        if (!updateError) {
+                            updatedCount++;
+                        }
+                    }
+                }
+            }
+        }
+
+        // Mettre à jour la date de dernière synchronisation
+        await supabase
+            .from('matches')
+            .upsert({
+                id: '00000000-0000-0000-0000-000000000000',
+                team_home: 'SYSTEM',
+                team_away: 'METADATA',
+                match_date: new Date().toISOString(),
+                status: 'FINISHED'
+            });
+
+        return { success: true, message: `${updatedCount} match(s) synchronisé(s) avec succès !` };
+    } catch (e: any) {
+        console.error("Sync Scores Error:", e);
+        return { success: false, error: "Erreur de synchronisation : " + e.message };
+    }
+}
+
+
+

@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { adminAddMatch, adminUpdateMatchScore, adminDrawWinner, getMatchesAndPredictions } from '@/app/actions/predictions';
+import { adminAddMatch, adminUpdateMatchScore, adminDrawWinner, getMatchesAndPredictions, adminDeleteMatch, adminClearAllMatches, adminSyncScoresFromGoogle, getLastSyncTime } from '@/app/actions/predictions';
 import { getTeams, type Team } from '@/app/actions/teams';
-import { Trophy, Plus, Calendar, Award, Phone, CheckCircle2, AlertCircle, Loader2, Sparkles, ChevronDown } from 'lucide-react';
+import { Trophy, Plus, Calendar, Award, Phone, CheckCircle2, AlertCircle, Loader2, Sparkles, ChevronDown, Trash2 } from 'lucide-react';
 
 export default function AdminPronosticsPage() {
     const [matches, setMatches] = useState<any[]>([]);
@@ -13,6 +13,10 @@ export default function AdminPronosticsPage() {
     const [actionLoading, setActionLoading] = useState<string | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+
+    // Date de dernière synchronisation
+    const [lastSyncTime, setLastSyncTime] = useState<string | null>(null);
+    const [timeAgo, setTimeAgo] = useState<string>('');
 
     // Formulaire d'ajout de match
     const [showAddForm, setShowAddForm] = useState(false);
@@ -37,11 +41,39 @@ export default function AdminPronosticsPage() {
         setTimeout(() => { setError(null); setSuccessMessage(null); }, 5000);
     };
 
+    const updateTimeAgo = useCallback((syncTimeStr: string | null) => {
+        if (!syncTimeStr) {
+            setTimeAgo('');
+            return;
+        }
+        const diffMs = new Date().getTime() - new Date(syncTimeStr).getTime();
+        const diffMins = Math.floor(diffMs / 60000);
+        if (diffMins < 1) {
+            setTimeAgo("il y a moins d'une minute");
+        } else if (diffMins < 60) {
+            setTimeAgo(`il y a ${diffMins} min`);
+        } else {
+            const diffHours = Math.floor(diffMins / 60);
+            if (diffHours < 24) {
+                setTimeAgo(`il y a ${diffHours} h`);
+            } else {
+                setTimeAgo(new Date(syncTimeStr).toLocaleDateString('fr-FR'));
+            }
+        }
+    }, []);
+
     useEffect(() => {
         fetchMatches();
+        getLastSyncTime().then(setLastSyncTime);
         // Load teams for dropdowns
         getTeams().then(res => { if (res.success) setTeams(res.teams); });
     }, []);
+
+    useEffect(() => {
+        updateTimeAgo(lastSyncTime);
+        const interval = setInterval(() => updateTimeAgo(lastSyncTime), 30000); // update every 30s
+        return () => clearInterval(interval);
+    }, [lastSyncTime, updateTimeAgo]);
 
     const fetchMatches = async () => {
         setLoading(true);
@@ -52,6 +84,33 @@ export default function AdminPronosticsPage() {
             showMsg(res.error || 'Impossible de récupérer les matchs.', true);
         }
         setLoading(false);
+    };
+
+
+    const handleDeleteMatch = async (matchId: string) => {
+        if (!confirm('Voulez-vous vraiment supprimer ce match ? Cette action est irréversible.')) return;
+        setActionLoading(matchId);
+        const res = await adminDeleteMatch(matchId);
+        if (res.success) {
+            showMsg('Match supprimé avec succès !');
+            await fetchMatches();
+        } else {
+            showMsg(res.error || 'Erreur lors de la suppression.', true);
+        }
+        setActionLoading(null);
+    };
+
+    const handleClearAllMatches = async () => {
+        if (!confirm('⚠️ ATTENTION : Voulez-vous vraiment supprimer TOUS les matchs ? Cette action videra complètement la base de données.')) return;
+        setActionLoading('clear');
+        const res = await adminClearAllMatches();
+        if (res.success) {
+            showMsg('Tous les matchs ont été supprimés !');
+            await fetchMatches();
+        } else {
+            showMsg(res.error || 'Erreur lors de la suppression générale.', true);
+        }
+        setActionLoading(null);
     };
 
     const handleAddMatch = async (e: React.FormEvent) => {
@@ -112,19 +171,51 @@ export default function AdminPronosticsPage() {
         setDrawingForMatchId(null);
     };
 
+    const handleSyncScores = async () => {
+        setActionLoading('sync');
+        const res = await adminSyncScoresFromGoogle();
+        if (res.success) {
+            showMsg(res.message || 'Scores synchronisés !');
+            await fetchMatches();
+            const newSync = await getLastSyncTime();
+            setLastSyncTime(newSync);
+        } else {
+            showMsg(res.error || 'Erreur lors de la synchronisation.', true);
+        }
+        setActionLoading(null);
+    };
+
     return (
         <div className="space-y-8">
             {/* Header section */}
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="font-archivo text-3xl italic uppercase tracking-tight text-slate-900">
-                        Gestion des <span className="text-yellow-500">Matchs</span> & Pronostics
+                         Gestion des <span className="text-yellow-500">Matchs</span> & Pronostics
                     </h1>
                     <p className="text-sm text-slate-500">
                         Créez les matchs, mettez à jour les scores en direct, et tirez au sort les gagnants.
                     </p>
                 </div>
                 <div className="flex items-center gap-3">
+                    {timeAgo ? (
+                        <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-emerald-600 bg-emerald-50 border border-emerald-100 px-3.5 py-2 rounded-xl">
+                            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                            Synchro {timeAgo}
+                        </span>
+                    ) : (
+                        <span className="flex items-center gap-1.5 text-[10px] font-black uppercase tracking-widest text-slate-400 bg-slate-50 border border-slate-100 px-3.5 py-2 rounded-xl">
+                            <span className="w-1.5 h-1.5 rounded-full bg-slate-300"></span>
+                            Synchro auto en attente
+                        </span>
+                    )}
+                    <button
+                        onClick={handleClearAllMatches}
+                        disabled={actionLoading === 'clear'}
+                        className="flex items-center gap-2 bg-red-600 text-white hover:bg-red-700 font-bold text-xs uppercase tracking-widest px-5 py-3.5 rounded-xl transition-all"
+                    >
+                        {actionLoading === 'clear' ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />} Vider tous les matchs
+                    </button>
                     <button
                         onClick={() => setShowAddForm(!showAddForm)}
                         className="flex items-center gap-2 bg-[#0A0A14] text-white hover:bg-yellow-400 hover:text-black font-bold text-xs uppercase tracking-widest px-5 py-3.5 rounded-xl transition-all"
@@ -351,7 +442,8 @@ export default function AdminPronosticsPage() {
                                                     month: 'long',
                                                     year: 'numeric',
                                                     hour: '2-digit',
-                                                    minute: '2-digit'
+                                                    minute: '2-digit',
+                                                    timeZone: 'Africa/Lome'
                                                 })}
                                             </p>
                                         </div>
@@ -409,6 +501,14 @@ export default function AdminPronosticsPage() {
                                                     className="text-xs font-bold text-slate-500 hover:text-slate-900 border border-slate-200 px-3 py-2 rounded-xl transition-all"
                                                 >
                                                     Modifier score
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDeleteMatch(m.id)}
+                                                    disabled={actionLoading === m.id}
+                                                    className="text-xs font-bold text-red-500 hover:text-white hover:bg-red-500 border border-red-200 hover:border-red-500 p-2.5 rounded-xl transition-all flex items-center justify-center"
+                                                    title="Supprimer le match"
+                                                >
+                                                    {actionLoading === m.id ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
                                                 </button>
                                             </div>
                                         )}

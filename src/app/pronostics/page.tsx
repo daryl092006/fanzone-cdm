@@ -7,6 +7,12 @@ import { Trophy, ArrowLeft, Loader2, LogOut, CheckCircle2, AlertCircle, Calendar
 import Link from 'next/link';
 import Image from 'next/image';
 
+function isPlaceholderTeam(name: string | null | undefined): boolean {
+    if (!name) return true;
+    const n = name.toLowerCase();
+    return n.includes('gr.') || n.startsWith('vq.') || n.startsWith('perd.') || n === 'tbd' || n === 'tbc';
+}
+
 export default function PronosticsPage() {
     const [identifier, setIdentifier] = useState('');
     const [participant, setParticipant] = useState<AuthParticipant | null>(null);
@@ -248,6 +254,7 @@ export default function PronosticsPage() {
                                     <div className="grid md:grid-cols-2 gap-6">
                                         {matches.map((m) => {
                                             const isUpcoming = m.status === 'UPCOMING';
+                                            const isPlaceholder = isPlaceholderTeam(m.teamHome) || isPlaceholderTeam(m.teamAway);
                                             const currentInput = predInputs[m.id] || {
                                                 home: m.prediction?.predScoreHome ?? 0,
                                                 away: m.prediction?.predScoreAway ?? 0
@@ -265,7 +272,9 @@ export default function PronosticsPage() {
                                                     key={m.id}
                                                     className={`border rounded-3xl p-6 transition-all space-y-5 ${
                                                         isUpcoming
-                                                            ? 'bg-white/5 border-white/10 hover:border-yellow-400/30'
+                                                            ? isPlaceholder 
+                                                                ? 'bg-white/[0.02] border-white/5 opacity-70'
+                                                                : 'bg-white/5 border-white/10 hover:border-yellow-400/30'
                                                             : 'bg-[#121225] border-white/5 opacity-90'
                                                     }`}
                                                 >
@@ -277,26 +286,35 @@ export default function PronosticsPage() {
                                                                 day: '2-digit',
                                                                 month: 'short',
                                                                 hour: '2-digit',
-                                                                minute: '2-digit'
+                                                                minute: '2-digit',
+                                                                timeZone: 'Africa/Lome'
                                                             })}
                                                         </span>
                                                         <span className={`px-2 py-1 rounded-full text-[9px] ${
-                                                            isUpcoming ? 'bg-yellow-400/10 text-yellow-400' : 'bg-red-400/10 text-red-400'
+                                                            isUpcoming 
+                                                                ? isPlaceholder
+                                                                    ? 'bg-slate-800 text-slate-400'
+                                                                    : 'bg-yellow-400/10 text-yellow-400' 
+                                                                : 'bg-red-400/10 text-red-400'
                                                         }`}>
-                                                            {isUpcoming ? 'À venir' : 'Terminé'}
+                                                            {isUpcoming ? isPlaceholder ? 'Équipes à venir' : 'À venir' : 'Terminé'}
                                                         </span>
                                                     </div>
 
                                                     {/* Équipes et scores réels */}
                                                     <div className="flex items-center justify-between">
                                                         <div className="flex flex-col items-start w-2/5">
-                                                            <span className="font-archivo text-md italic uppercase text-white truncate w-full">{m.teamHome}</span>
+                                                            <span className={`font-archivo text-md italic uppercase truncate w-full ${
+                                                                isPlaceholderTeam(m.teamHome) ? 'text-slate-500 font-medium' : 'text-white font-bold'
+                                                            }`}>{m.teamHome}</span>
                                                         </div>
                                                         <div className="flex items-center justify-center gap-2 bg-[#1C1C36] px-4 py-2 rounded-xl text-lg font-black text-white font-mono">
                                                             {isUpcoming ? 'VS' : `${m.scoreHome} - ${m.scoreAway}`}
                                                         </div>
                                                         <div className="flex flex-col items-end w-2/5 text-right">
-                                                            <span className="font-archivo text-md italic uppercase text-white truncate w-full">{m.teamAway}</span>
+                                                            <span className={`font-archivo text-md italic uppercase truncate w-full ${
+                                                                isPlaceholderTeam(m.teamAway) ? 'text-slate-500 font-medium' : 'text-white font-bold'
+                                                            }`}>{m.teamAway}</span>
                                                         </div>
                                                     </div>
 
@@ -309,7 +327,12 @@ export default function PronosticsPage() {
                                                             )}
                                                         </div>
 
-                                                        {isUpcoming ? (
+                                                        {isPlaceholder ? (
+                                                            /* Pronostics indisponibles pour équipes TBD */
+                                                            <div className="bg-white/5 border border-white/5 text-slate-400 px-4 py-3 rounded-xl text-xs text-center italic">
+                                                                Pronostics ouverts après qualification des équipes
+                                                            </div>
+                                                        ) : isUpcoming ? (
                                                             /* Formulaire actif */
                                                             <div className="flex items-center justify-between gap-4">
                                                                 <div className="flex items-center gap-2">

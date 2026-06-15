@@ -900,8 +900,8 @@ export function isLive(status: string): boolean {
 export function formatDate(dateStr: string, timeStr?: string): string {
   const date = new Date(timeStr ? `${dateStr}T${timeStr}` : dateStr);
   return date.toLocaleDateString('fr-FR', {
-    weekday: 'short', day: '2-digit', month: 'short',
-  }) + (timeStr ? ' · ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }) : '');
+    weekday: 'short', day: '2-digit', month: 'short', timeZone: 'Africa/Lome'
+  }) + (timeStr ? ' · ' + date.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Lome' }) : '');
 }
 
 /** Groupes FIFA 2026 : A–L */

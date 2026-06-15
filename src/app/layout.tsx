@@ -15,7 +15,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="fr" className="scroll-smooth">
+    <html lang="fr" className="scroll-smooth" suppressHydrationWarning>
       <head>
         <link rel="icon" href="/logo-escen.png" type="image/png" />
         <link rel="preconnect" href="https://fonts.googleapis.com" />

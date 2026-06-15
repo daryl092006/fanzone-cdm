@@ -47,6 +47,9 @@ export default function LandingPage() {
           <nav className="hidden lg:flex items-center gap-10 text-[11px] font-bold text-slate-500 uppercase tracking-widest">
             <a href="#lepass" className="hover:text-slate-900 transition-colors">Le Pass</a>
             <a href="#comment" className="hover:text-slate-900 transition-colors">Comment ça marche</a>
+            <Link href="/classements" className="hover:text-slate-900 transition-colors flex items-center gap-1.5">
+              <Activity size={12} /> Classements
+            </Link>
             <Link href="/pronostics" className="text-yellow-600 hover:text-yellow-700 transition-colors flex items-center gap-1.5">
               <Trophy size={12} /> Pronostics
             </Link>
@@ -95,6 +98,13 @@ export default function LandingPage() {
               >
                 Comment ça marche
               </a>
+              <Link
+                href="/classements"
+                onClick={() => setMobileMenuOpen(false)}
+                className="py-2 border-b border-slate-50 hover:text-slate-900 transition-colors flex items-center gap-1.5"
+              >
+                <Activity size={14} /> Classements
+              </Link>
               <Link
                 href="/pronostics"
                 onClick={() => setMobileMenuOpen(false)}
@@ -440,26 +450,44 @@ export default function LandingPage() {
         </section>
 
 
-        {/* ====== CTA PRONOSTICS ====== */}
+        {/* ====== CTA PRONOSTICS + CLASSEMENTS ====== */}
         <section className="py-12 px-6 lg:px-16 bg-white">
-          <div className="max-w-7xl mx-auto">
-            <div className="bg-[#0F1020] border border-white/5 rounded-3xl p-8 md:p-10 flex flex-col md:flex-row items-center justify-between gap-6 shadow-xl text-white">
+          <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-6">
+
+            {/* Pronostics */}
+            <div className="bg-[#0F1020] border border-white/5 rounded-3xl p-8 flex flex-col justify-between gap-6 shadow-xl text-white">
               <div className="space-y-2">
                 <span className="inline-flex items-center gap-1.5 bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
                   <Trophy size={10} /> Tirage au Sort
                 </span>
-                <h3 className="font-archivo text-2xl md:text-3xl italic uppercase tracking-tight">Faites vos pronostics et gagnez !</h3>
-                <p className="text-sm text-slate-400 max-w-xl leading-relaxed">
-                  Devinez les scores exacts des matchs de la Coupe du Monde. Un tirage au sort sera effectué parmi tous les pronostics corrects pour faire gagner de nombreux lots officiels !
+                <h3 className="font-archivo text-2xl italic uppercase tracking-tight">Faites vos pronostics et gagnez !</h3>
+                <p className="text-sm text-slate-400 leading-relaxed">
+                  Devinez les scores exacts. Un tirage au sort sera effectué parmi tous les pronostics corrects !
                 </p>
               </div>
-              <div className="shrink-0">
-                <Link href="/pronostics" className="group inline-flex items-center gap-2 bg-yellow-400 text-black font-bold text-sm px-8 py-4 rounded-xl hover:bg-white transition-all shadow-lg">
-                  Lancer mes Pronostics
-                  <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                </Link>
-              </div>
+              <Link href="/pronostics" className="group inline-flex items-center gap-2 bg-yellow-400 text-black font-bold text-sm px-6 py-3.5 rounded-xl hover:bg-white transition-all shadow-lg w-fit">
+                Lancer mes Pronostics
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
             </div>
+
+            {/* Classements */}
+            <div className="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col justify-between gap-6 shadow-sm">
+              <div className="space-y-2">
+                <span className="inline-flex items-center gap-1.5 bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider">
+                  <Activity size={10} /> Temps Réel
+                </span>
+                <h3 className="font-archivo text-2xl italic uppercase tracking-tight text-slate-900">Classements &amp; Tableau KO</h3>
+                <p className="text-sm text-slate-500 leading-relaxed">
+                  12 groupes, phases éliminatoires, huitièmes, quarts, demies et finale. Suivez chaque résultat en direct.
+                </p>
+              </div>
+              <Link href="/classements" className="group inline-flex items-center gap-2 bg-slate-900 text-white font-bold text-sm px-6 py-3.5 rounded-xl hover:bg-yellow-400 hover:text-black transition-all w-fit">
+                Voir les classements
+                <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+
           </div>
         </section>
 
