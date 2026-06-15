@@ -146,11 +146,11 @@ export default function PronosticsPage() {
                             <form onSubmit={handleLogin} className="space-y-4">
                                 <div className="space-y-1">
                                     <label className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                        N° Téléphone ou Code Badge
+                                        N° Téléphone
                                     </label>
                                     <input
                                         type="text"
-                                        placeholder="Ex: FZ26-ONL-123456 ou +22890000000"
+                                        placeholder="Ex: 90 00 00 00"
                                         value={identifier}
                                         onChange={(e) => setIdentifier(e.target.value)}
                                         className="w-full bg-[#14142B] border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors"
@@ -202,9 +202,9 @@ export default function PronosticsPage() {
                                         <h2 className="font-archivo text-xl italic uppercase text-white">
                                             {participant.firstName} {participant.lastName}
                                         </h2>
-                                        <p className="text-xs text-slate-500 font-mono">
-                                            Badge: {participant.badgeCode}
-                                        </p>
+                                         <p className="text-xs text-slate-500 font-mono">
+                                             Tél: {participant.phone}
+                                         </p>
                                     </div>
                                 </div>
 
@@ -214,6 +214,16 @@ export default function PronosticsPage() {
                                 >
                                     <LogOut size={14} /> Déconnexion
                                 </button>
+                            </div>
+
+                            {/* Warning présence indispensable */}
+                            <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-5 rounded-2xl text-xs space-y-1">
+                                <p className="font-bold flex items-center gap-1.5 uppercase tracking-wider">
+                                    <AlertCircle size={14} className="text-amber-400" /> Règle importante pour les tirages au sort
+                                </p>
+                                <p className="text-slate-300 leading-relaxed">
+                                    Même si votre pronostic est exact, <strong>vous devez obligatoirement être présent à la Fan Zone le jour du match</strong> (avec votre numéro enregistré par nos agents à l'entrée). En cas d'absence physique sur place le jour du match, le tirage au sort pronostic est annulé pour vous et un nouveau gagnant sera tiré.
+                                </p>
                             </div>
 
                             {/* Notifications */}

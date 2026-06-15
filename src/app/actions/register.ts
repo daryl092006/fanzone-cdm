@@ -132,7 +132,17 @@ export async function registerParticipant(formData: FormData) {
                 .eq('id', badgeId);
         }
 
-        return { success: true, participantId: participant.id, badgeCode: finalBadgeCode };
+        return { 
+            success: true, 
+            participantId: participant.id, 
+            badgeCode: finalBadgeCode,
+            participant: {
+                id: participant.id,
+                firstName: participant.first_name,
+                lastName: participant.last_name,
+                phone: participant.phone
+            }
+        };
 
     } catch (error) {
         console.error("Erreur d'inscription:", error);

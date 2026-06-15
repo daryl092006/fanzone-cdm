@@ -2,9 +2,9 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { adminAddMatch, adminUpdateMatchScore, adminDrawWinner, getMatchesAndPredictions, adminDeleteMatch, adminClearAllMatches, adminSyncScoresFromGoogle, getLastSyncTime } from '@/app/actions/predictions';
+import { adminAddMatch, adminUpdateMatchScore, adminDrawPresenceWinner, adminDrawPredictionWinner, getMatchesAndPredictions, adminDeleteMatch, adminClearAllMatches, adminSyncScoresFromGoogle, getLastSyncTime } from '@/app/actions/predictions';
 import { getTeams, type Team } from '@/app/actions/teams';
-import { Trophy, Plus, Calendar, Award, Phone, CheckCircle2, AlertCircle, Loader2, Sparkles, ChevronDown, Trash2 } from 'lucide-react';
+import { Trophy, Plus, Calendar, Award, Phone, CheckCircle2, AlertCircle, Loader2, Sparkles, ChevronDown, Trash2, MapPin } from 'lucide-react';
 
 export default function AdminPronosticsPage() {
     const [matches, setMatches] = useState<any[]>([]);
@@ -33,6 +33,7 @@ export default function AdminPronosticsPage() {
 
     // Résultat du tirage au sort
     const [drawWinner, setDrawWinner] = useState<any | null>(null);
+    const [drawWinnerType, setDrawWinnerType] = useState<string | null>(null);
     const [drawingForMatchId, setDrawingForMatchId] = useState<string | null>(null);
 
     const showMsg = (msg: string, isError = false) => {
@@ -153,20 +154,24 @@ export default function AdminPronosticsPage() {
         setActionLoading(null);
     };
 
-    const handleDrawWinner = async (matchId: string) => {
+    const handleDrawWinner = async (matchId: string, type: 'PRESENCE' | 'PREDICTION') => {
         setDrawingForMatchId(matchId);
         setDrawWinner(null);
+        setDrawWinnerType(type);
         setError(null);
 
         // Simulation de chargement/animation de tirage au sort (2 secondes d'animation style premium)
         await new Promise(resolve => setTimeout(resolve, 2000));
 
-        const res = await adminDrawWinner(matchId);
+        const res = type === 'PRESENCE' 
+            ? await adminDrawPresenceWinner(matchId) 
+            : await adminDrawPredictionWinner(matchId);
+
         if (res.success && res.winner) {
             setDrawWinner(res.winner);
             await fetchMatches();
         } else {
-            setError(res.error || "Impossible d'effectuer le tirage au sort. Vérifiez s'il y a des pronostics corrects.");
+            setError(res.error || `Impossible d'effectuer le tirage au sort ${type === 'PRESENCE' ? 'des présents' : 'des pronostics'}.`);
         }
         setDrawingForMatchId(null);
     };
@@ -347,7 +352,12 @@ export default function AdminPronosticsPage() {
                                     </div>
                                     <div className="space-y-2">
                                         <h3 className="font-archivo text-2xl italic uppercase text-slate-800">Tirage au sort en cours</h3>
-                                        <p className="text-xs text-slate-500">Sélection d'un gagnant au hasard parmi les bons pronostics...</p>
+                                        <p className="text-xs text-slate-500">
+                                            {drawWinnerType === 'PRESENCE' 
+                                                ? "Sélection d'un gagnant au hasard parmi les présents à la FanZone..." 
+                                                : "Sélection d'un gagnant au hasard parmi les pronostics corrects..."
+                                            }
+                                        </p>
                                     </div>
                                 </div>
                             ) : (
@@ -358,7 +368,7 @@ export default function AdminPronosticsPage() {
 
                                     <div className="space-y-2">
                                         <span className="text-[10px] font-black uppercase tracking-widest bg-yellow-400/20 text-yellow-800 px-3 py-1 rounded-full">
-                                            Gagnant Sélectionné !
+                                            {drawWinnerType === 'PRESENCE' ? 'Gagnant Présent (FanZone) !' : 'Gagnant Score Exact !'}
                                         </span>
                                         <h3 className="font-archivo text-3xl italic uppercase text-slate-900 mt-2">
                                             {drawWinner.firstName} {drawWinner.lastName}
@@ -382,7 +392,7 @@ export default function AdminPronosticsPage() {
                                     </div>
 
                                     <button
-                                        onClick={() => setDrawWinner(null)}
+                                        onClick={() => { setDrawWinner(null); setDrawWinnerType(null); }}
                                         className="w-full bg-[#0A0A14] text-white hover:bg-yellow-400 hover:text-black font-bold py-4 rounded-xl text-sm transition-all"
                                     >
                                         Fermer
@@ -515,30 +525,64 @@ export default function AdminPronosticsPage() {
                                     </div>
 
                                     {/* Action Tirage au Sort */}
-                                    <div className="w-full lg:w-auto flex justify-end">
+                                    <div className="w-full lg:w-auto flex flex-col sm:flex-row gap-3 justify-end items-stretch sm:items-center">
                                         {m.status === 'FINISHED' ? (
-                                            m.winner ? (
-                                                <div className="flex items-center gap-2 bg-yellow-50 border border-yellow-200 text-yellow-800 px-4 py-2.5 rounded-xl text-xs font-medium">
-                                                    <Award size={16} className="text-yellow-600 shrink-0" />
-                                                    <div>
-                                                        <p className="font-bold">Gagnant : {m.winner.firstName} {m.winner.lastName}</p>
-                                                        <p className="text-[10px] text-slate-400 font-mono">{m.winner.phone}</p>
+                                            <>
+                                                {/* Gagnant Présence */}
+                                                {m.winnerPresence ? (
+                                                    <div className="flex items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-800 px-4 py-2.5 rounded-xl text-xs font-medium">
+                                                        <MapPin size={16} className="text-emerald-600 shrink-0" />
+                                                        <div>
+                                                            <p className="font-bold text-[10px] uppercase text-emerald-600 tracking-wider">Présence</p>
+                                                            <p className="font-bold">{m.winnerPresence.firstName} {m.winnerPresence.lastName}</p>
+                                                            <p className="text-[9px] text-slate-400 font-mono">{m.winnerPresence.phone}</p>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    onClick={() => handleDrawWinner(m.id)}
-                                                    className="flex items-center gap-2 bg-yellow-400 text-black hover:bg-[#0A0A14] hover:text-white font-bold text-xs uppercase tracking-widest px-5 py-3 rounded-xl transition-all shadow-md shadow-yellow-400/10"
-                                                >
-                                                    <Trophy size={14} /> Tirage au Sort
-                                                </button>
-                                            )
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleDrawWinner(m.id, 'PRESENCE')}
+                                                        className="flex items-center justify-center gap-2 bg-[#0A0A14] text-white hover:bg-yellow-400 hover:text-black font-bold text-[10px] uppercase tracking-wider px-4 py-3 rounded-xl transition-all"
+                                                    >
+                                                        <MapPin size={14} /> Tirage Présence
+                                                    </button>
+                                                )}
+
+                                                {/* Gagnant Pronostics */}
+                                                {m.winnerPrediction ? (
+                                                    <div className={`flex items-center gap-2 border px-4 py-2.5 rounded-xl text-xs font-medium ${
+                                                        m.winnerPrediction.isPresent 
+                                                            ? 'bg-yellow-50 border-yellow-100 text-yellow-800' 
+                                                            : 'bg-red-50 border-red-100 text-red-800'
+                                                    }`}>
+                                                        <Award size={16} className={`${m.winnerPrediction.isPresent ? 'text-yellow-600' : 'text-red-600'} shrink-0`} />
+                                                        <div>
+                                                            <div className="flex items-center gap-1.5">
+                                                                <p className="font-bold text-[10px] uppercase tracking-wider text-slate-400">Prono exact</p>
+                                                                <span className={`text-[8px] font-black uppercase px-1.5 py-0.5 rounded ${
+                                                                    m.winnerPrediction.isPresent ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'
+                                                                }`}>
+                                                                    {m.winnerPrediction.isPresent ? 'Présent' : 'Absent (Annulé)'}
+                                                                </span>
+                                                            </div>
+                                                            <p className="font-bold">{m.winnerPrediction.firstName} {m.winnerPrediction.lastName}</p>
+                                                            <p className="text-[9px] text-slate-400 font-mono">{m.winnerPrediction.phone}</p>
+                                                        </div>
+                                                    </div>
+                                                ) : (
+                                                    <button
+                                                        onClick={() => handleDrawWinner(m.id, 'PREDICTION')}
+                                                        className="flex items-center justify-center gap-2 bg-yellow-400 text-black hover:bg-[#0A0A14] hover:text-white font-bold text-[10px] uppercase tracking-wider px-4 py-3 rounded-xl transition-all"
+                                                    >
+                                                        <Trophy size={14} /> Tirage Prono
+                                                    </button>
+                                                )}
+                                            </>
                                         ) : (
                                             <button
                                                 disabled
-                                                className="bg-slate-100 text-slate-400 text-xs px-4 py-3 rounded-xl cursor-not-allowed"
+                                                className="bg-slate-100 text-slate-400 text-xs px-4 py-3 rounded-xl cursor-not-allowed text-center"
                                             >
-                                                Tirage (En attente de fin)
+                                                Tirages (En attente)
                                             </button>
                                         )}
                                     </div>

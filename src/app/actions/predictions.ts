@@ -115,18 +115,40 @@ export async function getMatchesAndPredictions(participantId: string) {
 
         if (predError) throw predError;
 
+        // Récupérer toutes les présences pour pouvoir valider la présence physique des gagnants
+        const { data: attendances } = await supabase
+            .from('attendances')
+            .select('participant_id, date');
+
         // Récupérer tous les tirages gagnants
         const { data: winners, error: winnersError } = await supabase
             .from('draw_winners')
-            .select('*, participants(first_name, last_name, phone)')
-            .limit(100);
+            .select('*, participants(id, first_name, last_name, phone)')
+            .limit(200);
 
         // Fusionner les données (en excluant le match système de métadonnées)
         const results = (matches || [])
             .filter((m: any) => m.id !== '00000000-0000-0000-0000-000000000000')
             .map((m: any) => {
                 const pred = (predictions || []).find((p: any) => p.match_id === m.id);
-                const winner = (winners || []).find((w: any) => w.match_id === m.id);
+                
+                // Récupérer les gagnants par type de tirage
+                const matchWinners = (winners || []).filter((w: any) => w.match_id === m.id);
+                const winnerPresence = matchWinners.find((w: any) => w.draw_type === 'PRESENCE');
+                const winnerPrediction = matchWinners.find((w: any) => w.draw_type === 'PREDICTION' || !w.draw_type);
+
+                const checkPresence = (pId: string, matchDate: string) => {
+                    const d = new Date(matchDate).toISOString().split('T')[0];
+                    return (attendances || []).some((a: any) => a.participant_id === pId && a.date === d);
+                };
+
+                const mapWinner = (w: any) => w ? {
+                    firstName: w.participants?.first_name,
+                    lastName: w.participants?.last_name,
+                    phone: w.participants?.phone ? '**** ' + w.participants.phone.slice(-4) : '',
+                    drawnAt: w.drawn_at,
+                    isPresent: checkPresence(w.participant_id, m.match_date)
+                } : null;
 
                 return {
                     id: m.id,
@@ -142,12 +164,10 @@ export async function getMatchesAndPredictions(participantId: string) {
                         predScoreAway: pred.pred_score_away,
                         createdAt: pred.created_at
                     } : null,
-                    winner: winner ? {
-                        firstName: winner.participants?.first_name,
-                        lastName: winner.participants?.last_name,
-                        phone: winner.participants?.phone ? '**** ' + winner.participants.phone.slice(-4) : '',
-                        drawnAt: winner.drawn_at
-                    } : null
+                    winnerPresence: mapWinner(winnerPresence),
+                    winnerPrediction: mapWinner(winnerPrediction),
+                    // Rétrocompatibilité
+                    winner: mapWinner(winnerPrediction || winnerPresence)
                 };
             });
 
@@ -290,8 +310,103 @@ export async function adminUpdateMatchScore(matchId: string, scoreHome: number, 
     }
 }
 
-// Tirage au sort parmi les pronostics corrects
-export async function adminDrawWinner(matchId: string) {
+// Tirage au sort parmi les participants PRÉSENTS
+export async function adminDrawPresenceWinner(matchId: string) {
+    try {
+        // 1. Récupérer le match
+        const { data: match, error: matchError } = await supabase
+            .from('matches')
+            .select('*')
+            .eq('id', matchId)
+            .single();
+
+        if (matchError || !match) {
+            return { success: false, error: "Match introuvable." };
+        }
+
+        if (match.status !== 'FINISHED') {
+            return { success: false, error: "Le match doit être terminé pour lancer le tirage." };
+        }
+
+        // 2. Vérifier si un gagnant a déjà été tiré pour ce type
+        const { data: existingWinner } = await supabase
+            .from('draw_winners')
+            .select('*, participants(first_name, last_name, phone)')
+            .eq('match_id', matchId)
+            .eq('draw_type', 'PRESENCE')
+            .maybeSingle();
+
+        if (existingWinner) {
+            return {
+                success: true,
+                alreadyDrawn: true,
+                winner: {
+                    firstName: existingWinner.participants?.first_name,
+                    lastName: existingWinner.participants?.last_name,
+                    phone: existingWinner.participants?.phone,
+                    drawnAt: existingWinner.drawn_at
+                }
+            };
+        }
+
+        // 3. Récupérer les présences du jour du match (format de date YYYY-MM-DD)
+        const matchDateStr = new Date(match.match_date).toISOString().split('T')[0];
+        const { data: attendances, error: attError } = await supabase
+            .from('attendances')
+            .select('*, participants(id, first_name, last_name, phone)')
+            .eq('date', matchDateStr);
+
+        if (attError) throw attError;
+
+        if (!attendances || attendances.length === 0) {
+            return { success: false, error: "Aucun participant enregistré présent à la FanZone pour la date de ce match." };
+        }
+
+        // 4. Filtrer les participants uniques
+        const uniqueParticipants = Array.from(new Set(attendances.map(a => a.participants?.id)))
+            .map(id => attendances.find(a => a.participants?.id === id)?.participants)
+            .filter(Boolean);
+
+        if (uniqueParticipants.length === 0) {
+            return { success: false, error: "Aucun participant valide trouvé parmi les présents." };
+        }
+
+        // 5. Tirer au sort
+        const randomIndex = Math.floor(Math.random() * uniqueParticipants.length);
+        const luckyWinner = uniqueParticipants[randomIndex] as any;
+
+        // 6. Enregistrer le gagnant
+        const { data: drawRecord, error: drawError } = await supabase
+            .from('draw_winners')
+            .insert({
+                match_id: matchId,
+                participant_id: luckyWinner.id,
+                draw_type: 'PRESENCE',
+                drawn_at: new Date().toISOString()
+            })
+            .select()
+            .single();
+
+        if (drawError) throw drawError;
+
+        return {
+            success: true,
+            alreadyDrawn: false,
+            winner: {
+                firstName: luckyWinner.first_name,
+                lastName: luckyWinner.last_name,
+                phone: luckyWinner.phone,
+                drawnAt: drawRecord.drawn_at
+            }
+        };
+    } catch (e: any) {
+        console.error("Admin Draw Presence Error:", e);
+        return { success: false, error: "Erreur lors du tirage au sort des présents." };
+    }
+}
+
+// Tirage au sort parmi les PRONOSTICS CORRECTS
+export async function adminDrawPredictionWinner(matchId: string) {
     try {
         // 1. Récupérer le match avec son score final
         const { data: match, error: matchError } = await supabase
@@ -305,14 +420,15 @@ export async function adminDrawWinner(matchId: string) {
         }
 
         if (match.status !== 'FINISHED' || match.score_home === null || match.score_away === null) {
-            return { success: false, error: "Le match doit être terminé avec un score renseigné pour lancer le tirage." };
+            return { success: false, error: "Le match doit être terminé avec un score renseigné." };
         }
 
-        // 2. Vérifier si un gagnant a déjà été tiré
+        // 2. Vérifier si un gagnant a déjà été tiré pour ce type
         const { data: existingWinner } = await supabase
             .from('draw_winners')
             .select('*, participants(first_name, last_name, phone)')
             .eq('match_id', matchId)
+            .eq('draw_type', 'PREDICTION')
             .maybeSingle();
 
         if (existingWinner) {
@@ -331,7 +447,7 @@ export async function adminDrawWinner(matchId: string) {
         // 3. Récupérer tous les pronostics qui ont le score exact
         const { data: correctPredictions, error: predError } = await supabase
             .from('predictions')
-            .select('*, participants(first_name, last_name, phone)')
+            .select('*, participants(id, first_name, last_name, phone)')
             .eq('match_id', matchId)
             .eq('pred_score_home', match.score_home)
             .eq('pred_score_away', match.score_away);
@@ -352,6 +468,7 @@ export async function adminDrawWinner(matchId: string) {
             .insert({
                 match_id: matchId,
                 participant_id: luckyDraw.participant_id,
+                draw_type: 'PREDICTION',
                 drawn_at: new Date().toISOString()
             })
             .select()
@@ -370,8 +487,8 @@ export async function adminDrawWinner(matchId: string) {
             }
         };
     } catch (e: any) {
-        console.error("Admin Draw Error:", e);
-        return { success: false, error: "Erreur lors du tirage au sort." };
+        console.error("Admin Draw Prediction Error:", e);
+        return { success: false, error: "Erreur lors du tirage au sort des pronostics." };
     }
 }
 

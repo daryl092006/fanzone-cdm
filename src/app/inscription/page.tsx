@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { registerParticipant } from '../actions/register';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowLeft, Loader2, QrCode, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
+import { ArrowLeft, Loader2, UserPlus, ShieldCheck, CheckCircle2, AlertTriangle } from 'lucide-react';
 import Link from 'next/link';
 
 export default function InscriptionPage() {
@@ -25,9 +25,12 @@ export default function InscriptionPage() {
             setError(result.error);
             setLoading(false);
         } else if (result.participantId) {
+            if (result.participant) {
+                localStorage.setItem('fz26_participant', JSON.stringify(result.participant));
+            }
             setSuccess(true);
             setTimeout(() => {
-                router.push(`/badge/${result.participantId}`);
+                router.push('/pronostics');
             }, 1800);
         }
     }
@@ -78,7 +81,7 @@ export default function InscriptionPage() {
                             Inscription <span className="text-yellow-500">Supporter</span>
                         </h1>
                         <p className="text-sm text-slate-500 leading-relaxed">
-                            Créez votre badge d&apos;accès en moins d&apos;une minute. Aucun email requis.
+                            Inscrivez-vous gratuitement en moins d'une minute pour participer.
                         </p>
                     </motion.div>
 
@@ -94,7 +97,7 @@ export default function InscriptionPage() {
                                     <CheckCircle2 size={36} className="text-green-500" />
                                 </div>
                                 <h2 className="font-archivo text-2xl italic uppercase text-slate-900 tracking-tighter">Inscription réussie !</h2>
-                                <p className="text-sm text-slate-500">Votre badge est en cours de génération…</p>
+                                <p className="text-sm text-slate-500">Redirection vers vos pronostics…</p>
                                 <div className="flex justify-center">
                                     <Loader2 size={20} className="animate-spin text-yellow-500" />
                                 </div>
@@ -201,7 +204,6 @@ export default function InscriptionPage() {
                                             minLength={2}
                                             className={inputClass}
                                         />
-                                        <p className="text-[10px] text-slate-400 pl-1">Cette valeur sera affichée sur votre badge.</p>
                                     </motion.div>
                                 )}
 
@@ -255,7 +257,7 @@ export default function InscriptionPage() {
                                         className="mt-0.5 h-5 w-5 rounded accent-yellow-600 cursor-pointer shrink-0"
                                     />
                                     <label htmlFor="consent" className="text-xs text-yellow-800 leading-relaxed cursor-pointer">
-                                        Je confirme que mes informations sont exactes et complètes. J&apos;accepte les conditions d&apos;accès à Ici le Mondial Golfe 1 Digital Fan Zone. Je sais que mon badge est personnel et doit être présenté à chaque entrée.
+                                        Je confirme que mes informations sont exactes et complètes. J&apos;accepte les conditions de participation à la Fan Zone et je m&apos;engage à faire enregistrer ma présence physique par un agent à l&apos;entrée pour valider mes tirages au sort.
                                         <span className="text-red-500"> *</span>
                                     </label>
                                 </div>
@@ -267,8 +269,8 @@ export default function InscriptionPage() {
                                     className="w-full bg-yellow-400 text-black font-bold text-sm py-5 rounded-xl hover:bg-[#0A0A14] hover:text-white disabled:opacity-50 transition-all flex items-center justify-center gap-3 shadow-lg shadow-yellow-400/20"
                                 >
                                     {loading
-                                        ? <><Loader2 size={20} className="animate-spin" /> Vérification en cours...</>
-                                        : <><QrCode size={20} /> Créer mon Badge Gratuit</>
+                                        ? <><Loader2 size={20} className="animate-spin" /> Inscription en cours...</>
+                                        : <><UserPlus size={20} /> M&apos;inscrire gratuitement</>
                                     }
                                 </button>
 

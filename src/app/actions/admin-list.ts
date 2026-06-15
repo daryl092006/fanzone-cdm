@@ -47,7 +47,7 @@ export async function getPresences(dateFilter: string = '') {
     try {
         let query = supabase
             .from('attendances')
-            .select('*, participants(first_name, last_name, badges(badge_code))')
+            .select('*, participants(first_name, last_name, phone, badges(badge_code))')
             .order('scan_time', { ascending: false });
 
         if (dateFilter) {
@@ -69,7 +69,8 @@ export async function getPresences(dateFilter: string = '') {
                 participant: {
                     firstName: p?.first_name ?? 'Visiteur',
                     lastName: p?.last_name ?? 'Anonyme',
-                    registrationNumber: p?.badges?.badge_code ?? '—'
+                    registrationNumber: p?.badges?.badge_code ?? '—',
+                    phone: p?.phone ?? '—'
                 }
             };
         }) || [];

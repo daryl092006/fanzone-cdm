@@ -129,3 +129,71 @@ export async function processScan(badgeCode: string) {
         return { error: "Erreur technique lors du scan." };
     }
 }
+
+export async function registerPresenceByPhone(phone: string) {
+    const today = new Date().toISOString().split('T')[0];
+    const cleanPhone = phone.trim();
+
+    try {
+        // 1. Récupérer le participant par son téléphone
+        const { data: participant, error: pError } = await supabase
+            .from('participants')
+            .select(`
+                id,
+                first_name,
+                last_name,
+                phone,
+                profession,
+                attendances (
+                    id,
+                    date
+                )
+            `)
+            .eq('phone', cleanPhone)
+            .maybeSingle();
+
+        if (pError || !participant) {
+            return { error: "Aucun participant trouvé avec ce numéro de téléphone." };
+        }
+
+        const attendances = participant.attendances || [];
+        const alreadyScanned = attendances.some((att: any) => att.date === today);
+
+        if (alreadyScanned) {
+            return {
+                warning: "La présence de ce participant a déjà été enregistrée aujourd'hui.",
+                participant: {
+                    firstName: participant.first_name,
+                    lastName: participant.last_name,
+                    phone: participant.phone,
+                    profession: participant.profession
+                }
+            };
+        }
+
+        // 2. Insérer la présence
+        const { error: insertError } = await supabase
+            .from('attendances')
+            .insert({
+                participant_id: participant.id,
+                date: today,
+                status: 'VALIDE'
+            });
+
+        if (insertError) throw insertError;
+
+        return {
+            success: true,
+            participant: {
+                firstName: participant.first_name,
+                lastName: participant.last_name,
+                phone: participant.phone,
+                profession: participant.profession
+            }
+        };
+    } catch (e: any) {
+        console.error("Register Presence Phone Error:", e);
+        return { error: "Erreur technique lors de l'enregistrement de la présence." };
+    }
+}
+

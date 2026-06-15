@@ -199,12 +199,12 @@ export default function LandingPage() {
               </div>
 
               <p className="text-base font-medium text-slate-600 max-w-md leading-relaxed">
-                La plus grande Fan Zone d'Afrique de l'Ouest. Écrans géants, concerts, ambiance unique au cœur du Golfe de Guinée. Accès 100% gratuit sur présentation de votre badge quotidien.
+                La plus grande Fan Zone d'Afrique de l'Ouest. Écrans géants, concerts, ambiance unique au cœur de Golfe 1 à Lomé. Accès 100% gratuit et ouvert à tous.
               </p>
 
               <div className="flex flex-col sm:flex-row gap-4 items-start">
                 <Link href="/inscription" className="group inline-flex items-center gap-3 bg-primary-yellow text-black font-bold text-sm px-8 py-4 rounded-xl hover:bg-primary-green hover:text-white transition-all shadow-xl shadow-primary-yellow/20">
-                  Obtenir mon Pass Gratuit
+                  M'inscrire gratuitement
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
                 <a href="#comment" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors py-4">
@@ -243,18 +243,20 @@ export default function LandingPage() {
                     </div>
                     <div className="text-right">
                       <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Ici c&apos;est le Mondial</p>
-                      <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Badge Officiel</p>
+                      <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Accès Virtuel</p>
                     </div>
                   </div>
                   <div>
-                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-1">Titulaire</p>
+                    <p className="text-[9px] font-bold uppercase tracking-widest text-white/30 mb-1">Supporter Officiel</p>
                     <p className="font-archivo text-2xl italic uppercase leading-tight">Nom & Prénom</p>
                   </div>
                 </div>
                 <div className="p-8 space-y-5 bg-white">
-                  <div className="bg-slate-50 aspect-square rounded-2xl flex items-center justify-center relative">
-                    <QrCode size={100} className="text-slate-200" />
-                    <span className="absolute font-bold text-[10px] uppercase tracking-widest bg-white border border-primary-green/20 px-3 py-1.5 rounded-full text-primary-green shadow-sm">Accès Validé</span>
+                  <div className="bg-slate-50 aspect-square rounded-2xl flex flex-col items-center justify-center relative p-5 text-center">
+                    <CheckCircle2 size={56} className="text-emerald-500" />
+                    <p className="font-bold text-sm text-slate-800 mt-2">Enregistrement Téléphone</p>
+                    <p className="text-[10px] text-slate-400 mt-1">Numéro validé à l'entrée</p>
+                    <span className="absolute bottom-4 font-bold text-[10px] uppercase tracking-widest bg-white border border-primary-green/20 px-3 py-1.5 rounded-full text-primary-green shadow-sm">Présence Validée</span>
                   </div>
                   <div className="bg-primary-yellow rounded-xl py-3 text-center">
                     <p className="font-archivo text-[11px] font-black uppercase tracking-wider text-black">#FZ2026 · TOGO</p>
@@ -287,10 +289,10 @@ export default function LandingPage() {
             <div className="space-y-10">
               <div>
                 <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-green mb-4">L'Accès Officiel</p>
-                <h2 className="font-archivo text-4xl md:text-5xl leading-tight tracking-tighter italic uppercase">Le Pass Fan Zone</h2>
+                <h2 className="font-archivo text-4xl md:text-5xl leading-tight tracking-tighter italic uppercase">Accès & Participation</h2>
               </div>
               <p className="text-base text-slate-500 leading-relaxed max-w-md">
-                Votre badge numérique personnel est <strong>obligatoire pour chaque entrée</strong>. Il est gratuit, instantané et lié à votre numéro de téléphone.
+                L'enregistrement de votre numéro de téléphone est <strong>obligatoire pour participer aux tirages au sort</strong>. Il est 100% gratuit et instantané.
               </p>
 
               {/* CORRECTION AUDIT #7 : mention badge à présenter chaque jour en évidence */}
@@ -299,16 +301,16 @@ export default function LandingPage() {
                 <div>
                   <p className="text-sm font-black text-primary-green uppercase tracking-wide">Important</p>
                   <p className="text-sm text-primary-green/80 mt-1 leading-relaxed">
-                    Votre badge doit être présenté et scanné <strong>chaque jour à l'entrée</strong>. Un badge non scanné ne valide pas la présence du jour.
+                    Donnez votre numéro de téléphone <strong>chaque jour à l'entrée</strong> pour valider votre présence. <strong>Règle essentielle</strong> : pour participer et gagner aux deux tirages au sort (Présence et Pronostics), votre présence physique sur place doit être validée à l'entrée le jour du match, sous peine d'annulation du gain.
                   </p>
                 </div>
               </div>
 
               <div className="space-y-4">
                 {[
-                  { icon: <ShieldCheck size={20} className="text-primary-green" />, t: 'Validation quotidienne', d: 'Badge scanné à chaque journée par nos agents à l\'entrée.', bg: 'bg-primary-green/5 border-primary-green/10' },
-                  { icon: <Zap size={20} className="text-primary-blue" />, t: 'Généré en 60 secondes', d: 'Aucun email requis. Juste votre numéro de téléphone.', bg: 'bg-primary-blue/5 border-primary-blue/10' },
-                  { icon: <QrCode size={20} className="text-[#8cbe43]" />, t: 'Papier ou Digital', d: 'Imprimez votre QR Code ou gardez-le sur smartphone.', bg: 'bg-light-green/5 border-light-green/10' },
+                  { icon: <ShieldCheck size={20} className="text-primary-green" />, t: "Enregistrement à l'arrivée", d: "Présentez simplement votre numéro de téléphone à nos agents à l'entrée à chaque visite.", bg: 'bg-primary-green/5 border-primary-green/10' },
+                  { icon: <Zap size={20} className="text-primary-blue" />, t: 'Inscrit en 30 secondes', d: 'Aucun email requis. Saisissez vos infos et commencez à pronostiquer.', bg: 'bg-primary-blue/5 border-primary-blue/10' },
+                  { icon: <Ticket size={20} className="text-[#8cbe43]" />, t: 'Zéro ticket physique', d: 'Tout est relié à votre numéro de téléphone. Plus de badge à perdre ou à imprimer !', bg: 'bg-light-green/5 border-light-green/10' },
                 ].map((f, i) => (
                   <div key={i} className={`flex items-center gap-5 p-5 rounded-2xl border ${f.bg}`}>
                     <div className="shrink-0 w-10 h-10 rounded-xl bg-white flex items-center justify-center shadow-sm">{f.icon}</div>
@@ -344,26 +346,26 @@ export default function LandingPage() {
             <div className="text-center space-y-4">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600">Guide Rapide</p>
               <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase text-slate-900">Comment ça marche ?</h2>
-              <p className="text-slate-500 text-sm max-w-md mx-auto">Trois étapes simples pour accéder à la Fan Zone chaque jour.</p>
+              <p className="text-slate-500 text-sm max-w-md mx-auto">Trois étapes simples pour participer aux animations et aux tirages au sort.</p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {[
                 {
                   num: '01',
-                  t: 'Je m\'inscris',
-                  d: 'Je remplis le formulaire en ligne avec mon nom, prénom et numéro de téléphone. L\'email est optionnel. L\'inscription est gratuite et prend moins d\'une minute.',
+                  t: 'Je m\'inscris en ligne',
+                  d: 'Je remplis le formulaire d\'inscription gratuit en ligne avec mon nom, prénom et mon numéro de téléphone en 1 minute.',
                   icon: <ClipboardList className="text-yellow-600 shrink-0" size={24} />,
                 },
                 {
                   num: '02',
-                  t: 'Je reçois mon Badge QR',
-                  d: 'Un badge personnel avec un QR Code unique est généré immédiatement. Je peux l\'afficher sur mon téléphone ou l\'imprimer sur papier.',
-                  icon: <Ticket className="text-yellow-500 shrink-0" size={24} />,
+                  t: 'Je pronostique',
+                  d: 'Je me connecte sur mon téléphone pour pronostiquer sur les matchs à venir et tenter de gagner le tirage pronostics.',
+                  icon: <Trophy className="text-yellow-500 shrink-0" size={24} />,
                 },
                 {
                   num: '03',
-                  t: 'Je le présente chaque jour',
-                  d: 'À chaque visite, je présente mon QR Code à l\'agent à l\'entrée. Il sera scanné pour valider ma présence du jour. Ce badge est personnel et non transférable.',
+                  t: 'Validation sur place',
+                  d: 'Je me présente obligatoirement à l\'entrée chez les agents sur le terrain pour faire enregistrer ma présence et participer au tirage.',
                   icon: <CheckCircle2 className="text-emerald-500 shrink-0" size={24} />,
                 },
               ].map((step, i) => (
@@ -389,7 +391,7 @@ export default function LandingPage() {
             </div>
             <div className="text-center pt-4">
               <Link href="/inscription" className="group inline-flex items-center gap-3 bg-yellow-400 text-black font-bold text-sm px-10 py-5 rounded-xl hover:bg-white transition-all shadow-xl shadow-yellow-400/20">
-                Commencer l'inscription <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                S'inscrire en ligne <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
             </div>
           </div>
@@ -417,7 +419,7 @@ export default function LandingPage() {
                   d: 'Chaque Jour',
                   h: '09h00 – 23h00',
                   t: 'Match Day',
-                  p: 'Diffusion en direct de tous les matchs sur écrans géants 4K LED. Accès sur badge obligatoire.',
+                  p: 'Diffusion en direct de tous les matchs sur écrans géants 4K LED. Accès gratuit (enregistrement requis à l\'entrée pour le tirage).',
                   bg: 'bg-[#0A0A14] text-white',
                   accent: 'text-yellow-400 bg-white/10',
                 },
@@ -505,7 +507,7 @@ export default function LandingPage() {
                 {[
                   { icon: <MapIcon size={20} className="text-yellow-600" />, t: 'Emplacement', d: 'Complexe Sportif d\'Akodesséwa-Kpota (Terrain GER)\nLomé, Togo' },
                   { icon: <Clock size={20} className="text-yellow-600" />, t: 'Horaires d\'ouverture', d: 'Accueil dès 09h00 · Chaque jour\nFermeture 1h après le dernier match' },
-                  { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Assistance sur place', d: 'Des agents ADN & ESCEN sont présents\npour vous aider à vous inscrire ou retrouver votre badge.' },
+                  { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Assistance sur place', d: 'Des agents ADN & ESCEN sont présents\npour vous aider à vous enregistrer.' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-5">
                     <div className="w-11 h-11 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-center shrink-0">{item.icon}</div>
@@ -518,15 +520,15 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="bg-slate-50 rounded-3xl p-10 space-y-8 border border-slate-200 shadow-sm">
-              <h3 className="font-archivo text-3xl italic uppercase text-slate-900">Prêt à rejoindre ?</h3>
-              <p className="text-slate-500 text-sm leading-relaxed">L'inscription est rapide, gratuite et se fait depuis votre téléphone. Votre badge QR est généré immédiatement.</p>
+              <h3 className="font-archivo text-3xl italic uppercase text-slate-900">Prêt à nous rejoindre ?</h3>
+              <p className="text-slate-500 text-sm leading-relaxed">L'inscription est rapide, gratuite et se fait depuis votre téléphone. Pas besoin de badge physique.</p>
               <Link href="/inscription" className="group w-full flex items-center justify-center gap-3 bg-yellow-400 text-black font-bold text-sm px-8 py-5 rounded-xl hover:bg-slate-900 hover:text-white transition-all shadow-md">
-                Créer mon Badge Gratuit <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+                M'inscrire gratuitement <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
               </Link>
               <div className="space-y-3 pt-2">
                 {[
                   'Inscription gratuite et sans email',
-                  'Badge généré instantanément',
+                  'Faire mes pronostics immédiatement',
                   'Assistance disponible sur place',
                 ].map((item, i) => (
                   <div key={i} className="flex items-center gap-3">

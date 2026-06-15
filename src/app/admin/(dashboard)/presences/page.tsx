@@ -58,7 +58,7 @@ export default async function PresencesPage({
                 <div className="grid grid-cols-12 bg-slate-50 border-b border-slate-200 text-[10px] font-black text-slate-400 uppercase tracking-widest px-8 py-4">
                     <div className="col-span-4">Participant</div>
                     <div className="col-span-3 text-center">Date</div>
-                    <div className="col-span-3 text-center">Heure de Scan</div>
+                    <div className="col-span-3 text-center">Heure d'Enregistrement</div>
                     <div className="col-span-2 text-right">Statut</div>
                 </div>
 
@@ -71,7 +71,7 @@ export default async function PresencesPage({
                                 </div>
                                 <div>
                                     <p className="text-sm font-bold text-slate-900">{att.participant.firstName} {att.participant.lastName}</p>
-                                    <p className="text-[10px] font-mono text-slate-400 leading-none">{att.participant.registrationNumber}</p>
+                                    <p className="text-[10px] font-mono text-slate-400 leading-none">{att.participant.registrationNumber || 'Tél: ' + att.participant.phone}</p>
                                 </div>
                             </div>
 
@@ -101,7 +101,7 @@ export default async function PresencesPage({
                                 <History size={32} className="text-slate-200" />
                             </div>
                             <p className="font-archivo text-slate-300 italic">Aucune présence enregistrée</p>
-                            <p className="text-xs text-slate-200 mt-1">Les scanners n'ont pas encore été activés.</p>
+                            <p className="text-xs text-slate-200 mt-1">Aucune présence n'a été saisie aujourd'hui.</p>
                         </div>
                     )}
                 </div>

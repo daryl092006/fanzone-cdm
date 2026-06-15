@@ -3,7 +3,7 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Ici le Mondial Golfe 1 Digital Fan Zone | Lomé, Togo — Mairie du Golfe × ESCEN",
-  description: "Plateforme officielle de l'événement Ici le Mondial Golfe 1 Digital Fan Zone à Lomé, Togo. Inscrivez-vous gratuitement pour obtenir votre badge d'accès. Une initiative de la Mairie du Golfe en partenariat avec ESCEN Expert Pro.",
+  description: "Plateforme officielle de l'événement Ici le Mondial Golfe 1 Digital Fan Zone à Lomé, Togo. Inscrivez-vous gratuitement pour participer aux pronostics et aux tirages au sort quotidiens.",
   icons: {
     icon: "/logo-escen.png",
   },
