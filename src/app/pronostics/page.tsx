@@ -13,6 +13,46 @@ function isPlaceholderTeam(name: string | null | undefined): boolean {
     return n.includes('gr.') || n.startsWith('vq.') || n.startsWith('perd.') || n === 'tbd' || n === 'tbc';
 }
 
+function MatchCountdown({ targetDate, onExpired }: { targetDate: string; onExpired?: () => void }) {
+    const [timeLeft, setTimeLeft] = useState<{ hours: number; minutes: number; seconds: number } | null>(null);
+
+    useEffect(() => {
+        const calculateTime = () => {
+            const difference = new Date(targetDate).getTime() - new Date().getTime();
+            if (difference <= 0) {
+                setTimeLeft(null);
+                if (onExpired) onExpired();
+                return;
+            }
+            const hours = Math.floor(difference / (1000 * 60 * 60));
+            const minutes = Math.floor((difference / 1000 / 60) % 60);
+            const seconds = Math.floor((difference / 1000) % 60);
+            setTimeLeft({ hours, minutes, seconds });
+        };
+
+        calculateTime();
+        const interval = setInterval(calculateTime, 1000);
+        return () => clearInterval(interval);
+    }, [targetDate, onExpired]);
+
+    if (!timeLeft) {
+        return (
+            <span className="text-red-400 bg-red-500/10 border border-red-500/20 px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-wider">
+                Fermé
+            </span>
+        );
+    }
+
+    const pad = (n: number) => String(n).padStart(2, '0');
+
+    return (
+        <span className="flex items-center gap-1 bg-yellow-400/10 border border-yellow-400/20 px-2.5 py-1 rounded-full text-[9px] font-black tracking-widest text-yellow-400 animate-pulse">
+            <span className="w-1.5 h-1.5 rounded-full bg-yellow-400 animate-ping mr-0.5" />
+            CLOS DANS {pad(timeLeft.hours)}:{pad(timeLeft.minutes)}:{pad(timeLeft.seconds)}
+        </span>
+    );
+}
+
 export default function PronosticsPage() {
     const [identifier, setIdentifier] = useState('');
     const [participant, setParticipant] = useState<AuthParticipant | null>(null);
@@ -127,11 +167,23 @@ export default function PronosticsPage() {
         });
     };
 
-    // Grouper les matchs par jour (heure de Lomé = UTC+0) - uniquement les matchs à venir
+    // Grouper les matchs par jour (heure de Lomé = UTC+0) - uniquement les matchs à venir (ou France vs Sénégal tant que la limite n'est pas dépassée)
     const matchesByDay = useMemo(() => {
         const grouped: { label: string; matches: any[] }[] = [];
         const seen: Record<string, number> = {};
-        const upcomingMatches = matches.filter(m => m.status === 'UPCOMING' && new Date() < new Date(m.matchDate));
+        
+        const now = new Date();
+        const upcomingMatches = matches.filter(m => {
+            const isFranceSenegal = (m.teamHome === 'France' && m.teamAway === 'Senegal') ||
+                                   (m.teamHome === 'Senegal' && m.teamAway === 'France');
+            
+            if (isFranceSenegal) {
+                const limitDate = new Date(new Date(m.matchDate).getTime() + 65 * 60 * 1000);
+                return m.status !== 'FINISHED' && now < limitDate;
+            }
+            
+            return m.status === 'UPCOMING' && now < new Date(m.matchDate);
+        });
         
         for (const m of upcomingMatches) {
             const dayKey = new Date(m.matchDate).toLocaleDateString('fr-FR', {
@@ -360,7 +412,14 @@ export default function PronosticsPage() {
                                             {/* Matchs du jour */}
                                             <div className="grid md:grid-cols-2 gap-6">
                                                 {dayMatches.map((m: any) => {
-                                                    const isUpcoming = m.status === 'UPCOMING' && new Date() < new Date(m.matchDate);
+                                                    const isFranceSenegal = (m.teamHome === 'France' && m.teamAway === 'Senegal') ||
+                                                                           (m.teamHome === 'Senegal' && m.teamAway === 'France');
+                                                    const limitDate = new Date(new Date(m.matchDate).getTime() + 65 * 60 * 1000);
+                                                    
+                                                    const isUpcoming = isFranceSenegal
+                                                        ? (m.status !== 'FINISHED' && new Date() < limitDate)
+                                                        : (m.status === 'UPCOMING' && new Date() < new Date(m.matchDate));
+
                                                     const isPlaceholder = isPlaceholderTeam(m.teamHome) || isPlaceholderTeam(m.teamAway);
                                                     const currentInput = predInputs[m.id] || {
                                                         home: m.prediction?.predScoreHome ?? 0,
@@ -392,13 +451,18 @@ export default function PronosticsPage() {
                                                                         timeZone: 'Africa/Lome'
                                                                     })}
                                                                 </span>
-                                                                <span className={`px-2 py-1 rounded-full text-[9px] ${
-                                                                    isUpcoming
-                                                                        ? isPlaceholder ? 'bg-slate-800 text-slate-400' : 'bg-yellow-400/10 text-yellow-400'
-                                                                        : 'bg-red-400/10 text-red-400'
-                                                                }`}>
-                                                                    {isUpcoming ? (isPlaceholder ? 'Équipes à venir' : 'À venir') : 'Terminé'}
-                                                                </span>
+                                                                <div className="flex items-center gap-2">
+                                                                    {isUpcoming && isFranceSenegal && (
+                                                                        <MatchCountdown targetDate={limitDate.toISOString()} onExpired={() => fetchData(participant.id)} />
+                                                                    )}
+                                                                    <span className={`px-2 py-1 rounded-full text-[9px] ${
+                                                                        isUpcoming
+                                                                            ? isPlaceholder ? 'bg-slate-800 text-slate-400' : 'bg-yellow-400/10 text-yellow-400'
+                                                                            : 'bg-red-400/10 text-red-400'
+                                                                    }`}>
+                                                                        {isUpcoming ? (isPlaceholder ? 'Équipes à venir' : 'À venir') : 'Terminé'}
+                                                                    </span>
+                                                                </div>
                                                             </div>
 
                                                             {/* Équipes */}

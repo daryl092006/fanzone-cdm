@@ -42,6 +42,7 @@ export default function AdminPronosticsPage() {
     const [drawWinner, setDrawWinner] = useState<any | null>(null);
     const [drawWinnerType, setDrawWinnerType] = useState<string | null>(null);
     const [drawingForMatchId, setDrawingForMatchId] = useState<string | null>(null);
+    const [drawCountdown, setDrawCountdown] = useState<number | null>(null);
 
     const showMsg = (msg: string, isError = false) => {
         if (isError) { setError(msg); setSuccessMessage(null); }
@@ -144,7 +145,22 @@ export default function AdminPronosticsPage() {
         setDrawWinner(null);
         setDrawWinnerType(type);
         setError(null);
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        setDrawCountdown(10);
+        
+        const interval = setInterval(() => {
+            setDrawCountdown(prev => {
+                if (prev === null || prev <= 1) {
+                    clearInterval(interval);
+                    return null;
+                }
+                return prev - 1;
+            });
+        }, 1000);
+
+        await new Promise(resolve => setTimeout(resolve, 10000));
+        clearInterval(interval);
+        setDrawCountdown(null);
+
         const res = type === 'PRESENCE'
             ? await adminDrawPresenceWinner(matchId)
             : await adminDrawPredictionWinner(matchId);
@@ -152,7 +168,10 @@ export default function AdminPronosticsPage() {
             setDrawWinner(res.winner);
             await fetchMatches();
         } else {
-            setError(res.error || `Tirage impossible.`);
+            setDrawWinner({
+                isNone: true,
+                reason: res.error || "Aucun candidat éligible trouvé."
+            });
         }
         setDrawingForMatchId(null);
     };
@@ -317,47 +336,127 @@ export default function AdminPronosticsPage() {
                         exit={{ opacity: 0 }}
                         className="fixed inset-0 z-50 bg-[#0A0A14]/85 backdrop-blur-md flex items-center justify-center p-6"
                     >
-                        <div className="bg-white text-slate-900 rounded-3xl p-8 max-w-md w-full border border-slate-200 shadow-2xl text-center space-y-6 relative overflow-hidden">
+                        <div className="bg-white text-slate-900 rounded-3xl p-8 max-w-lg w-full border border-slate-200 shadow-2xl text-center space-y-6 relative overflow-hidden">
                             {drawingForMatchId ? (
-                                <div className="py-12 space-y-6">
-                                    <div className="relative w-24 h-24 mx-auto flex items-center justify-center">
-                                        <Trophy size={48} className="text-yellow-400 animate-bounce" />
-                                        <div className="absolute inset-0 border-4 border-yellow-400/20 border-t-yellow-400 rounded-full animate-spin" />
+                                <div className="py-8 space-y-6">
+                                    {/* Boulier de Loto */}
+                                    <div className="relative w-72 h-72 mx-auto bg-slate-900/10 border-4 border-slate-900 rounded-full flex items-center justify-center overflow-hidden shadow-inner">
+                                        {/* Glass reflection */}
+                                        <div className="absolute top-2 left-4 w-24 h-12 bg-white/25 rounded-full rotate-[-15deg] blur-[1.5px] z-10 pointer-events-none" />
+                                        
+                                        {/* Bouncing Balls */}
+                                        <div className="absolute inset-1 overflow-hidden rounded-full">
+                                            {[...Array(25)].map((_, i) => {
+                                                const colorClass = [
+                                                    'bg-yellow-400 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.4)] border border-yellow-500/30',
+                                                    'bg-blue-500 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.4)] border border-blue-600/30',
+                                                    'bg-red-500 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.4)] border border-red-600/30',
+                                                    'bg-emerald-500 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.4)] border border-emerald-600/30',
+                                                    'bg-purple-500 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.4)] border border-purple-600/30',
+                                                    'bg-orange-500 shadow-[inset_-2px_-2px_4px_rgba(0,0,0,0.4)] border border-orange-600/30'
+                                                ][i % 6];
+                                                
+                                                // Random movements for chaotic feel
+                                                const animDelay = `${i * 0.1}s`;
+                                                const animDuration = `${0.6 + Math.random() * 0.5}s`;
+                                                const topOffset = `${15 + Math.random() * 60}%`;
+                                                const leftOffset = `${15 + Math.random() * 60}%`;
+
+                                                return (
+                                                    <div
+                                                        key={i}
+                                                        className={`absolute w-10 h-10 rounded-full ${colorClass} animate-lottery-ball`}
+                                                        style={{
+                                                            top: topOffset,
+                                                            left: leftOffset,
+                                                            animationDelay: animDelay,
+                                                            animationDuration: animDuration
+                                                        }}
+                                                    />
+                                                );
+                                            })}
+                                        </div>
+                                        
+                                        {/* Center spinner core */}
+                                        <div className="absolute w-20 h-20 border-8 border-slate-900 border-t-yellow-400 border-b-yellow-400 rounded-full animate-spin z-20" />
+                                        
+                                        {/* Countdown display (static) */}
+                                        {drawCountdown !== null && (
+                                            <div className="absolute z-30 font-archivo text-3xl font-black text-slate-900 bg-white w-12 h-12 rounded-full flex items-center justify-center shadow-lg border-2 border-yellow-400 select-none animate-pulse">
+                                                {drawCountdown}
+                                            </div>
+                                        )}
                                     </div>
                                     <div className="space-y-2">
-                                        <h3 className="font-archivo text-2xl italic uppercase text-slate-800">Tirage en cours…</h3>
+                                        <h3 className="font-archivo text-2xl italic uppercase text-slate-800 animate-pulse">
+                                            Tirage en cours{drawCountdown !== null ? ` (${drawCountdown}s)` : '…'}
+                                        </h3>
                                         <p className="text-xs text-slate-500">
                                             {drawWinnerType === 'PRESENCE'
-                                                ? "Sélection d'un gagnant parmi les présents à la FanZone…"
-                                                : "Sélection d'un gagnant parmi les pronostics corrects…"}
+                                                ? "Mélange des bulletins de présence..."
+                                                : "Sélection parmi les pronostics exacts..."}
                                         </p>
                                     </div>
                                 </div>
                             ) : (
                                 <div className="space-y-6">
-                                    <div className="w-20 h-20 bg-yellow-100 rounded-full flex items-center justify-center mx-auto text-yellow-600 animate-pulse">
-                                        <Trophy size={36} />
-                                    </div>
-                                    <div className="space-y-2">
-                                        <span className="text-[10px] font-black uppercase tracking-widest bg-yellow-400/20 text-yellow-800 px-3 py-1 rounded-full">
-                                            {drawWinnerType === 'PRESENCE' ? 'Gagnant Présence !' : 'Gagnant Pronostic Exact !'}
-                                        </span>
-                                        <h3 className="font-archivo text-3xl italic uppercase text-slate-900 mt-2">
-                                            {drawWinner.firstName} {drawWinner.lastName}
-                                        </h3>
-                                        <div className="flex items-center justify-center gap-2 text-sm text-slate-500 font-mono mt-2">
-                                            <Phone size={14} /> {drawWinner.phone}
-                                        </div>
-                                    </div>
-                                    <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date du Tirage</p>
-                                        <p className="text-xs font-bold text-slate-700">
-                                            {new Date(drawWinner.drawnAt).toLocaleDateString('fr-FR', {
-                                                day: 'numeric', month: 'long', year: 'numeric',
-                                                hour: '2-digit', minute: '2-digit'
-                                            })}
-                                        </p>
-                                    </div>
+                                    {drawWinner && drawWinner.isNone ? (
+                                        <>
+                                            {/* Boule vide / barrée rouge/grise */}
+                                            <div className="relative w-24 h-24 mx-auto bg-gradient-to-br from-slate-300 to-slate-500 rounded-full flex items-center justify-center shadow-lg border-2 border-slate-200 animate-pop-bounce">
+                                                {/* Reflet 3D */}
+                                                <div className="absolute top-1 left-2 w-6 h-3 bg-white/30 rounded-full rotate-[-15deg] blur-[0.5px] pointer-events-none" />
+                                                
+                                                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-inner border border-slate-100 text-slate-400 font-bold text-lg">
+                                                    Ø
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <span className="text-[10px] font-black uppercase tracking-widest bg-slate-200 text-slate-700 px-3 py-1 rounded-full">
+                                                    {drawWinnerType === 'PRESENCE' ? 'Tirage Présence' : 'Tirage Pronostic'}
+                                                </span>
+                                                <h3 className="font-archivo text-3xl italic uppercase text-slate-900 mt-2">
+                                                    Aucun Gagnant
+                                                </h3>
+                                                <p className="text-xs text-slate-500 leading-relaxed px-4">
+                                                    {drawWinner.reason}
+                                                </p>
+                                            </div>
+                                        </>
+                                    ) : drawWinner ? (
+                                        <>
+                                            {/* Boule de tirage gagnante dorée avec reflet 3D et rebond */}
+                                            <div className="relative w-24 h-24 mx-auto bg-gradient-to-br from-yellow-300 via-yellow-400 to-amber-600 rounded-full flex items-center justify-center shadow-lg border-2 border-yellow-200 animate-pop-bounce">
+                                                {/* Reflet 3D */}
+                                                <div className="absolute top-1 left-2 w-6 h-3 bg-white/40 rounded-full rotate-[-15deg] blur-[0.5px] pointer-events-none" />
+                                                
+                                                {/* Intérieur de la boule */}
+                                                <div className="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-inner border border-slate-100">
+                                                    <Trophy size={28} className="text-amber-500 animate-pulse" />
+                                                </div>
+                                            </div>
+                                            <div className="space-y-2">
+                                                <span className="text-[10px] font-black uppercase tracking-widest bg-yellow-400/20 text-yellow-800 px-3 py-1 rounded-full">
+                                                    {drawWinnerType === 'PRESENCE' ? 'Gagnant Présence !' : 'Gagnant Pronostic Exact !'}
+                                                </span>
+                                                <h3 className="font-archivo text-3xl italic uppercase text-slate-900 mt-2">
+                                                    {drawWinner.firstName} {drawWinner.lastName}
+                                                </h3>
+                                                <div className="flex items-center justify-center gap-2 text-sm text-slate-500 font-mono mt-2">
+                                                    <Phone size={14} /> {drawWinner.phone}
+                                                </div>
+                                            </div>
+                                            <div className="bg-slate-50 p-4 rounded-2xl border border-slate-100 space-y-1">
+                                                <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Date du Tirage</p>
+                                                <p className="text-xs font-bold text-slate-700">
+                                                    {new Date(drawWinner.drawnAt).toLocaleDateString('fr-FR', {
+                                                        day: 'numeric', month: 'long', year: 'numeric',
+                                                        hour: '2-digit', minute: '2-digit'
+                                                    })}
+                                                </p>
+                                            </div>
+                                        </>
+                                    ) : null}
                                     <button
                                         onClick={() => { setDrawWinner(null); setDrawWinnerType(null); }}
                                         className="w-full bg-[#0A0A14] text-white hover:bg-yellow-400 hover:text-black font-bold py-4 rounded-xl text-sm transition-all"
@@ -366,6 +465,28 @@ export default function AdminPronosticsPage() {
                                     </button>
                                 </div>
                             )}
+                            <style dangerouslySetInnerHTML={{ __html: `
+                                @keyframes lotteryBall {
+                                    0% { transform: translate(0, 0) scale(1); }
+                                    20% { transform: translate(60px, -80px) scale(0.95); }
+                                    40% { transform: translate(-70px, 40px) scale(1.05); }
+                                    60% { transform: translate(50px, 70px) scale(0.9); }
+                                    80% { transform: translate(-60px, -50px) scale(1.05); }
+                                    100% { transform: translate(0, 0) scale(1); }
+                                }
+                                .animate-lottery-ball {
+                                    animation: lotteryBall infinite ease-in-out;
+                                }
+                                @keyframes popAndBounce {
+                                    0% { transform: scale(0) rotate(-45deg); }
+                                    70% { transform: scale(1.1) rotate(10deg); }
+                                    85% { transform: scale(0.95) rotate(-5deg); }
+                                    100% { transform: scale(1) rotate(0); }
+                                }
+                                .animate-pop-bounce {
+                                    animation: popAndBounce 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+                                }
+                            `}} />
                         </div>
                     </motion.div>
                 )}
@@ -395,12 +516,21 @@ export default function AdminPronosticsPage() {
                             );
                             const lastMatch = sorted[sorted.length - 1];
 
-                            // Tirage présence : dernier match LIVE ou FINISHED
-                            const lastMatchActive = lastMatch.status === 'LIVE' || lastMatch.status === 'FINISHED';
+                            // Vérifier s'il y a un match France vs Sénégal ce jour-là
+                            const franceSenegalMatch = dayMatches.find((m: any) =>
+                                (m.teamHome === 'France' && m.teamAway === 'Senegal') ||
+                                (m.teamHome === 'Senegal' && m.teamAway === 'France')
+                            );
+
+                            // Tirage présence : France vs Sénégal si présent, sinon dernier match du jour
+                            const presenceTriggerMatch = franceSenegalMatch || lastMatch;
+                            const isPresenceDrawAllowed = presenceTriggerMatch.status === 'LIVE' || presenceTriggerMatch.status === 'FINISHED';
                             const dayPresenceWinner = dayMatches.find(m => m.winnerPresence)?.winnerPresence ?? null;
 
-                            // Tirage pronostic : tous les matchs du jour FINISHED
-                            const allFinished = dayMatches.every(m => m.status === 'FINISHED');
+                            // Tirage pronostic : France vs Sénégal terminé si présent, sinon tous les matchs terminés
+                            const isPredictionDrawAllowed = franceSenegalMatch
+                                ? (franceSenegalMatch.status === 'FINISHED' && franceSenegalMatch.scoreHome !== null && franceSenegalMatch.scoreAway !== null)
+                                : dayMatches.every(m => m.status === 'FINISHED');
                             const dayPredictionWinner = dayMatches.find(m => m.winnerPrediction)?.winnerPrediction ?? null;
 
                             return (
@@ -508,8 +638,8 @@ export default function AdminPronosticsPage() {
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">🟢 Tirage Présence · Journée</p>
                                                     <p className="text-[10px] text-slate-400 mt-0.5">
                                                         À la mi-temps de{' '}
-                                                        <span className="font-bold text-slate-600">{lastMatch.teamHome} vs {lastMatch.teamAway}</span>
-                                                        {' '}({new Date(lastMatch.matchDate).toLocaleTimeString('fr-FR', {
+                                                        <span className="font-bold text-slate-600">{presenceTriggerMatch.teamHome} vs {presenceTriggerMatch.teamAway}</span>
+                                                        {' '}({new Date(presenceTriggerMatch.matchDate).toLocaleTimeString('fr-FR', {
                                                             hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Lome'
                                                         })})
                                                     </p>
@@ -524,16 +654,16 @@ export default function AdminPronosticsPage() {
                                                         <p className="text-[9px] text-slate-400 font-mono">{dayPresenceWinner.phone}</p>
                                                     </div>
                                                 </div>
-                                            ) : lastMatchActive ? (
+                                            ) : isPresenceDrawAllowed ? (
                                                 <button
-                                                    onClick={() => handleDrawWinner(lastMatch.id, 'PRESENCE')}
+                                                    onClick={() => handleDrawWinner(presenceTriggerMatch.id, 'PRESENCE')}
                                                     className="shrink-0 flex items-center justify-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-[10px] uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-sm"
                                                 >
                                                     <MapPin size={14} /> Lancer le Tirage Présence
                                                 </button>
                                             ) : (
                                                 <span className="shrink-0 text-[10px] text-slate-400 bg-white border border-slate-200 px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider">
-                                                    En attente du dernier match
+                                                    {franceSenegalMatch ? "En attente du match France vs Sénégal" : "En attente du dernier match"}
                                                 </span>
                                             )}
                                         </div>
@@ -545,7 +675,9 @@ export default function AdminPronosticsPage() {
                                                 <div className="min-w-0">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-yellow-700">🏆 Tirage Pronostic · Journée</p>
                                                     <p className="text-[10px] text-slate-400 mt-0.5">
-                                                        Le lendemain avant le 1er match · Tous les matchs du jour doivent être terminés
+                                                        {franceSenegalMatch 
+                                                            ? "À la fin du match France vs Sénégal · Concerne uniquement les pronostics de ce match" 
+                                                            : "Le lendemain avant le 1er match · Tous les matchs du jour doivent être terminés"}
                                                     </p>
                                                 </div>
                                             </div>
@@ -569,16 +701,16 @@ export default function AdminPronosticsPage() {
                                                         <p className="text-[9px] text-slate-400 font-mono">{dayPredictionWinner.phone}</p>
                                                     </div>
                                                 </div>
-                                            ) : allFinished ? (
+                                            ) : isPredictionDrawAllowed ? (
                                                 <button
-                                                    onClick={() => handleDrawWinner(lastMatch.id, 'PREDICTION')}
+                                                    onClick={() => handleDrawWinner(franceSenegalMatch ? franceSenegalMatch.id : lastMatch.id, 'PREDICTION')}
                                                     className="shrink-0 flex items-center justify-center gap-2 bg-yellow-400 hover:bg-[#0A0A14] hover:text-white text-black font-bold text-[10px] uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-sm"
                                                 >
                                                     <Trophy size={14} /> Lancer le Tirage Pronostic
                                                 </button>
                                             ) : (
                                                 <span className="shrink-0 text-[10px] text-slate-400 bg-white border border-slate-200 px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider">
-                                                    En attente de la fin de tous les matchs
+                                                    {franceSenegalMatch ? "En attente de la fin du match France vs Sénégal" : "En attente de la fin de tous les matchs"}
                                                 </span>
                                             )}
                                         </div>

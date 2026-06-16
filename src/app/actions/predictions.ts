@@ -184,7 +184,7 @@ export async function submitPrediction(participantId: string, matchId: string, p
         // Vérifier si le match existe, son statut et sa date de début
         const { data: match, error: matchError } = await supabase
             .from('matches')
-            .select('status, match_date')
+            .select('status, match_date, team_home, team_away')
             .eq('id', matchId)
             .single();
 
@@ -195,8 +195,18 @@ export async function submitPrediction(participantId: string, matchId: string, p
         const now = new Date();
         const matchDate = new Date(match.match_date);
 
-        if (match.status !== 'UPCOMING' || now >= matchDate) {
-            return { success: false, error: "Le pronostic n'est plus modifiable car le match a débuté ou est terminé." };
+        const isFranceSenegal = (match.team_home === 'France' && match.team_away === 'Senegal') ||
+                               (match.team_home === 'Senegal' && match.team_away === 'France');
+
+        if (isFranceSenegal) {
+            const limitDate = new Date(matchDate.getTime() + 65 * 60 * 1000);
+            if (match.status === 'FINISHED' || now >= limitDate) {
+                return { success: false, error: "Le pronostic n'est plus modifiable car la limite (5 min après le début de la seconde période) est dépassée ou le match est terminé." };
+            }
+        } else {
+            if (match.status !== 'UPCOMING' || now >= matchDate) {
+                return { success: false, error: "Le pronostic n'est plus modifiable car le match a débuté ou est terminé." };
+            }
         }
 
         // Upsert du pronostic
@@ -352,8 +362,18 @@ export async function adminDrawPresenceWinner(matchId: string) {
         dayMatches.sort((a: any, b: any) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime());
         const lastMatch = dayMatches[dayMatches.length - 1];
 
-        // 2. Vérifier si le dernier match de la journée a commencé (LIVE ou FINISHED)
-        if (lastMatch.status !== 'LIVE' && lastMatch.status !== 'FINISHED') {
+        // Vérifier s'il y a un match France vs Sénégal ce jour-là
+        const franceSenegalMatch = dayMatches.find((m: any) => 
+            (m.team_home === 'France' && m.team_away === 'Senegal') || 
+            (m.team_home === 'Senegal' && m.team_away === 'France')
+        );
+
+        // 2. Vérifier si le match déclencheur a commencé (LIVE ou FINISHED)
+        const triggerMatch = franceSenegalMatch || lastMatch;
+        if (triggerMatch.status !== 'LIVE' && triggerMatch.status !== 'FINISHED') {
+            if (franceSenegalMatch) {
+                return { success: false, error: "Le tirage de présence n'est possible qu'à partir de la mi-temps du match France vs Sénégal." };
+            }
             return { success: false, error: "Le tirage de présence n'est possible qu'à partir du début (mi-temps) du dernier match de la journée." };
         }
 
@@ -466,10 +486,22 @@ export async function adminDrawPredictionWinner(matchId: string) {
             return dStr === matchDateStr && m.id !== '00000000-0000-0000-0000-000000000000';
         });
 
-        // Vérifier si au moins un match de la journée est terminé avec un score renseigné
-        const isAnyMatchFinished = dayMatches.some((m: any) => m.status === 'FINISHED' && m.score_home !== null && m.score_away !== null);
-        if (!isAnyMatchFinished) {
-            return { success: false, error: "Au moins un match de la journée doit être terminé avec un score renseigné." };
+        // Vérifier s'il y a un match France vs Sénégal ce jour-là
+        const franceSenegalMatch = dayMatches.find((m: any) => 
+            (m.team_home === 'France' && m.team_away === 'Senegal') || 
+            (m.team_home === 'Senegal' && m.team_away === 'France')
+        );
+
+        if (franceSenegalMatch) {
+            if (franceSenegalMatch.status !== 'FINISHED' || franceSenegalMatch.score_home === null || franceSenegalMatch.score_away === null) {
+                return { success: false, error: "Le match France vs Sénégal doit être terminé avec un score renseigné pour le tirage." };
+            }
+        } else {
+            // Vérifier si au moins un match de la journée est terminé avec un score renseigné
+            const isAnyMatchFinished = dayMatches.some((m: any) => m.status === 'FINISHED' && m.score_home !== null && m.score_away !== null);
+            if (!isAnyMatchFinished) {
+                return { success: false, error: "Au moins un match de la journée doit être terminé avec un score renseigné." };
+            }
         }
 
         // 2. Vérifier si un gagnant de type PREDICTION a déjà été tiré pour ce jour-là
@@ -723,8 +755,17 @@ export async function getDrawCandidates(matchId: string, type: 'PRESENCE' | 'PRE
                 return dStr === matchDateStr && m.status === 'FINISHED' && m.score_home !== null && m.score_away !== null;
             });
 
+            // Vérifier s'il s'agit du match France vs Sénégal
+            const isFranceSenegal = (match.team_home === 'France' && match.team_away === 'Senegal') ||
+                                   (match.team_home === 'Senegal' && match.team_away === 'France');
+
             let allCandidates: any[] = [];
             for (const dm of dayMatches) {
+                // Si c'est le match France vs Sénégal, on ne prend en compte que les pronostics de ce match spécifique.
+                if (isFranceSenegal && dm.id !== matchId) {
+                    continue;
+                }
+
                 const { data: correctPredictions } = await supabase
                     .from('predictions')
                     .select('*, participants(id, first_name, last_name, phone)')
