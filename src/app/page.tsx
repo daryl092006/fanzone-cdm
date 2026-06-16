@@ -77,9 +77,26 @@ export default function LandingPage() {
             {/* Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 text-slate-600 hover:text-slate-900 focus:outline-none"
+              className="lg:hidden p-2 text-slate-800 hover:text-slate-900 focus:outline-none flex flex-col justify-center items-center w-10 h-10 rounded-full hover:bg-slate-100 transition-colors"
+              aria-label="Menu"
             >
-              {mobileMenuOpen ? <X size={20} /> : <Menu size={20} />}
+              <div className="w-5 h-3.5 flex flex-col justify-between items-center">
+                <motion.span
+                  animate={mobileMenuOpen ? { rotate: 45, y: 6 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full h-[2px] bg-slate-800 rounded-full origin-center"
+                />
+                <motion.span
+                  animate={mobileMenuOpen ? { opacity: 0, x: -10 } : { opacity: 1, x: 0 }}
+                  transition={{ duration: 0.15 }}
+                  className="w-full h-[2px] bg-slate-800 rounded-full"
+                />
+                <motion.span
+                  animate={mobileMenuOpen ? { rotate: -45, y: -6 } : { rotate: 0, y: 0 }}
+                  transition={{ duration: 0.2 }}
+                  className="w-full h-[2px] bg-slate-800 rounded-full origin-center"
+                />
+              </div>
             </button>
           </div>
         </div>
