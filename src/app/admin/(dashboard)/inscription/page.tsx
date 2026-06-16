@@ -411,6 +411,8 @@ export default function AdminInscriptionPage() {
                                         <input required type="email" name="email" placeholder="votre@email.com" className={inputClass} />
                                     </motion.div>
                                 )}
+                            </div>
+
                             {/* Code Agent / Partenaire */}
                             <div className="space-y-2">
                                 <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
