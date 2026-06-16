@@ -779,3 +779,55 @@ export async function adminResetDrawsAndParticipants() {
         return { success: false, error: "Erreur lors de la réinitialisation de la base : " + e.message };
     }
 }
+
+// Vérifier si le participant est présent aujourd'hui
+export async function checkTodayPresence(participantId: string) {
+    const today = new Date().toISOString().split('T')[0];
+    try {
+        const { data, error } = await supabase
+            .from('attendances')
+            .select('id')
+            .eq('participant_id', participantId)
+            .eq('date', today)
+            .maybeSingle();
+        return { success: true, isPresent: !!data };
+    } catch (e) {
+        console.error("checkTodayPresence error:", e);
+        return { success: false, isPresent: false };
+    }
+}
+
+// Valider la présence avec le code agent (escen / ecen)
+export async function validatePresenceWithCode(participantId: string, agentCode: string) {
+    const code = agentCode.trim();
+    if (code !== 'escen' && code !== 'ecen') {
+        return { success: false, error: "Code agent invalide." };
+    }
+    const today = new Date().toISOString().split('T')[0];
+    try {
+        const { data: existing } = await supabase
+            .from('attendances')
+            .select('id')
+            .eq('participant_id', participantId)
+            .eq('date', today)
+            .maybeSingle();
+
+        if (existing) {
+            return { success: true, isPresent: true, message: "Présence déjà validée aujourd'hui." };
+        }
+
+        const { error } = await supabase
+            .from('attendances')
+            .insert({
+                participant_id: participantId,
+                date: today,
+                status: 'VALIDE'
+            });
+
+        if (error) throw error;
+        return { success: true, isPresent: true, message: "Votre présence a été validée avec succès !" };
+    } catch (e) {
+        console.error("validatePresenceWithCode error:", e);
+        return { success: false, error: "Erreur technique lors de la validation." };
+    }
+}

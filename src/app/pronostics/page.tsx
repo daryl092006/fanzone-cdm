@@ -2,8 +2,8 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { loginParticipant, getMatchesAndPredictions, submitPrediction, AuthParticipant } from '@/app/actions/predictions';
-import { Trophy, ArrowLeft, Loader2, LogOut, CheckCircle2, AlertCircle, Calendar, Award, Zap, ChevronRight, User } from 'lucide-react';
+import { loginParticipant, getMatchesAndPredictions, submitPrediction, AuthParticipant, checkTodayPresence, validatePresenceWithCode } from '@/app/actions/predictions';
+import { Trophy, ArrowLeft, Loader2, LogOut, CheckCircle2, AlertCircle, Calendar, Award, Zap, ChevronRight, User, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 
@@ -22,6 +22,12 @@ export default function PronosticsPage() {
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
     const [predInputs, setPredInputs] = useState<Record<string, { home: number; away: number }>>({});
+
+    // États de gestion de présence
+    const [isPresent, setIsPresent] = useState(false);
+    const [presenceCodeInput, setPresenceCodeInput] = useState('');
+    const [presenceLoading, setPresenceLoading] = useState(false);
+    const [presenceError, setPresenceError] = useState<string | null>(null);
 
     // Charger le participant depuis localStorage
     useEffect(() => {
@@ -45,7 +51,30 @@ export default function PronosticsPage() {
         } else {
             setError(res.error || "Impossible de récupérer les matchs.");
         }
+        
+        // Vérifier si présent aujourd'hui
+        const presenceRes = await checkTodayPresence(id);
+        if (presenceRes.success) {
+            setIsPresent(presenceRes.isPresent);
+        }
         setLoading(false);
+    };
+
+    const handleValidatePresence = async (e: React.FormEvent) => {
+        e.preventDefault();
+        if (!participant || !presenceCodeInput.trim()) return;
+        setPresenceLoading(true);
+        setPresenceError(null);
+        const res = await validatePresenceWithCode(participant.id, presenceCodeInput);
+        if (res.success) {
+            setIsPresent(true);
+            setSuccessMessage(res.message || "Présence validée !");
+            setTimeout(() => setSuccessMessage(null), 3000);
+            setPresenceCodeInput('');
+        } else {
+            setPresenceError(res.error || "Code agent invalide.");
+        }
+        setPresenceLoading(false);
     };
 
     const handleLogin = async (e: React.FormEvent) => {
@@ -98,11 +127,13 @@ export default function PronosticsPage() {
         });
     };
 
-    // Grouper les matchs par jour (heure de Lomé = UTC+0)
+    // Grouper les matchs par jour (heure de Lomé = UTC+0) - uniquement les matchs à venir
     const matchesByDay = useMemo(() => {
         const grouped: { label: string; matches: any[] }[] = [];
         const seen: Record<string, number> = {};
-        for (const m of matches) {
+        const upcomingMatches = matches.filter(m => m.status === 'UPCOMING' && new Date() < new Date(m.matchDate));
+        
+        for (const m of upcomingMatches) {
             const dayKey = new Date(m.matchDate).toLocaleDateString('fr-FR', {
                 timeZone: 'Africa/Lome',
                 weekday: 'long',
@@ -224,6 +255,52 @@ export default function PronosticsPage() {
                                 </button>
                             </div>
 
+                            {/* Section Validation Présence sur place */}
+                            {isPresent ? (
+                                <div className="bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 p-5 rounded-2xl flex items-center gap-3">
+                                    <CheckCircle2 className="shrink-0" size={20} />
+                                    <div>
+                                        <p className="font-bold text-xs uppercase tracking-wider">Votre présence est validée aujourd'hui !</p>
+                                        <p className="text-[11px] text-slate-300 mt-0.5">Vous êtes éligible aux tirages au sort de la journée.</p>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-white/5 border border-white/10 rounded-3xl p-5 space-y-4">
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-8 h-8 rounded-lg bg-yellow-400/10 flex items-center justify-center text-yellow-400">
+                                            <ShieldCheck size={16} />
+                                        </div>
+                                        <div>
+                                            <h3 className="font-archivo text-sm italic uppercase text-white tracking-wider">Validation de votre Présence</h3>
+                                            <p className="text-[11px] text-slate-400">Faites valider votre présence physique sur place par un agent.</p>
+                                        </div>
+                                    </div>
+
+                                    <form onSubmit={handleValidatePresence} className="flex gap-2">
+                                        <input
+                                            type="text"
+                                            value={presenceCodeInput}
+                                            onChange={(e) => setPresenceCodeInput(e.target.value)}
+                                            placeholder="Entrez le code agent..."
+                                            className="flex-1 bg-[#14142B] border border-white/10 rounded-xl px-4 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-yellow-400 transition-colors"
+                                        />
+                                        <button
+                                            type="submit"
+                                            disabled={presenceLoading}
+                                            className="bg-yellow-400 text-black hover:bg-white px-5 py-2.5 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1 shadow-md"
+                                        >
+                                            {presenceLoading ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+                                            Valider
+                                        </button>
+                                    </form>
+                                    {presenceError && (
+                                        <p className="text-[11px] text-red-400 font-bold flex items-center gap-1">
+                                            <AlertCircle size={12} /> {presenceError}
+                                        </p>
+                                    )}
+                                </div>
+                            )}
+
                             {/* Warning présence */}
                             <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-5 rounded-2xl text-xs space-y-1">
                                 <p className="font-bold flex items-center gap-1.5 uppercase tracking-wider">
@@ -264,9 +341,9 @@ export default function PronosticsPage() {
                                         <Loader2 size={32} className="animate-spin text-yellow-400" />
                                         Chargement des matchs...
                                     </div>
-                                ) : matches.length === 0 ? (
+                                ) : matchesByDay.length === 0 ? (
                                     <div className="text-center py-16 bg-white/5 rounded-3xl border border-white/5 text-slate-400 text-sm">
-                                        Aucun match programmé pour le moment.
+                                        Aucun match disponible pour les pronostics pour le moment.
                                     </div>
                                 ) : (
                                     matchesByDay.map(({ label, matches: dayMatches }) => (

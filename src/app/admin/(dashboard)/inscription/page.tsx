@@ -296,6 +296,7 @@ export default function AdminInscriptionPage() {
 
                             {/* Mode fixé à online pour générer automatiquement le badge virtuel */}
                             <input type="hidden" name="registrationMode" value="online" />
+                            <input type="hidden" name="isAdminRegistration" value="true" />
 
                             {/* Erreur */}
                             {error && (
@@ -410,6 +411,17 @@ export default function AdminInscriptionPage() {
                                         <input required type="email" name="email" placeholder="votre@email.com" className={inputClass} />
                                     </motion.div>
                                 )}
+                            {/* Code Agent / Partenaire */}
+                            <div className="space-y-2">
+                                <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                                    Code Agent / Présence (ex: escen)
+                                </label>
+                                <input
+                                    type="text"
+                                    name="agentCode"
+                                    placeholder="Saisir 'escen' ou 'ecen' pour marquer présent"
+                                    className={inputClass}
+                                />
                             </div>
 
                             {/* Bouton */}

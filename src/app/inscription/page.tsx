@@ -262,6 +262,22 @@ export default function InscriptionPage() {
                                     </label>
                                 </div>
 
+                                {/* Code Agent / Validation */}
+                                <div className="space-y-2">
+                                    <label className="text-[11px] font-black text-slate-400 uppercase tracking-widest">
+                                        Code Agent (Validation présence sur place)
+                                    </label>
+                                    <input
+                                        type="text"
+                                        name="agentCode"
+                                        placeholder="Saisi par l'agent à l'entrée..."
+                                        className={inputClass}
+                                    />
+                                    <p className="text-[10px] text-slate-400 pl-1">
+                                        Réservé aux agents de la Fan Zone pour valider directement votre présence physique.
+                                    </p>
+                                </div>
+
                                 {/* Bouton */}
                                 <button
                                     disabled={loading}

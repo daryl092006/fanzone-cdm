@@ -2,11 +2,11 @@
 
 import { supabase } from '@/lib/supabase';
 
-async function generateUniqueOnlineBadgeCode(): Promise<string> {
+async function generateUniqueOnlineBadgeCode(prefix: string = 'ONL'): Promise<string> {
     let attempts = 0;
     while (attempts < 10) {
         const rand = Math.floor(100000 + Math.random() * 900000); // 6 chiffres
-        const code = `FZ26-ONL-${rand}`;
+        const code = `FZ26-${prefix.toUpperCase()}-${rand}`;
         const { data } = await supabase
             .from('badges')
             .select('id')
@@ -33,6 +33,9 @@ export async function registerParticipant(formData: FormData) {
     const ageRange = (formData.get('ageRange') as string | null);
     const badgeCode = (formData.get('badgeCode') as string)?.trim().toUpperCase();
 
+    const agentCode = (formData.get('agentCode') as string)?.trim();
+    const isEscen = agentCode === 'escen' || agentCode === 'ecen';
+
     // 2. Validation de base
     if (!firstName || firstName.length < 2)
         return { error: 'Le prénom est requis (minimum 2 caractères).' };
@@ -58,13 +61,14 @@ export async function registerParticipant(formData: FormData) {
         let finalBadgeCode = badgeCode;
 
         if (registrationMode === 'online') {
-            finalBadgeCode = await generateUniqueOnlineBadgeCode();
+            const prefix = isEscen ? 'ESCEN' : 'ONL';
+            finalBadgeCode = await generateUniqueOnlineBadgeCode(prefix);
             const { data: newBadge, error: newBadgeError } = await supabase
                 .from('badges')
                 .insert({
                     badge_code: finalBadgeCode,
                     status: 'ASSIGNE',
-                    print_batch: 'ONLINE',
+                    print_batch: isEscen ? 'ESCEN' : 'ONLINE',
                     assigned_at: new Date().toISOString()
                 })
                 .select('id')
@@ -130,6 +134,19 @@ export async function registerParticipant(formData: FormData) {
                 .from('badges')
                 .update({ status: 'ASSIGNE', assigned_at: new Date().toISOString() })
                 .eq('id', badgeId);
+        }
+
+        // 6. Si le code agent renseigné est 'escen' ou 'ecen', marquer le participant comme présent pour la journée
+        const agentCode = (formData.get('agentCode') as string)?.trim();
+        if (agentCode === 'escen' || agentCode === 'ecen') {
+            const today = new Date().toISOString().split('T')[0];
+            await supabase
+                .from('attendances')
+                .insert({
+                    participant_id: participant.id,
+                    date: today,
+                    status: 'VALIDE'
+                });
         }
 
         return { 

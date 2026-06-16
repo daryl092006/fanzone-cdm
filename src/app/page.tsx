@@ -176,11 +176,6 @@ export default function LandingPage() {
               transition={{ duration: 0.7 }}
               className="space-y-8"
             >
-              {/* Badge label officiel */}
-              <div className="inline-flex items-center gap-3 bg-primary-green/10 border border-primary-green/20 text-primary-green px-5 py-2.5 rounded-full">
-                <span className="w-2 h-2 bg-light-green rounded-full animate-pulse"></span>
-                <span className="text-[10px] font-black uppercase tracking-[0.25em]">Événement Officiel · Mairie Golfe 1 · ADN × ESCEN</span>
-              </div>
 
               {/* Titre principal */}
               <div>
