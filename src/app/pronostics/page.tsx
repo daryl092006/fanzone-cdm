@@ -88,10 +88,14 @@ export default function PronosticsPage() {
         setSubmitting(null);
     };
 
-    const updateLocalInput = (matchId: string, side: 'home' | 'away', val: number) => {
-        const current = predInputs[matchId] || { home: 0, away: 0 };
-        const newVal = Math.max(0, current[side] + val);
-        setPredInputs({ ...predInputs, [matchId]: { ...current, [side]: newVal } });
+    const setLocalScore = (matchId: string, side: 'home' | 'away', val: number, prediction?: any) => {
+        setPredInputs(prev => {
+            const current = prev[matchId] ?? {
+                home: prediction?.predScoreHome ?? 0,
+                away: prediction?.predScoreAway ?? 0
+            };
+            return { ...prev, [matchId]: { ...current, [side]: val } };
+        });
     };
 
     // Grouper les matchs par jour (heure de Lomé = UTC+0)
@@ -349,25 +353,64 @@ export default function PronosticsPage() {
                                                                         Pronostics ouverts après qualification des équipes
                                                                     </div>
                                                                 ) : isUpcoming ? (
-                                                                    <div className="flex items-center justify-between gap-4">
-                                                                        <div className="flex items-center gap-2">
-                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'home', -1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">-</button>
-                                                                            <span className="w-6 text-center font-bold font-mono">{currentInput.home}</span>
-                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'home', 1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">+</button>
+                                                                    <div className="space-y-4">
+                                                                        {/* Boules Équipe Domicile */}
+                                                                        <div className="space-y-1.5">
+                                                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 truncate">{m.teamHome}</p>
+                                                                            <div className="flex flex-wrap gap-1.5">
+                                                                                {[0,1,2,3,4,5,6,7,8,9].map(n => (
+                                                                                    <button
+                                                                                        key={n}
+                                                                                        type="button"
+                                                                                        onClick={() => setLocalScore(m.id, 'home', n, m.prediction)}
+                                                                                        className={`w-9 h-9 rounded-full font-black text-sm transition-all border-2 ${
+                                                                                            currentInput.home === n
+                                                                                                ? 'bg-yellow-400 border-yellow-400 text-black shadow-lg shadow-yellow-400/30 scale-110'
+                                                                                                : 'bg-white/5 border-white/10 text-slate-300 hover:border-yellow-400/50 hover:text-yellow-400'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {n}
+                                                                                    </button>
+                                                                                ))}
+                                                                            </div>
                                                                         </div>
-                                                                        <div className="flex items-center gap-2">
-                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'away', -1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">-</button>
-                                                                            <span className="w-6 text-center font-bold font-mono">{currentInput.away}</span>
-                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'away', 1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">+</button>
+                                                                        {/* Boules Équipe Extérieur */}
+                                                                        <div className="space-y-1.5">
+                                                                            <p className="text-[9px] font-black uppercase tracking-widest text-slate-500 truncate">{m.teamAway}</p>
+                                                                            <div className="flex flex-wrap gap-1.5">
+                                                                                {[0,1,2,3,4,5,6,7,8,9].map(n => (
+                                                                                    <button
+                                                                                        key={n}
+                                                                                        type="button"
+                                                                                        onClick={() => setLocalScore(m.id, 'away', n, m.prediction)}
+                                                                                        className={`w-9 h-9 rounded-full font-black text-sm transition-all border-2 ${
+                                                                                            currentInput.away === n
+                                                                                                ? 'bg-yellow-400 border-yellow-400 text-black shadow-lg shadow-yellow-400/30 scale-110'
+                                                                                                : 'bg-white/5 border-white/10 text-slate-300 hover:border-yellow-400/50 hover:text-yellow-400'
+                                                                                        }`}
+                                                                                    >
+                                                                                        {n}
+                                                                                    </button>
+                                                                                ))}
+                                                                            </div>
                                                                         </div>
-                                                                        <button
-                                                                            onClick={() => handlePredict(m.id, currentInput.home, currentInput.away)}
-                                                                            disabled={submitting === m.id}
-                                                                            className="bg-yellow-400 hover:bg-white text-black font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1 shadow-md shrink-0"
-                                                                        >
-                                                                            {submitting === m.id ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
-                                                                            Valider
-                                                                        </button>
+                                                                        {/* Récap + Valider */}
+                                                                        <div className="flex items-center justify-between pt-2 border-t border-white/5">
+                                                                            <div className="flex items-center gap-3">
+                                                                                <span className="text-xs text-slate-400">Pronostic :</span>
+                                                                                <span className="font-black font-mono text-lg text-white">
+                                                                                    {currentInput.home} <span className="text-yellow-400">–</span> {currentInput.away}
+                                                                                </span>
+                                                                            </div>
+                                                                            <button
+                                                                                onClick={() => handlePredict(m.id, currentInput.home, currentInput.away)}
+                                                                                disabled={submitting === m.id}
+                                                                                className="bg-yellow-400 hover:bg-white text-black font-bold text-xs px-5 py-2.5 rounded-xl transition-all flex items-center gap-1.5 shadow-md shrink-0"
+                                                                            >
+                                                                                {submitting === m.id ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+                                                                                Valider
+                                                                            </button>
+                                                                        </div>
                                                                     </div>
                                                                 ) : (
                                                                     <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl">
