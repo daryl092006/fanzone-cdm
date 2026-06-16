@@ -17,7 +17,8 @@ import {
     History,
     Tag,
     Download,
-    BarChart2
+    BarChart2,
+    Phone
 } from 'lucide-react';
 import AdminNavLink from './AdminNavLink';
 import AdminSearchBar from './AdminSearchBar';
@@ -63,7 +64,7 @@ export default function AdminDashboardLayoutClient({
                 <div className="p-6 border-b border-white/5 space-y-4">
                     <div className="flex justify-between items-center lg:block">
                         <div className="flex items-center gap-3">
-                            <Image src="/logo-mairie.png" alt="Mairie" width={64} height={24} className="object-contain" />
+                            <div className="bg-white rounded-lg px-2 py-1"><Image src="/logo-mairie.png" alt="Mairie" width={64} height={24} className="object-contain" /></div>
                             <div>
                                 <p className="font-archivo text-sm italic uppercase tracking-tighter">Admin Panel</p>
                                 <p className="text-[9px] font-bold text-yellow-400 uppercase tracking-widest">Ici c&apos;est le Mondial</p>
@@ -78,9 +79,9 @@ export default function AdminDashboardLayoutClient({
                         </button>
                     </div>
                     <div className="flex items-center gap-2">
-                        <Image src="/logo-escen.png" alt="ESCEN" width={64} height={24} className="object-contain" />
+                        <div className="bg-white rounded-lg px-2 py-1"><Image src="/logo-escen.png" alt="ESCEN" width={64} height={24} className="object-contain" /></div>
                         <span className="text-white/20 text-xs">|</span>
-                        <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
+                        <div className="bg-white rounded-lg px-2 py-1"><Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" /></div>
                     </div>
                 </div>
 
@@ -99,7 +100,7 @@ export default function AdminDashboardLayoutClient({
                         target="_blank"
                         className="flex items-center gap-3 px-4 py-3 rounded-xl bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 font-bold text-xs uppercase tracking-widest hover:bg-yellow-400 hover:text-black transition-all"
                     >
-                        <QrCode size={18} /> Scanner terrain
+                        <Phone size={18} /> Présences Téléphone
                     </Link>
                 </div>
 

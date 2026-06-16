@@ -11,6 +11,18 @@ import FixturesSection from '@/app/components/FixturesSection';
 import StandingsSection from '@/app/components/StandingsSection';
 import TopScorers from '@/app/components/TopScorers';
 
+const partnerLogos = [
+  { src: '/logo-mairie.png', alt: 'Mairie Golfe 1', width: 220, height: 100 },
+  { src: '/logo-escen.png', alt: 'ESCEN', width: 220, height: 100 },
+  { src: '/logo-adn.png', alt: 'ADN', width: 150, height: 75 },
+  { src: '/gozem-logo-hq.png', alt: 'Gozem', width: 190, height: 85 },
+  { src: '/Yas_logo_2024.svg.png', alt: 'Yas', width: 190, height: 85 },
+  { src: '/ATFA-Logo-_Green.png', alt: 'ATFA', width: 150, height: 85 },
+  { src: '/45f34856-37ba-488d-b374-1bac3607b2c6.png', alt: 'Partenaire', width: 190, height: 85 },
+  { src: '/72beae0e-feed-42b6-ba30-0601d8ec8d35.png', alt: 'Partenaire 2', width: 190, height: 85 },
+  { src: '/97c9938b-3800-4570-8abe-0206cb2b9d46.png', alt: 'Partenaire 3', width: 190, height: 85 },
+];
+
 export default function LandingPage() {
   const [matches, setMatches] = useState<any[]>([]);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -209,7 +221,7 @@ export default function LandingPage() {
                 </Link>
                 <a href="#comment" className="inline-flex items-center gap-2 text-sm font-bold text-slate-500 hover:text-slate-900 transition-colors py-4">
                   Comment ça marche ? ↓
-                </a>
+                  </a>
               </div>
 
               <div className="flex items-center gap-10 pt-4 border-t border-slate-200">
@@ -237,9 +249,9 @@ export default function LandingPage() {
                 <div className="bg-[#0F1020] p-8 text-white space-y-5">
                   <div className="flex justify-between items-start">
                     <div className="flex items-center gap-2">
-                      <Image src="/logo-mairie.png" alt="Mairie" width={48} height={20} className="object-contain animate-pulse" />
-                      <Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" />
-                      <Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" />
+                      <div className="bg-white rounded-lg px-1.5 py-0.5"><Image src="/logo-mairie.png" alt="Mairie" width={48} height={20} className="object-contain animate-pulse" /></div>
+                      <div className="bg-white rounded-lg px-1.5 py-0.5"><Image src="/logo-escen.png" alt="ESCEN" width={48} height={20} className="object-contain" /></div>
+                      <div className="bg-white rounded-lg px-1.5 py-0.5"><Image src="/logo-adn.png" alt="ADN" width={32} height={32} className="object-contain" /></div>
                     </div>
                     <div className="text-right">
                       <p className="text-[8px] font-bold uppercase tracking-widest text-white/40">Ici c&apos;est le Mondial</p>
@@ -267,21 +279,48 @@ export default function LandingPage() {
           </div>
         </section>
  
-        {/* ====== BANDEAU INSTITUTIONNEL — CORRECTION AUDIT #2 ====== */}
-        <div className="bg-[#0F1020] py-5 px-6 lg:px-16 border-y border-white/5">
-          <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-4">
-            <p className="text-[11px] font-black text-white/70 uppercase tracking-widest text-center sm:text-left">
-              Un événement organisé par <span className="text-primary-yellow">ADN — Académie Digitale Numérique</span> en partenariat avec <span className="text-primary-yellow">ESCEN</span> et la <span className="text-primary-yellow">Mairie Golfe 1</span>
-            </p>
-            <div className="flex items-center gap-5">
-              <Image src="/logo-mairie.png" alt="Mairie" width={80} height={36} className="object-contain" />
-              <div className="w-px h-6 bg-white/10"></div>
-              <Image src="/logo-escen.png" alt="ESCEN" width={80} height={36} className="object-contain" />
-              <div className="w-px h-6 bg-white/10"></div>
-              <Image src="/logo-adn.png" alt="ADN" width={56} height={28} className="object-contain" />
+        {/* ====== SECTION NOS PARTENAIRES ====== */}
+        <section id="partenaires" className="py-20 bg-white border-y border-slate-100 overflow-hidden">
+          <div className="max-w-7xl mx-auto px-6 lg:px-16 space-y-12">
+            
+            {/* Header de Section */}
+            <div className="text-center space-y-4">
+              <p className="text-[10px] font-black uppercase tracking-[0.3em] text-primary-green">Ils nous soutiennent</p>
+              <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase text-slate-900">Nos Partenaires</h2>
+              <p className="text-slate-500 text-sm max-w-xl mx-auto">
+                Un événement exceptionnel rendu possible grâce à la collaboration d'institutions fortes et d'acteurs de premier plan.
+              </p>
             </div>
+
+            {/* Texte Organisateurs */}
+            <div className="text-center">
+              <p className="text-[11px] font-bold text-slate-500 uppercase tracking-widest leading-relaxed">
+                Organisé par <span className="text-primary-green font-black">ADN — Académie Digitale Numérique</span> en partenariat avec <span className="text-primary-green font-black">ESCEN</span> et la <span className="text-primary-green font-black">Mairie Golfe 1</span>
+              </p>
+            </div>
+
+            {/* Bande défilante */}
+            <div className="relative w-full flex overflow-x-hidden pt-4">
+              <div className="animate-marquee flex items-center gap-16 whitespace-nowrap">
+                {[...partnerLogos, ...partnerLogos, ...partnerLogos].map((partner, idx) => (
+                  <div key={idx} className="flex items-center gap-16">
+                    <div className="bg-slate-50 rounded-3xl px-8 py-4 flex items-center justify-center h-32 min-w-[240px] shadow-sm border border-slate-100 hover:scale-105 hover:bg-white hover:shadow-md transition-all duration-200">
+                      <Image
+                        src={partner.src}
+                        alt={partner.alt}
+                        width={partner.width}
+                        height={partner.height}
+                        className="object-contain max-h-20"
+                      />
+                    </div>
+                    <span className="text-slate-300 text-xl select-none">•</span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
           </div>
-        </div>
+        </section>
 
         {/* ====== LE PASS ====== */}
         <section id="lepass" className="py-28 px-6 lg:px-16 bg-white">
@@ -403,7 +442,7 @@ export default function LandingPage() {
             <div className="text-center space-y-4">
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-yellow-600">Programme 2026</p>
               <h2 className="font-archivo text-4xl md:text-5xl tracking-tighter italic uppercase">L'Agenda</h2>
-              <p className="text-slate-500 text-sm">Du 11 juin au 19 juillet 2026 · Complexe Sportif d&apos;Akodesséwa-Kpota (Terrain GER) · Ouvert dès 09h00</p>
+              <p className="text-slate-500 text-sm">Du 11 juin au 19 juillet 2026 · Complexe Sportif d&apos;Akodesséwa-Kpota (Terrain GER) · Ouvert dès 10h00</p>
             </div>
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
               {[
@@ -417,7 +456,7 @@ export default function LandingPage() {
                 },
                 {
                   d: 'Chaque Jour',
-                  h: '09h00 – 23h00',
+                  h: '10h00 – 23h00',
                   t: 'Match Day',
                   p: 'Diffusion en direct de tous les matchs sur écrans géants 4K LED. Accès gratuit (enregistrement requis à l\'entrée pour le tirage).',
                   bg: 'bg-[#0A0A14] text-white',
@@ -506,7 +545,7 @@ export default function LandingPage() {
               <div className="space-y-6">
                 {[
                   { icon: <MapIcon size={20} className="text-yellow-600" />, t: 'Emplacement', d: 'Complexe Sportif d\'Akodesséwa-Kpota (Terrain GER)\nLomé, Togo' },
-                  { icon: <Clock size={20} className="text-yellow-600" />, t: 'Horaires d\'ouverture', d: 'Accueil dès 09h00 · Chaque jour\nFermeture 1h après le dernier match' },
+                  { icon: <Clock size={20} className="text-yellow-600" />, t: 'Horaires d\'ouverture', d: 'Accueil dès 10h00 · Chaque jour\nFermeture 1h après le dernier match' },
                   { icon: <ShieldCheck size={20} className="text-yellow-600" />, t: 'Assistance sur place', d: 'Des agents ADN & ESCEN sont présents\npour vous aider à vous enregistrer.' },
                 ].map((item, i) => (
                   <div key={i} className="flex items-start gap-5">
