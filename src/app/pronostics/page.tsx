@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { loginParticipant, getMatchesAndPredictions, submitPrediction, AuthParticipant } from '@/app/actions/predictions';
 import { Trophy, ArrowLeft, Loader2, LogOut, CheckCircle2, AlertCircle, Calendar, Award, Zap, ChevronRight, User } from 'lucide-react';
@@ -17,10 +17,11 @@ export default function PronosticsPage() {
     const [identifier, setIdentifier] = useState('');
     const [participant, setParticipant] = useState<AuthParticipant | null>(null);
     const [loading, setLoading] = useState(false);
-    const [submitting, setSubmitting] = useState<string | null>(null); // matchId
+    const [submitting, setSubmitting] = useState<string | null>(null);
     const [matches, setMatches] = useState<any[]>([]);
     const [error, setError] = useState<string | null>(null);
     const [successMessage, setSuccessMessage] = useState<string | null>(null);
+    const [predInputs, setPredInputs] = useState<Record<string, { home: number; away: number }>>({});
 
     // Charger le participant depuis localStorage
     useEffect(() => {
@@ -87,20 +88,32 @@ export default function PronosticsPage() {
         setSubmitting(null);
     };
 
-    const [predInputs, setPredInputs] = useState<Record<string, { home: number; away: number }>>({});
-
-    // Mettre à jour les inputs de score localement
     const updateLocalInput = (matchId: string, side: 'home' | 'away', val: number) => {
         const current = predInputs[matchId] || { home: 0, away: 0 };
         const newVal = Math.max(0, current[side] + val);
-        setPredInputs({
-            ...predInputs,
-            [matchId]: {
-                ...current,
-                [side]: newVal
-            }
-        });
+        setPredInputs({ ...predInputs, [matchId]: { ...current, [side]: newVal } });
     };
+
+    // Grouper les matchs par jour (heure de Lomé = UTC+0)
+    const matchesByDay = useMemo(() => {
+        const grouped: { label: string; matches: any[] }[] = [];
+        const seen: Record<string, number> = {};
+        for (const m of matches) {
+            const dayKey = new Date(m.matchDate).toLocaleDateString('fr-FR', {
+                timeZone: 'Africa/Lome',
+                weekday: 'long',
+                day: '2-digit',
+                month: 'long',
+                year: 'numeric',
+            });
+            if (seen[dayKey] === undefined) {
+                seen[dayKey] = grouped.length;
+                grouped.push({ label: dayKey, matches: [] });
+            }
+            grouped[seen[dayKey]].matches.push(m);
+        }
+        return grouped;
+    }, [matches]);
 
     return (
         <div className="min-h-screen bg-[#0A0A14] text-white font-space py-12 px-6 flex flex-col items-center">
@@ -163,13 +176,9 @@ export default function PronosticsPage() {
                                     className="w-full bg-yellow-400 text-black hover:bg-white font-bold py-4 rounded-xl text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-yellow-400/10"
                                 >
                                     {loading ? (
-                                        <>
-                                            <Loader2 size={16} className="animate-spin" /> Connexion...
-                                        </>
+                                        <><Loader2 size={16} className="animate-spin" /> Connexion...</>
                                     ) : (
-                                        <>
-                                            Accéder aux matchs <ChevronRight size={16} />
-                                        </>
+                                        <>Accéder aux matchs <ChevronRight size={16} /></>
                                     )}
                                 </button>
                             </form>
@@ -196,18 +205,13 @@ export default function PronosticsPage() {
                                         <User size={24} />
                                     </div>
                                     <div>
-                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
-                                            Supporter Officiel
-                                        </p>
+                                        <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest">Supporter Officiel</p>
                                         <h2 className="font-archivo text-xl italic uppercase text-white">
                                             {participant.firstName} {participant.lastName}
                                         </h2>
-                                         <p className="text-xs text-slate-500 font-mono">
-                                             Tél: {participant.phone}
-                                         </p>
+                                        <p className="text-xs text-slate-500 font-mono">Tél: {participant.phone}</p>
                                     </div>
                                 </div>
-
                                 <button
                                     onClick={handleLogout}
                                     className="flex items-center gap-2 text-xs font-bold text-slate-400 hover:text-red-400 transition-colors bg-white/5 hover:bg-red-500/10 border border-white/5 px-4 py-2.5 rounded-xl"
@@ -216,7 +220,7 @@ export default function PronosticsPage() {
                                 </button>
                             </div>
 
-                            {/* Warning présence indispensable */}
+                            {/* Warning présence */}
                             <div className="bg-amber-500/10 border border-amber-500/20 text-amber-300 p-5 rounded-2xl text-xs space-y-1">
                                 <p className="font-bold flex items-center gap-1.5 uppercase tracking-wider">
                                     <AlertCircle size={14} className="text-amber-400" /> Règle importante pour les tirages au sort
@@ -245,8 +249,8 @@ export default function PronosticsPage() {
                                 </div>
                             )}
 
-                            {/* Liste des Matchs */}
-                            <div className="space-y-6">
+                            {/* Grille des matchs groupés par jour */}
+                            <div className="space-y-10">
                                 <h3 className="font-archivo text-lg italic uppercase text-slate-400 tracking-wider">
                                     Grille des Pronostics
                                 </h3>
@@ -261,173 +265,144 @@ export default function PronosticsPage() {
                                         Aucun match programmé pour le moment.
                                     </div>
                                 ) : (
-                                    <div className="grid md:grid-cols-2 gap-6">
-                                        {matches.map((m) => {
-                                            const isUpcoming = m.status === 'UPCOMING';
-                                            const isPlaceholder = isPlaceholderTeam(m.teamHome) || isPlaceholderTeam(m.teamAway);
-                                            const currentInput = predInputs[m.id] || {
-                                                home: m.prediction?.predScoreHome ?? 0,
-                                                away: m.prediction?.predScoreAway ?? 0
-                                            };
+                                    matchesByDay.map(({ label, matches: dayMatches }) => (
+                                        <div key={label} className="space-y-4">
+                                            {/* En-tête du jour */}
+                                            <div className="flex items-center gap-3">
+                                                <div className="flex items-center gap-2 bg-yellow-400/10 border border-yellow-400/20 text-yellow-400 px-4 py-2 rounded-full">
+                                                    <Calendar size={13} />
+                                                    <span className="text-xs font-black uppercase tracking-widest capitalize">{label}</span>
+                                                </div>
+                                                <div className="flex-1 h-px bg-white/5" />
+                                            </div>
 
-                                            const hasSubmitted = !!m.prediction;
+                                            {/* Matchs du jour */}
+                                            <div className="grid md:grid-cols-2 gap-6">
+                                                {dayMatches.map((m: any) => {
+                                                    const isUpcoming = m.status === 'UPCOMING' && new Date() < new Date(m.matchDate);
+                                                    const isPlaceholder = isPlaceholderTeam(m.teamHome) || isPlaceholderTeam(m.teamAway);
+                                                    const currentInput = predInputs[m.id] || {
+                                                        home: m.prediction?.predScoreHome ?? 0,
+                                                        away: m.prediction?.predScoreAway ?? 0
+                                                    };
+                                                    const hasSubmitted = !!m.prediction;
+                                                    const isExact = !isUpcoming && m.scoreHome !== null && m.scoreAway !== null &&
+                                                        m.prediction?.predScoreHome === m.scoreHome &&
+                                                        m.prediction?.predScoreAway === m.scoreAway;
 
-                                            // Vérifier si le pronostic est exact
-                                            const isExact = !isUpcoming && m.scoreHome !== null && m.scoreAway !== null &&
-                                                m.prediction?.predScoreHome === m.scoreHome &&
-                                                m.prediction?.predScoreAway === m.scoreAway;
-
-                                            return (
-                                                <div
-                                                    key={m.id}
-                                                    className={`border rounded-3xl p-6 transition-all space-y-5 ${
-                                                        isUpcoming
-                                                            ? isPlaceholder 
-                                                                ? 'bg-white/[0.02] border-white/5 opacity-70'
-                                                                : 'bg-white/5 border-white/10 hover:border-yellow-400/30'
-                                                            : 'bg-[#121225] border-white/5 opacity-90'
-                                                    }`}
-                                                >
-                                                    {/* Statut & Date */}
-                                                    <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
-                                                        <span className="flex items-center gap-1">
-                                                            <Calendar size={12} />
-                                                            {new Date(m.matchDate).toLocaleDateString('fr-FR', {
-                                                                day: '2-digit',
-                                                                month: 'short',
-                                                                hour: '2-digit',
-                                                                minute: '2-digit',
-                                                                timeZone: 'Africa/Lome'
-                                                            })}
-                                                        </span>
-                                                        <span className={`px-2 py-1 rounded-full text-[9px] ${
-                                                            isUpcoming 
-                                                                ? isPlaceholder
-                                                                    ? 'bg-slate-800 text-slate-400'
-                                                                    : 'bg-yellow-400/10 text-yellow-400' 
-                                                                : 'bg-red-400/10 text-red-400'
-                                                        }`}>
-                                                            {isUpcoming ? isPlaceholder ? 'Équipes à venir' : 'À venir' : 'Terminé'}
-                                                        </span>
-                                                    </div>
-
-                                                    {/* Équipes et scores réels */}
-                                                    <div className="flex items-center justify-between">
-                                                        <div className="flex flex-col items-start w-2/5">
-                                                            <span className={`font-archivo text-md italic uppercase truncate w-full ${
-                                                                isPlaceholderTeam(m.teamHome) ? 'text-slate-500 font-medium' : 'text-white font-bold'
-                                                            }`}>{m.teamHome}</span>
-                                                        </div>
-                                                        <div className="flex items-center justify-center gap-2 bg-[#1C1C36] px-4 py-2 rounded-xl text-lg font-black text-white font-mono">
-                                                            {isUpcoming ? 'VS' : `${m.scoreHome} - ${m.scoreAway}`}
-                                                        </div>
-                                                        <div className="flex flex-col items-end w-2/5 text-right">
-                                                            <span className={`font-archivo text-md italic uppercase truncate w-full ${
-                                                                isPlaceholderTeam(m.teamAway) ? 'text-slate-500 font-medium' : 'text-white font-bold'
-                                                            }`}>{m.teamAway}</span>
-                                                        </div>
-                                                    </div>
-
-                                                    {/* Pronostics utilisateur */}
-                                                    <div className="pt-4 border-t border-white/5 space-y-3">
-                                                        <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex justify-between">
-                                                            <span>Votre pronostic :</span>
-                                                            {hasSubmitted && (
-                                                                <span className="text-yellow-400 font-bold">Enregistré</span>
-                                                            )}
-                                                        </div>
-
-                                                        {isPlaceholder ? (
-                                                            /* Pronostics indisponibles pour équipes TBD */
-                                                            <div className="bg-white/5 border border-white/5 text-slate-400 px-4 py-3 rounded-xl text-xs text-center italic">
-                                                                Pronostics ouverts après qualification des équipes
+                                                    return (
+                                                        <div
+                                                            key={m.id}
+                                                            className={`border rounded-3xl p-6 transition-all space-y-5 ${
+                                                                isUpcoming
+                                                                    ? isPlaceholder
+                                                                        ? 'bg-white/[0.02] border-white/5 opacity-70'
+                                                                        : 'bg-white/5 border-white/10 hover:border-yellow-400/30'
+                                                                    : 'bg-[#121225] border-white/5 opacity-90'
+                                                            }`}
+                                                        >
+                                                            {/* Heure + Statut */}
+                                                            <div className="flex justify-between items-center text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                                                                <span className="flex items-center gap-1">
+                                                                    <Calendar size={12} />
+                                                                    {new Date(m.matchDate).toLocaleTimeString('fr-FR', {
+                                                                        hour: '2-digit',
+                                                                        minute: '2-digit',
+                                                                        timeZone: 'Africa/Lome'
+                                                                    })}
+                                                                </span>
+                                                                <span className={`px-2 py-1 rounded-full text-[9px] ${
+                                                                    isUpcoming
+                                                                        ? isPlaceholder ? 'bg-slate-800 text-slate-400' : 'bg-yellow-400/10 text-yellow-400'
+                                                                        : 'bg-red-400/10 text-red-400'
+                                                                }`}>
+                                                                    {isUpcoming ? (isPlaceholder ? 'Équipes à venir' : 'À venir') : 'Terminé'}
+                                                                </span>
                                                             </div>
-                                                        ) : isUpcoming ? (
-                                                            /* Formulaire actif */
-                                                            <div className="flex items-center justify-between gap-4">
-                                                                <div className="flex items-center gap-2">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => updateLocalInput(m.id, 'home', -1)}
-                                                                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <span className="w-6 text-center font-bold font-mono">{currentInput.home}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => updateLocalInput(m.id, 'home', 1)}
-                                                                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold"
-                                                                    >
-                                                                        +
-                                                                    </button>
-                                                                </div>
 
-                                                                <div className="flex items-center gap-2">
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => updateLocalInput(m.id, 'away', -1)}
-                                                                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold"
-                                                                    >
-                                                                        -
-                                                                    </button>
-                                                                    <span className="w-6 text-center font-bold font-mono">{currentInput.away}</span>
-                                                                    <button
-                                                                        type="button"
-                                                                        onClick={() => updateLocalInput(m.id, 'away', 1)}
-                                                                        className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold"
-                                                                    >
-                                                                        +
-                                                                    </button>
+                                                            {/* Équipes */}
+                                                            <div className="flex items-center justify-between">
+                                                                <div className="flex flex-col items-start w-2/5">
+                                                                    <span className={`font-archivo text-md italic uppercase truncate w-full ${
+                                                                        isPlaceholderTeam(m.teamHome) ? 'text-slate-500 font-medium' : 'text-white font-bold'
+                                                                    }`}>{m.teamHome}</span>
                                                                 </div>
-
-                                                                <button
-                                                                    onClick={() => handlePredict(m.id, currentInput.home, currentInput.away)}
-                                                                    disabled={submitting === m.id}
-                                                                    className="bg-yellow-400 hover:bg-white text-black font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1 shadow-md shrink-0"
-                                                                >
-                                                                    {submitting === m.id ? (
-                                                                        <Loader2 size={12} className="animate-spin" />
-                                                                    ) : (
-                                                                        <Zap size={12} />
-                                                                    )}
-                                                                    Valider
-                                                                </button>
+                                                                <div className="flex items-center justify-center gap-2 bg-[#1C1C36] px-4 py-2 rounded-xl text-lg font-black text-white font-mono">
+                                                                    {isUpcoming ? 'VS' : `${m.scoreHome} - ${m.scoreAway}`}
+                                                                </div>
+                                                                <div className="flex flex-col items-end w-2/5 text-right">
+                                                                    <span className={`font-archivo text-md italic uppercase truncate w-full ${
+                                                                        isPlaceholderTeam(m.teamAway) ? 'text-slate-500 font-medium' : 'text-white font-bold'
+                                                                    }`}>{m.teamAway}</span>
+                                                                </div>
                                                             </div>
-                                                        ) : (
-                                                            /* Pronostic final figé */
-                                                            <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl">
-                                                                <div className="text-sm font-mono font-bold text-slate-300">
-                                                                    Pronostic : {m.prediction ? `${m.prediction.predScoreHome} - ${m.prediction.predScoreAway}` : 'Aucun'}
+
+                                                            {/* Pronostics */}
+                                                            <div className="pt-4 border-t border-white/5 space-y-3">
+                                                                <div className="text-[10px] font-black text-slate-400 uppercase tracking-widest flex justify-between">
+                                                                    <span>Votre pronostic :</span>
+                                                                    {hasSubmitted && <span className="text-yellow-400 font-bold">Enregistré</span>}
                                                                 </div>
 
-                                                                {m.prediction && (
-                                                                    <div className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
-                                                                        isExact ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
-                                                                    }`}>
-                                                                        {isExact ? 'Exact (+ Tirage)' : 'Perdu'}
+                                                                {isPlaceholder ? (
+                                                                    <div className="bg-white/5 border border-white/5 text-slate-400 px-4 py-3 rounded-xl text-xs text-center italic">
+                                                                        Pronostics ouverts après qualification des équipes
+                                                                    </div>
+                                                                ) : isUpcoming ? (
+                                                                    <div className="flex items-center justify-between gap-4">
+                                                                        <div className="flex items-center gap-2">
+                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'home', -1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">-</button>
+                                                                            <span className="w-6 text-center font-bold font-mono">{currentInput.home}</span>
+                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'home', 1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">+</button>
+                                                                        </div>
+                                                                        <div className="flex items-center gap-2">
+                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'away', -1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">-</button>
+                                                                            <span className="w-6 text-center font-bold font-mono">{currentInput.away}</span>
+                                                                            <button type="button" onClick={() => updateLocalInput(m.id, 'away', 1)} className="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-sm font-bold">+</button>
+                                                                        </div>
+                                                                        <button
+                                                                            onClick={() => handlePredict(m.id, currentInput.home, currentInput.away)}
+                                                                            disabled={submitting === m.id}
+                                                                            className="bg-yellow-400 hover:bg-white text-black font-bold text-xs px-4 py-2.5 rounded-xl transition-all flex items-center gap-1 shadow-md shrink-0"
+                                                                        >
+                                                                            {submitting === m.id ? <Loader2 size={12} className="animate-spin" /> : <Zap size={12} />}
+                                                                            Valider
+                                                                        </button>
+                                                                    </div>
+                                                                ) : (
+                                                                    <div className="flex justify-between items-center bg-white/5 p-3 rounded-xl">
+                                                                        <div className="text-sm font-mono font-bold text-slate-300">
+                                                                            Pronostic : {m.prediction ? `${m.prediction.predScoreHome} - ${m.prediction.predScoreAway}` : 'Aucun'}
+                                                                        </div>
+                                                                        {m.prediction && (
+                                                                            <div className={`text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-full ${
+                                                                                isExact ? 'bg-emerald-500/10 text-emerald-400' : 'bg-red-500/10 text-red-400'
+                                                                            }`}>
+                                                                                {isExact ? 'Exact (+ Tirage)' : 'Perdu'}
+                                                                            </div>
+                                                                        )}
                                                                     </div>
                                                                 )}
                                                             </div>
-                                                        )}
-                                                    </div>
 
-                                                    {/* Tirage au sort info */}
-                                                    {m.winner && (
-                                                        <div className="mt-4 p-3 bg-yellow-400/10 border border-yellow-400/20 rounded-xl flex items-center gap-3">
-                                                            <Award size={18} className="text-yellow-400 shrink-0" />
-                                                            <div className="text-xs">
-                                                                <p className="font-bold text-yellow-400">Gagnant Tirage au sort</p>
-                                                                <p className="text-slate-300 font-mono text-[11px]">
-                                                                    {m.winner.firstName} {m.winner.lastName} ({m.winner.phone})
-                                                                </p>
-                                                            </div>
+                                                            {/* Gagnant tirage */}
+                                                            {m.winner && (
+                                                                <div className="mt-4 p-3 bg-yellow-400/10 border border-yellow-400/20 rounded-xl flex items-center gap-3">
+                                                                    <Award size={18} className="text-yellow-400 shrink-0" />
+                                                                    <div className="text-xs">
+                                                                        <p className="font-bold text-yellow-400">Gagnant Tirage au sort</p>
+                                                                        <p className="text-slate-300 font-mono text-[11px]">
+                                                                            {m.winner.firstName} {m.winner.lastName} ({m.winner.phone})
+                                                                        </p>
+                                                                    </div>
+                                                                </div>
+                                                            )}
                                                         </div>
-                                                    )}
-                                                </div>
-                                            );
-                                        })}
-                                    </div>
+                                                    );
+                                                })}
+                                            </div>
+                                        </div>
+                                    ))
                                 )}
                             </div>
                         </motion.div>

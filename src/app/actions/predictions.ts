@@ -181,10 +181,10 @@ export async function getMatchesAndPredictions(participantId: string) {
 // Soumettre un pronostic
 export async function submitPrediction(participantId: string, matchId: string, predScoreHome: number, predScoreAway: number) {
     try {
-        // Vérifier si le match existe et est toujours modifiable (UPCOMING)
+        // Vérifier si le match existe, son statut et sa date de début
         const { data: match, error: matchError } = await supabase
             .from('matches')
-            .select('status')
+            .select('status, match_date')
             .eq('id', matchId)
             .single();
 
@@ -192,7 +192,10 @@ export async function submitPrediction(participantId: string, matchId: string, p
             return { success: false, error: "Match introuvable." };
         }
 
-        if (match.status !== 'UPCOMING') {
+        const now = new Date();
+        const matchDate = new Date(match.match_date);
+
+        if (match.status !== 'UPCOMING' || now >= matchDate) {
             return { success: false, error: "Le pronostic n'est plus modifiable car le match a débuté ou est terminé." };
         }
 
@@ -225,12 +228,13 @@ export async function submitPrediction(participantId: string, matchId: string, p
 // Créer ou ajouter un match
 export async function adminAddMatch(teamHome: string, teamAway: string, matchDateStr: string) {
     try {
+        const cleanDateStr = matchDateStr.endsWith('Z') ? matchDateStr : `${matchDateStr}Z`;
         const { data, error } = await supabase
             .from('matches')
             .insert({
                 team_home: teamHome,
                 team_away: teamAway,
-                match_date: new Date(matchDateStr).toISOString(),
+                match_date: new Date(cleanDateStr).toISOString(),
                 status: 'UPCOMING'
             })
             .select()
@@ -277,15 +281,22 @@ export async function adminClearAllMatches() {
 }
 
 // Mettre à jour le score d'un match + déclencher l'avancement automatique KO
-export async function adminUpdateMatchScore(matchId: string, scoreHome: number, scoreAway: number, status: string) {
+export async function adminUpdateMatchScore(matchId: string, scoreHome: number, scoreAway: number, status: string, matchDateStr?: string) {
     try {
+        const updateData: any = {
+            score_home: scoreHome,
+            score_away: scoreAway,
+            status: status // 'UPCOMING', 'LIVE', 'FINISHED'
+        };
+
+        if (matchDateStr) {
+            const cleanDateStr = matchDateStr.endsWith('Z') ? matchDateStr : `${matchDateStr}Z`;
+            updateData.match_date = new Date(cleanDateStr).toISOString();
+        }
+
         const { data, error } = await supabase
             .from('matches')
-            .update({
-                score_home: scoreHome,
-                score_away: scoreAway,
-                status: status // 'UPCOMING', 'LIVE', 'FINISHED'
-            })
+            .update(updateData)
             .eq('id', matchId)
             .select()
             .single();
@@ -293,7 +304,7 @@ export async function adminUpdateMatchScore(matchId: string, scoreHome: number, 
         if (error) throw error;
 
         // ── Qualification automatique ─────────────────────────────────────────
-        // Si le match est terminé, on recalcule les classements et on avance
+        // Si le match est terminé, on recalculcule les classements et on avance
         // les équipes qualifiées dans le bracket KO si le groupe est complet.
         let knockoutMessage: string | undefined;
         if (status === 'FINISHED') {
@@ -319,62 +330,85 @@ export async function adminDrawPresenceWinner(matchId: string) {
             .select('*')
             .eq('id', matchId)
             .single();
-
+ 
         if (matchError || !match) {
             return { success: false, error: "Match introuvable." };
         }
+ 
+        const matchDateStr = new Date(match.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
 
-        if (match.status !== 'FINISHED') {
-            return { success: false, error: "Le match doit être terminé pour lancer le tirage." };
+        // Récupérer tous les matchs de cette journée pour évaluer l'éligibilité globale du jour
+        const { data: allMatches, error: allMatchesError } = await supabase
+            .from('matches')
+            .select('*');
+        if (allMatchesError) throw allMatchesError;
+
+        const dayMatches = (allMatches || []).filter((m: any) => {
+            const dStr = new Date(m.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            return dStr === matchDateStr && m.id !== '00000000-0000-0000-0000-000000000000';
+        });
+
+        // 1. Trier les matchs de la journée par ordre chronologique
+        dayMatches.sort((a: any, b: any) => new Date(a.match_date).getTime() - new Date(b.match_date).getTime());
+        const lastMatch = dayMatches[dayMatches.length - 1];
+
+        // 2. Vérifier si le dernier match de la journée a commencé (LIVE ou FINISHED)
+        if (lastMatch.status !== 'LIVE' && lastMatch.status !== 'FINISHED') {
+            return { success: false, error: "Le tirage de présence n'est possible qu'à partir du début (mi-temps) du dernier match de la journée." };
         }
 
-        // 2. Vérifier si un gagnant a déjà été tiré pour ce type
-        const { data: existingWinner } = await supabase
+        // 2. Vérifier si au moins un match de la journée ne commence pas entre 00h et 08h
+        const hasPresenceSupport = dayMatches.some((m: any) => {
+            const matchHour = parseInt(new Date(m.match_date).toLocaleTimeString('fr-FR', { timeZone: 'Africa/Lome', hour: '2-digit', hour12: false }));
+            return !(matchHour >= 0 && matchHour < 8);
+        });
+        if (!hasPresenceSupport) {
+            return { success: false, error: "Les matchs programmés entre 00h et 08h ne gèrent pas de tirage de présence." };
+        }
+
+        // 3. Vérifier si un gagnant de type PRESENCE a déjà été tiré pour ce jour-là (tous matchs de ce jour-là confondus)
+        const { data: dayPresenceWinners, error: dpError } = await supabase
             .from('draw_winners')
-            .select('*, participants(first_name, last_name, phone)')
-            .eq('match_id', matchId)
-            .eq('draw_type', 'PRESENCE')
-            .maybeSingle();
+            .select('*, matches(match_date)')
+            .eq('draw_type', 'PRESENCE');
 
-        if (existingWinner) {
-            return {
-                success: true,
-                alreadyDrawn: true,
-                winner: {
-                    firstName: existingWinner.participants?.first_name,
-                    lastName: existingWinner.participants?.last_name,
-                    phone: existingWinner.participants?.phone,
-                    drawnAt: existingWinner.drawn_at
-                }
-            };
+        if (dpError) throw dpError;
+
+        const alreadyDrawnForThisDay = (dayPresenceWinners || []).some((w: any) => {
+            if (!w.matches) return false;
+            const wDateStr = new Date(w.matches.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            return wDateStr === matchDateStr;
+        });
+
+        if (alreadyDrawnForThisDay) {
+            return { success: false, error: `Un tirage de présence a déjà été effectué pour la journée du ${matchDateStr.split('-').reverse().join('/')}.` };
         }
 
-        // 3. Récupérer les présences du jour du match (format de date YYYY-MM-DD)
-        const matchDateStr = new Date(match.match_date).toISOString().split('T')[0];
+        // 3. Récupérer les présences du jour du match (les gens venus ce jour-là)
         const { data: attendances, error: attError } = await supabase
             .from('attendances')
             .select('*, participants(id, first_name, last_name, phone)')
             .eq('date', matchDateStr);
-
+ 
         if (attError) throw attError;
-
+ 
         if (!attendances || attendances.length === 0) {
-            return { success: false, error: "Aucun participant enregistré présent à la FanZone pour la date de ce match." };
+            return { success: false, error: `Aucun participant enregistré présent à la FanZone le ${matchDateStr.split('-').reverse().join('/')}.` };
         }
-
+ 
         // 4. Filtrer les participants uniques
         const uniqueParticipants = Array.from(new Set(attendances.map(a => a.participants?.id)))
             .map(id => attendances.find(a => a.participants?.id === id)?.participants)
             .filter(Boolean);
-
+ 
         if (uniqueParticipants.length === 0) {
             return { success: false, error: "Aucun participant valide trouvé parmi les présents." };
         }
-
+ 
         // 5. Tirer au sort
         const randomIndex = Math.floor(Math.random() * uniqueParticipants.length);
         const luckyWinner = uniqueParticipants[randomIndex] as any;
-
+ 
         // 6. Enregistrer le gagnant
         const { data: drawRecord, error: drawError } = await supabase
             .from('draw_winners')
@@ -386,9 +420,9 @@ export async function adminDrawPresenceWinner(matchId: string) {
             })
             .select()
             .single();
-
+ 
         if (drawError) throw drawError;
-
+ 
         return {
             success: true,
             alreadyDrawn: false,
@@ -405,7 +439,7 @@ export async function adminDrawPresenceWinner(matchId: string) {
     }
 }
 
-// Tirage au sort parmi les PRONOSTICS CORRECTS
+// Tirage au sort parmi les PRONOSTICS CORRECTS de la journée
 export async function adminDrawPredictionWinner(matchId: string) {
     try {
         // 1. Récupérer le match avec son score final
@@ -419,55 +453,61 @@ export async function adminDrawPredictionWinner(matchId: string) {
             return { success: false, error: "Match introuvable." };
         }
 
-        if (match.status !== 'FINISHED' || match.score_home === null || match.score_away === null) {
-            return { success: false, error: "Le match doit être terminé avec un score renseigné." };
+        const matchDateStr = new Date(match.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+
+        // Récupérer tous les matchs de cette journée
+        const { data: allMatches, error: allMatchesError } = await supabase
+            .from('matches')
+            .select('*');
+        if (allMatchesError) throw allMatchesError;
+
+        const dayMatches = (allMatches || []).filter((m: any) => {
+            const dStr = new Date(m.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            return dStr === matchDateStr && m.id !== '00000000-0000-0000-0000-000000000000';
+        });
+
+        // Vérifier si au moins un match de la journée est terminé avec un score renseigné
+        const isAnyMatchFinished = dayMatches.some((m: any) => m.status === 'FINISHED' && m.score_home !== null && m.score_away !== null);
+        if (!isAnyMatchFinished) {
+            return { success: false, error: "Au moins un match de la journée doit être terminé avec un score renseigné." };
         }
 
-        // 2. Vérifier si un gagnant a déjà été tiré pour ce type
-        const { data: existingWinner } = await supabase
+        // 2. Vérifier si un gagnant de type PREDICTION a déjà été tiré pour ce jour-là
+        const { data: dayPredictionWinners, error: dpError } = await supabase
             .from('draw_winners')
-            .select('*, participants(first_name, last_name, phone)')
-            .eq('match_id', matchId)
-            .eq('draw_type', 'PREDICTION')
-            .maybeSingle();
+            .select('*, matches(match_date)')
+            .eq('draw_type', 'PREDICTION');
 
-        if (existingWinner) {
-            return {
-                success: true,
-                alreadyDrawn: true,
-                winner: {
-                    firstName: existingWinner.participants?.first_name,
-                    lastName: existingWinner.participants?.last_name,
-                    phone: existingWinner.participants?.phone,
-                    drawnAt: existingWinner.drawn_at
-                }
-            };
+        if (dpError) throw dpError;
+
+        const alreadyDrawnForThisDay = (dayPredictionWinners || []).some((w: any) => {
+            if (!w.matches) return false;
+            const wDateStr = new Date(w.matches.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            return wDateStr === matchDateStr;
+        });
+
+        if (alreadyDrawnForThisDay) {
+            return { success: false, error: `Un tirage de pronostics a déjà été effectué pour la journée du ${matchDateStr.split('-').reverse().join('/')}.` };
         }
 
-        // 3. Récupérer tous les pronostics qui ont le score exact
-        const { data: correctPredictions, error: predError } = await supabase
-            .from('predictions')
-            .select('*, participants(id, first_name, last_name, phone)')
-            .eq('match_id', matchId)
-            .eq('pred_score_home', match.score_home)
-            .eq('pred_score_away', match.score_away);
-
-        if (predError) throw predError;
-
-        if (!correctPredictions || correctPredictions.length === 0) {
-            return { success: false, error: "Aucun participant n'a trouvé le score exact de ce match." };
+        // 3. Récupérer tous les candidats pronostics corrects pour la journée
+        const resCandidates = await getDrawCandidates(matchId, 'PREDICTION');
+        if (!resCandidates.success || !resCandidates.candidates || resCandidates.candidates.length === 0) {
+            return { success: false, error: "Aucun participant n'a trouvé de score exact pour les matchs de cette journée." };
         }
+
+        const candidates = resCandidates.candidates;
 
         // 4. Sélectionner un gagnant au hasard
-        const randomIndex = Math.floor(Math.random() * correctPredictions.length);
-        const luckyDraw = correctPredictions[randomIndex];
+        const randomIndex = Math.floor(Math.random() * candidates.length);
+        const luckyDraw = candidates[randomIndex];
 
         // 5. Enregistrer le gagnant
         const { data: drawRecord, error: drawError } = await supabase
             .from('draw_winners')
             .insert({
                 match_id: matchId,
-                participant_id: luckyDraw.participant_id,
+                participant_id: luckyDraw.id,
                 draw_type: 'PREDICTION',
                 drawn_at: new Date().toISOString()
             })
@@ -480,9 +520,9 @@ export async function adminDrawPredictionWinner(matchId: string) {
             success: true,
             alreadyDrawn: false,
             winner: {
-                firstName: luckyDraw.participants?.first_name,
-                lastName: luckyDraw.participants?.last_name,
-                phone: luckyDraw.participants?.phone,
+                firstName: luckyDraw.firstName,
+                lastName: luckyDraw.lastName,
+                phone: luckyDraw.phone,
                 drawnAt: drawRecord.drawn_at
             }
         };
@@ -625,5 +665,117 @@ export async function adminSyncScoresFromGoogle() {
     }
 }
 
+// Récupérer la liste des candidats éligibles pour un tirage au sort (présence aujourd'hui ou pronostics corrects)
+export async function getDrawCandidates(matchId: string, type: 'PRESENCE' | 'PREDICTION') {
+    try {
+        const { data: match, error: matchError } = await supabase
+            .from('matches')
+            .select('*')
+            .eq('id', matchId)
+            .single();
 
+        if (matchError || !match) {
+            return { success: false, error: "Match introuvable." };
+        }
 
+        if (type === 'PRESENCE') {
+            // Vérifier si le match a lieu entre 00h et 08h (Afrique/Lomé)
+            const matchHour = parseInt(new Date(match.match_date).toLocaleTimeString('fr-FR', { timeZone: 'Africa/Lome', hour: '2-digit', hour12: false }));
+            if (matchHour >= 0 && matchHour < 8) {
+                return { success: false, error: "Les matchs programmés entre 00h et 08h ne gèrent pas de tirage de présence." };
+            }
+
+            const matchDateStr = new Date(match.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            const { data: attendances, error: attError } = await supabase
+                .from('attendances')
+                .select('*, participants(id, first_name, last_name, phone)')
+                .eq('date', matchDateStr);
+
+            if (attError) throw attError;
+
+            if (!attendances || attendances.length === 0) {
+                return { success: true, candidates: [] };
+            }
+
+            const uniqueParticipants = Array.from(new Set(attendances.map(a => a.participants?.id)))
+                .map(id => attendances.find(a => a.participants?.id === id)?.participants)
+                .filter(Boolean)
+                .map((p: any) => ({
+                    id: p.id,
+                    firstName: p.first_name,
+                    lastName: p.last_name,
+                    phone: p.phone
+                }));
+
+            return { success: true, candidates: uniqueParticipants };
+        } else {
+            const matchDateStr = new Date(match.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            
+            // Récupérer tous les matchs de cette journée
+            const { data: allMatches, error: matchesError } = await supabase
+                .from('matches')
+                .select('*');
+            
+            if (matchesError) throw matchesError;
+
+            const dayMatches = (allMatches || []).filter((m: any) => {
+                const dStr = new Date(m.match_date).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+                return dStr === matchDateStr && m.status === 'FINISHED' && m.score_home !== null && m.score_away !== null;
+            });
+
+            let allCandidates: any[] = [];
+            for (const dm of dayMatches) {
+                const { data: correctPredictions } = await supabase
+                    .from('predictions')
+                    .select('*, participants(id, first_name, last_name, phone)')
+                    .eq('match_id', dm.id)
+                    .eq('pred_score_home', dm.score_home)
+                    .eq('pred_score_away', dm.score_away);
+                
+                if (correctPredictions) {
+                    correctPredictions.forEach((p: any) => {
+                        if (p.participants) {
+                            allCandidates.push({
+                                id: p.participants.id,
+                                firstName: p.participants.first_name,
+                                lastName: p.participants.last_name,
+                                phone: p.participants.phone
+                            });
+                        }
+                    });
+                }
+            }
+
+            // Unicité des candidats par ID de participant
+            const uniqueCandidates = Array.from(new Set(allCandidates.map(c => c.id)))
+                .map(id => allCandidates.find(c => c.id === id))
+                .filter(Boolean);
+
+            return { success: true, candidates: uniqueCandidates };
+        }
+    } catch (e: any) {
+        console.error("Get Draw Candidates Error:", e);
+        return { success: false, error: "Erreur lors de la récupération des candidats." };
+    }
+}
+
+// Action de réinitialisation générale (tirages, inscriptions, pronostics, badges, présences)
+export async function adminResetDrawsAndParticipants() {
+    try {
+        // 1. Suppression des gagnants des tirages
+        await supabase.from('draw_winners').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // 2. Suppression des présences enregistrées
+        await supabase.from('attendances').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // 3. Suppression des pronostics (predictions)
+        await supabase.from('predictions').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // 4. Suppression des badges
+        await supabase.from('badges').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+        // 5. Suppression des participants (inscriptions)
+        await supabase.from('participants').delete().neq('id', '00000000-0000-0000-0000-000000000000');
+
+        return { success: true };
+    } catch (e: any) {
+        console.error("Admin Reset Database Error:", e);
+        return { success: false, error: "Erreur lors de la réinitialisation de la base : " + e.message };
+    }
+}

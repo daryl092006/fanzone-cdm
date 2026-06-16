@@ -36,6 +36,7 @@ export default function AdminInscriptionPage() {
                 // Uniquement les matchs à venir (UPCOMING) sans équipes fictives
                 const upcoming = res.matches.filter((m: any) => 
                     m.status === 'UPCOMING' && 
+                    new Date() < new Date(m.matchDate) &&
                     !m.teamHome.toLowerCase().includes('gr.') && 
                     !m.teamAway.toLowerCase().includes('gr.') &&
                     !m.teamHome.toLowerCase().includes('vq.') &&
