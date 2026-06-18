@@ -18,6 +18,7 @@ import {
     Tag,
     Download,
     BarChart2,
+    BarChart3,
     Phone
 } from 'lucide-react';
 import AdminNavLink from './AdminNavLink';
@@ -45,6 +46,7 @@ export default function AdminDashboardLayoutClient({
         { href: '/admin/pronostics', icon: <Trophy size={18} />, label: 'Matchs & Pronostics', exact: false },
         { href: '/admin/classements', icon: <BarChart2 size={18} />, label: 'Classements Groupes', exact: false },
         { href: '/admin/presences', icon: <History size={18} />, label: 'Présences', exact: false },
+        { href: '/admin/rapports', icon: <BarChart3 size={18} />, label: 'Rapports par Jour', exact: false },
         { href: '/admin/exports', icon: <Download size={18} />, label: 'Exports', exact: false },
     ];
 

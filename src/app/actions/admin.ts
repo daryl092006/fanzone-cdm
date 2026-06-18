@@ -105,3 +105,57 @@ export async function getDashboardStats() {
         return { error: "Impossible de charger les statistiques." };
     }
 }
+
+export async function getDailyStats() {
+    try {
+        const { data: participants, error: pError } = await supabase
+            .from('participants')
+            .select('id, created_at');
+
+        if (pError) throw pError;
+
+        const { data: attendances, error: aError } = await supabase
+            .from('attendances')
+            .select('participant_id, date, status');
+
+        if (aError) throw aError;
+
+        const statsByDate: Record<string, { date: string; registrations: number; uniquePresent: Set<string>; totalScans: number }> = {};
+
+        participants?.forEach(p => {
+            if (!p.created_at) return;
+            const dateStr = p.created_at.split('T')[0];
+            if (!statsByDate[dateStr]) {
+                statsByDate[dateStr] = { date: dateStr, registrations: 0, uniquePresent: new Set(), totalScans: 0 };
+            }
+            statsByDate[dateStr].registrations++;
+        });
+
+        attendances?.forEach(a => {
+            const dateStr = a.date;
+            if (!dateStr) return;
+            if (!statsByDate[dateStr]) {
+                statsByDate[dateStr] = { date: dateStr, registrations: 0, uniquePresent: new Set(), totalScans: 0 };
+            }
+            if (a.participant_id) {
+                statsByDate[dateStr].uniquePresent.add(a.participant_id);
+            }
+            statsByDate[dateStr].totalScans++;
+        });
+
+        const reports = Object.values(statsByDate)
+            .map(item => ({
+                date: item.date,
+                registrations: item.registrations,
+                uniquePresent: item.uniquePresent.size,
+                totalScans: item.totalScans
+            }))
+            .sort((a, b) => b.date.localeCompare(a.date));
+
+        return { success: true, reports };
+    } catch (error) {
+        console.error("Daily Stats Error:", error);
+        return { error: "Erreur lors de la récupération des rapports journaliers." };
+    }
+}
+

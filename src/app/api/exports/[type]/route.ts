@@ -37,10 +37,17 @@ export async function GET(
             filename = `fanzone-participants-${new Date().toISOString().slice(0, 10)}.csv`;
 
         } else if (type === 'presences') {
-            const { data, error } = await supabase
+            const dateFilter = request.nextUrl.searchParams.get('date');
+            let query = supabase
                 .from('attendances')
                 .select(`id, date, scan_time, status, participants(first_name, last_name, badges(badge_code))`)
                 .order('scan_time', { ascending: false });
+
+            if (dateFilter) {
+                query = query.eq('date', dateFilter);
+            }
+
+            const { data, error } = await query;
 
             if (error) throw error;
 
@@ -55,7 +62,9 @@ export async function GET(
                 a.status,
             ]);
             csv = BOM + [headers, ...rows].map(r => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
-            filename = `fanzone-presences-${new Date().toISOString().slice(0, 10)}.csv`;
+            filename = dateFilter 
+                ? `fanzone-presences-${dateFilter}-${new Date().toISOString().slice(0, 10)}.csv`
+                : `fanzone-presences-${new Date().toISOString().slice(0, 10)}.csv`;
 
         } else if (type === 'badges') {
             const { data, error } = await supabase
@@ -107,6 +116,62 @@ export async function GET(
             ];
             csv = BOM + [headers, ...rows].map(r => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
             filename = `fanzone-rapport-${today}.csv`;
+
+        } else if (type === 'rapports-journaliers') {
+            const [
+                { data: participants, error: pError },
+                { data: attendances, error: aError }
+            ] = await Promise.all([
+                supabase.from('participants').select('id, created_at'),
+                supabase.from('attendances').select('participant_id, date, status')
+            ]);
+
+            if (pError) throw pError;
+            if (aError) throw aError;
+
+            const statsByDate: Record<string, { date: string; registrations: number; uniquePresent: Set<string>; totalScans: number }> = {};
+
+            participants?.forEach(p => {
+                if (!p.created_at) return;
+                const dateStr = p.created_at.split('T')[0];
+                if (!statsByDate[dateStr]) {
+                    statsByDate[dateStr] = { date: dateStr, registrations: 0, uniquePresent: new Set(), totalScans: 0 };
+                }
+                statsByDate[dateStr].registrations++;
+            });
+
+            attendances?.forEach(a => {
+                const dateStr = a.date;
+                if (!dateStr) return;
+                if (!statsByDate[dateStr]) {
+                    statsByDate[dateStr] = { date: dateStr, registrations: 0, uniquePresent: new Set(), totalScans: 0 };
+                }
+                if (a.participant_id) {
+                    statsByDate[dateStr].uniquePresent.add(a.participant_id);
+                }
+                statsByDate[dateStr].totalScans++;
+            });
+
+            const reports = Object.values(statsByDate)
+                .map(item => ({
+                    date: item.date,
+                    registrations: item.registrations,
+                    uniquePresent: item.uniquePresent.size,
+                    totalScans: item.totalScans
+                }))
+                .sort((a, b) => b.date.localeCompare(a.date));
+
+            const BOM = '\uFEFF';
+            const headers = ['Date', 'Inscriptions', 'Présents Uniques', 'Scans Totaux'];
+            const rows = reports.map(r => [
+                r.date,
+                r.registrations,
+                r.uniquePresent,
+                r.totalScans
+            ]);
+
+            csv = BOM + [headers, ...rows].map(r => r.map((v: any) => `"${String(v).replace(/"/g, '""')}"`).join(',')).join('\n');
+            filename = `fanzone-rapports-journaliers-${new Date().toISOString().slice(0, 10)}.csv`;
 
         } else {
             return NextResponse.json({ error: 'Type d\'export inconnu.' }, { status: 400 });
