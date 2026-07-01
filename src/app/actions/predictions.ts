@@ -368,9 +368,18 @@ export async function adminDrawPresenceWinner(matchId: string) {
             (m.team_home === 'Senegal' && m.team_away === 'France')
         );
 
+        const englandDrcMatch = dayMatches.find((m: any) => 
+            (m.team_home === 'England' && m.team_away === 'DR Congo') || 
+            (m.team_home === 'DR Congo' && m.team_away === 'England')
+        );
+
         // 2. Vérifier si le match déclencheur a commencé (LIVE ou FINISHED)
-        const triggerMatch = franceSenegalMatch || lastMatch;
-        if (triggerMatch.status !== 'LIVE' && triggerMatch.status !== 'FINISHED') {
+        const triggerMatch = englandDrcMatch || franceSenegalMatch || lastMatch;
+        if (triggerMatch === englandDrcMatch) {
+            if (englandDrcMatch.status !== 'FINISHED') {
+                return { success: false, error: "Le tirage de présence n'est possible qu'à la fin du match Angleterre vs RD Congo." };
+            }
+        } else if (triggerMatch.status !== 'LIVE' && triggerMatch.status !== 'FINISHED') {
             if (franceSenegalMatch) {
                 return { success: false, error: "Le tirage de présence n'est possible qu'à partir de la mi-temps du match France vs Sénégal." };
             }
@@ -492,7 +501,16 @@ export async function adminDrawPredictionWinner(matchId: string) {
             (m.team_home === 'Senegal' && m.team_away === 'France')
         );
 
-        if (franceSenegalMatch) {
+        const englandDrcMatch = dayMatches.find((m: any) => 
+            (m.team_home === 'England' && m.team_away === 'DR Congo') || 
+            (m.team_home === 'DR Congo' && m.team_away === 'England')
+        );
+
+        if (englandDrcMatch) {
+            if (englandDrcMatch.status !== 'FINISHED' || englandDrcMatch.score_home === null || englandDrcMatch.score_away === null) {
+                return { success: false, error: "Le match Angleterre vs RD Congo doit être terminé avec un score renseigné pour le tirage." };
+            }
+        } else if (franceSenegalMatch) {
             if (franceSenegalMatch.status !== 'FINISHED' || franceSenegalMatch.score_home === null || franceSenegalMatch.score_away === null) {
                 return { success: false, error: "Le match France vs Sénégal doit être terminé avec un score renseigné pour le tirage." };
             }
