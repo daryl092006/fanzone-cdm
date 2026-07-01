@@ -516,19 +516,29 @@ export default function AdminPronosticsPage() {
                             );
                             const lastMatch = sorted[sorted.length - 1];
 
+                             // Vérifier s'il y a un match Angleterre vs RD Congo ce jour-là
+                            const englandDrcMatch = dayMatches.find((m: any) =>
+                                (m.teamHome === 'England' && m.teamAway === 'DR Congo') ||
+                                (m.teamHome === 'DR Congo' && m.teamAway === 'England')
+                            );
+
                             // Vérifier s'il y a un match France vs Sénégal ce jour-là
                             const franceSenegalMatch = dayMatches.find((m: any) =>
                                 (m.teamHome === 'France' && m.teamAway === 'Senegal') ||
                                 (m.teamHome === 'Senegal' && m.teamAway === 'France')
                             );
 
-                            // Tirage présence : France vs Sénégal si présent, sinon dernier match du jour
-                            const presenceTriggerMatch = franceSenegalMatch || lastMatch;
-                            const isPresenceDrawAllowed = presenceTriggerMatch.status === 'LIVE' || presenceTriggerMatch.status === 'FINISHED';
+                            // Tirage présence : Angleterre vs RD Congo si présent, sinon France vs Sénégal si présent, sinon dernier match du jour
+                            const presenceTriggerMatch = englandDrcMatch || franceSenegalMatch || lastMatch;
+                            const isPresenceDrawAllowed = presenceTriggerMatch === englandDrcMatch
+                                ? englandDrcMatch.status === 'FINISHED'
+                                : (presenceTriggerMatch.status === 'LIVE' || presenceTriggerMatch.status === 'FINISHED');
                             const dayPresenceWinner = dayMatches.find(m => m.winnerPresence)?.winnerPresence ?? null;
 
-                            // Tirage pronostic : France vs Sénégal terminé si présent, sinon tous les matchs terminés
-                            const isPredictionDrawAllowed = franceSenegalMatch
+                            // Tirage pronostic : Angleterre vs RD Congo terminé si présent, sinon France vs Sénégal terminé si présent, sinon tous les matchs terminés
+                            const isPredictionDrawAllowed = englandDrcMatch
+                                ? (englandDrcMatch.status === 'FINISHED' && englandDrcMatch.scoreHome !== null && englandDrcMatch.scoreAway !== null)
+                                : franceSenegalMatch
                                 ? (franceSenegalMatch.status === 'FINISHED' && franceSenegalMatch.scoreHome !== null && franceSenegalMatch.scoreAway !== null)
                                 : dayMatches.every(m => m.status === 'FINISHED');
                             const dayPredictionWinner = dayMatches.find(m => m.winnerPrediction)?.winnerPrediction ?? null;
@@ -637,8 +647,17 @@ export default function AdminPronosticsPage() {
                                                 <div className="min-w-0">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-emerald-700">🟢 Tirage Présence · Journée</p>
                                                     <p className="text-[10px] text-slate-400 mt-0.5">
-                                                        À la mi-temps de{' '}
-                                                        <span className="font-bold text-slate-600">{presenceTriggerMatch.teamHome} vs {presenceTriggerMatch.teamAway}</span>
+                                                        {presenceTriggerMatch === englandDrcMatch ? (
+                                                            <>
+                                                                À la fin de{' '}
+                                                                <span className="font-bold text-slate-600">{presenceTriggerMatch.teamHome} vs {presenceTriggerMatch.teamAway}</span>
+                                                            </>
+                                                        ) : (
+                                                            <>
+                                                                À la mi-temps de{' '}
+                                                                <span className="font-bold text-slate-600">{presenceTriggerMatch.teamHome} vs {presenceTriggerMatch.teamAway}</span>
+                                                            </>
+                                                        )}
                                                         {' '}({new Date(presenceTriggerMatch.matchDate).toLocaleTimeString('fr-FR', {
                                                             hour: '2-digit', minute: '2-digit', timeZone: 'Africa/Lome'
                                                         })})
@@ -663,7 +682,7 @@ export default function AdminPronosticsPage() {
                                                 </button>
                                             ) : (
                                                 <span className="shrink-0 text-[10px] text-slate-400 bg-white border border-slate-200 px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider">
-                                                    {franceSenegalMatch ? "En attente du match France vs Sénégal" : "En attente du dernier match"}
+                                                    {englandDrcMatch ? "En attente de la fin du match Angleterre vs RD Congo" : franceSenegalMatch ? "En attente du match France vs Sénégal" : "En attente du dernier match"}
                                                 </span>
                                             )}
                                         </div>
@@ -675,7 +694,9 @@ export default function AdminPronosticsPage() {
                                                 <div className="min-w-0">
                                                     <p className="text-[10px] font-black uppercase tracking-widest text-yellow-700">🏆 Tirage Pronostic · Journée</p>
                                                     <p className="text-[10px] text-slate-400 mt-0.5">
-                                                        {franceSenegalMatch 
+                                                        {englandDrcMatch
+                                                            ? "À la fin du match Angleterre vs RD Congo · Concerne uniquement les pronostics de ce match"
+                                                            : franceSenegalMatch 
                                                             ? "À la fin du match France vs Sénégal · Concerne uniquement les pronostics de ce match" 
                                                             : "Le lendemain avant le 1er match · Tous les matchs du jour doivent être terminés"}
                                                     </p>
@@ -703,14 +724,14 @@ export default function AdminPronosticsPage() {
                                                 </div>
                                             ) : isPredictionDrawAllowed ? (
                                                 <button
-                                                    onClick={() => handleDrawWinner(franceSenegalMatch ? franceSenegalMatch.id : lastMatch.id, 'PREDICTION')}
+                                                    onClick={() => handleDrawWinner(englandDrcMatch ? englandDrcMatch.id : franceSenegalMatch ? franceSenegalMatch.id : lastMatch.id, 'PREDICTION')}
                                                     className="shrink-0 flex items-center justify-center gap-2 bg-yellow-400 hover:bg-[#0A0A14] hover:text-white text-black font-bold text-[10px] uppercase tracking-wider px-5 py-3 rounded-xl transition-all shadow-sm"
                                                 >
                                                     <Trophy size={14} /> Lancer le Tirage Pronostic
                                                 </button>
                                             ) : (
                                                 <span className="shrink-0 text-[10px] text-slate-400 bg-white border border-slate-200 px-4 py-2.5 rounded-xl font-bold uppercase tracking-wider">
-                                                    {franceSenegalMatch ? "En attente de la fin du match France vs Sénégal" : "En attente de la fin de tous les matchs"}
+                                                    {englandDrcMatch ? "En attente de la fin du match Angleterre vs RD Congo" : franceSenegalMatch ? "En attente de la fin du match France vs Sénégal" : "En attente de la fin de tous les matchs"}
                                                 </span>
                                             )}
                                         </div>
