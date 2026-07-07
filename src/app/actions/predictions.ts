@@ -585,18 +585,23 @@ export async function adminDrawPredictionWinner(matchId: string) {
 // ─── Scraper de scores via Google / DuckDuckGo Search ─────────────────────────
 
 function normalizeTeamName(name: string): string {
-    if (!name) return "";
-    let clean = name.toLowerCase().trim();
-    if (clean.includes('south korea') || clean.includes('corée du sud') || clean.includes('korea republic')) return 'korea republic';
-    if (clean.includes('czech republic') || clean.includes('république tchèque') || clean.includes('rep. tcheque') || clean.includes('czechia')) return 'czechia';
-    if (clean.includes('democratic republic of the congo') || clean.includes('rd congo') || clean.includes('dr congo')) return 'dr congo';
-    if (clean.includes('united states') || clean.includes('états unis') || clean.includes('etats unis') || clean.includes('usa')) return 'usa';
-    if (clean.includes('turkey') || clean.includes('türkiye') || clean.includes('turquie')) return 'türkiye';
+    if (!name) return '';
+    const clean = name.toLowerCase().trim();
+    // Correspondances explicites API → DB
+    if (clean === 'south korea' || clean === 'korea republic' || clean.includes('corée du sud')) return 'korea republic';
+    if (clean === 'czech republic' || clean === 'czechia' || clean.includes('rep. tcheque') || clean.includes('tchèque')) return 'czechia';
+    if (clean.includes('democratic republic of the congo') || clean === 'dr congo' || clean === 'rd congo') return 'dr congo';
+    if (clean === 'united states' || clean === 'usa' || clean.includes('états-unis') || clean.includes('etats-unis')) return 'usa';
+    if (clean === 'turkey' || clean === 'türkiye' || clean.includes('turquie')) return 'türkiye';
+    if (clean === 'curaçao' || clean === 'curacao') return 'curaçao';
     if (clean.includes('bosnia')) return 'bosnia-herzegovina';
-    if (clean.includes('ivory coast') || clean.includes('côte d\'ivoire')) return 'ivory coast';
-    if (clean.includes('espagne') || clean.includes('spain') || clean.includes('españa')) return 'spain';
-    if (clean.includes('belgique') || clean.includes('belgium')) return 'belgium';
-    return clean.replace(/and/g, '&').replace(/-/g, ' ').replace(/\s+/g, ' ').replace(/republic/g, 'rep.');
+    if (clean === 'ivory coast' || clean.includes("côte d'ivoire") || clean.includes("cote d'ivoire")) return 'ivory coast';
+    if (clean === 'cape verde' || clean === 'cap-vert') return 'cape verde';
+    if (clean === 'new zealand' || clean === 'nouvelle-zélande') return 'new zealand';
+    if (clean === 'saudi arabia' || clean.includes('arabie saoudite')) return 'saudi arabia';
+    if (clean === 'south africa' || clean === 'afrique du sud') return 'south africa';
+    // Pour tout le reste : retourner directement sans transformer
+    return clean;
 }
 
 function matchesAlign(apiHome: string, apiAway: string, dbHome: string, dbAway: string): boolean {

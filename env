@@ -1,0 +1,13 @@
+# ─── Supabase ─────────────────────────────────────────────────────────────────
+# Trouve ces valeurs dans : https://supabase.com/dashboard → ton projet → Settings → API
+NEXT_PUBLIC_SUPABASE_URL="https://ntvvlkosaakgpkrrjzxq.supabase.co"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im50dnZsa29zYWFrZ3BrcnJqenhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODAzOTA2OTgsImV4cCI6MjA5NTk2NjY5OH0.57ux7WKKgx9pN5h3LPLXlPrFvzVGH7om8C28fplPiwI"
+
+# ─── World Cup API ─────────────────────────────────────────────────────────────
+# Obtiens ta clé sur : https://worldcupapi.com/register puis → Dashboard
+# NE PAS PRÉFIXER PAR NEXT_PUBLIC_ (clé gardée côté serveur uniquement)
+WORLDCUP_API_KEY="uSc5Whjn1hBkTJIY"
+
+# ─── RapidAPI - API-Football ──────────────────────────────────────────────────
+# Obtenez votre clé gratuite sur : https://rapidapi.com/api-sports/api/api-football
+RAPIDAPI_KEY=""
