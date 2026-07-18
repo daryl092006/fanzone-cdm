@@ -188,11 +188,18 @@ export default function AdminPronosticsPage() {
         setActionLoading(null);
     };
 
-    // Grouper les matchs par jour (heure de Lomé)
+    // Grouper les matchs par jour (heure de Lomé) en masquant les anciens jours
     const matchesByDay = (() => {
         const grouped: { label: string; matches: any[] }[] = [];
         const seen: Record<string, number> = {};
+        const todayStr = new Date().toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+
         for (const m of matches) {
+            const matchLomeDateStr = new Date(m.matchDate).toLocaleDateString('fr-CA', { timeZone: 'Africa/Lome' });
+            if (matchLomeDateStr < todayStr) {
+                continue;
+            }
+
             const dayKey = new Date(m.matchDate).toLocaleDateString('fr-FR', {
                 timeZone: 'Africa/Lome',
                 weekday: 'long', day: '2-digit', month: 'long', year: 'numeric',
