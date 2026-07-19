@@ -174,15 +174,8 @@ export default function PronosticsPage() {
         
         const now = new Date();
         const upcomingMatches = matches.filter(m => {
-            const isFranceSenegal = (m.teamHome === 'France' && m.teamAway === 'Senegal') ||
-                                   (m.teamHome === 'Senegal' && m.teamAway === 'France');
-            
-            if (isFranceSenegal) {
-                const limitDate = new Date(new Date(m.matchDate).getTime() + 65 * 60 * 1000);
-                return m.status !== 'FINISHED' && now < limitDate;
-            }
-            
-            return m.status === 'UPCOMING' && now < new Date(m.matchDate);
+            const limitDate = new Date(new Date(m.matchDate).getTime() + 45 * 60 * 1000);
+            return m.status !== 'FINISHED' && now < limitDate;
         });
         
         for (const m of upcomingMatches) {
@@ -412,13 +405,8 @@ export default function PronosticsPage() {
                                             {/* Matchs du jour */}
                                             <div className="grid md:grid-cols-2 gap-6">
                                                 {dayMatches.map((m: any) => {
-                                                    const isFranceSenegal = (m.teamHome === 'France' && m.teamAway === 'Senegal') ||
-                                                                           (m.teamHome === 'Senegal' && m.teamAway === 'France');
-                                                    const limitDate = new Date(new Date(m.matchDate).getTime() + 65 * 60 * 1000);
-                                                    
-                                                    const isUpcoming = isFranceSenegal
-                                                        ? (m.status !== 'FINISHED' && new Date() < limitDate)
-                                                        : (m.status === 'UPCOMING' && new Date() < new Date(m.matchDate));
+                                                    const limitDate = new Date(new Date(m.matchDate).getTime() + 45 * 60 * 1000);
+                                                    const isUpcoming = m.status !== 'FINISHED' && new Date() < limitDate;
 
                                                     const isPlaceholder = isPlaceholderTeam(m.teamHome) || isPlaceholderTeam(m.teamAway);
                                                     const currentInput = predInputs[m.id] || {
@@ -452,7 +440,7 @@ export default function PronosticsPage() {
                                                                     })}
                                                                 </span>
                                                                 <div className="flex items-center gap-2">
-                                                                    {isUpcoming && isFranceSenegal && (
+                                                                    {isUpcoming && (
                                                                         <MatchCountdown targetDate={limitDate.toISOString()} onExpired={() => fetchData(participant.id)} />
                                                                     )}
                                                                     <span className={`px-2 py-1 rounded-full text-[9px] ${

@@ -195,18 +195,9 @@ export async function submitPrediction(participantId: string, matchId: string, p
         const now = new Date();
         const matchDate = new Date(match.match_date);
 
-        const isFranceSenegal = (match.team_home === 'France' && match.team_away === 'Senegal') ||
-                               (match.team_home === 'Senegal' && match.team_away === 'France');
-
-        if (isFranceSenegal) {
-            const limitDate = new Date(matchDate.getTime() + 65 * 60 * 1000);
-            if (match.status === 'FINISHED' || now >= limitDate) {
-                return { success: false, error: "Le pronostic n'est plus modifiable car la limite (5 min après le début de la seconde période) est dépassée ou le match est terminé." };
-            }
-        } else {
-            if (match.status !== 'UPCOMING' || now >= matchDate) {
-                return { success: false, error: "Le pronostic n'est plus modifiable car le match a débuté ou est terminé." };
-            }
+        const limitDate = new Date(matchDate.getTime() + 45 * 60 * 1000);
+        if (match.status === 'FINISHED' || now >= limitDate) {
+            return { success: false, error: "Le pronostic n'est plus modifiable car la limite (45 min après le début du match) est dépassée ou le match est terminé." };
         }
 
         // Upsert du pronostic

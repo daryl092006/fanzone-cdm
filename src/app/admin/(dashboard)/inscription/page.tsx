@@ -34,14 +34,15 @@ export default function AdminInscriptionPage() {
             const res = await getMatchesAndPredictions(id);
             if (res.success && res.matches) {
                 // Uniquement les matchs à venir (UPCOMING) sans équipes fictives
-                const upcoming = res.matches.filter((m: any) => 
-                    m.status === 'UPCOMING' && 
-                    new Date() < new Date(m.matchDate) &&
-                    !m.teamHome.toLowerCase().includes('gr.') && 
-                    !m.teamAway.toLowerCase().includes('gr.') &&
-                    !m.teamHome.toLowerCase().includes('vq.') &&
-                    !m.teamAway.toLowerCase().includes('vq.')
-                );
+                const upcoming = res.matches.filter((m: any) => {
+                    const limitDate = new Date(new Date(m.matchDate).getTime() + 45 * 60 * 1000);
+                    return m.status !== 'FINISHED' && 
+                        new Date() < limitDate &&
+                        !m.teamHome.toLowerCase().includes('gr.') && 
+                        !m.teamAway.toLowerCase().includes('gr.') &&
+                        !m.teamHome.toLowerCase().includes('vq.') &&
+                        !m.teamAway.toLowerCase().includes('vq.');
+                });
                 setMatches(upcoming);
                 
                 // Pré-remplir les inputs
